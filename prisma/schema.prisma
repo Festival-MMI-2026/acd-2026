@@ -1,0 +1,205 @@
+// Prisma schema for ACD Event Management System
+// Includes better-auth tables + ACD custom models
+
+generator client {
+  provider = "prisma-client"
+  output   = "../server/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// Better-Auth Tables (existing)
+// ============================================
+
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime  @db.Timestamptz(6)
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId])
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamptz(6)
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId])
+}
+
+model user {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @db.Timestamptz(6)
+  account       account[]
+  session       session[]
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([identifier])
+}
+
+// ============================================
+// ACD Custom Models
+// ============================================
+
+// Programme des journées
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  startTime   String   // Format "HH:mm"
+  endTime     String   // Format "HH:mm"
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Repas disponibles
+model Meal {
+  id        String       @id @default(uuid())
+  name      String       // "Déjeuner Jour 1", "Dîner Jour 2"
+  date      DateTime
+  mealType  MealType
+  price     Decimal      @db.Decimal(10, 2)
+  options   MealOption[]
+  registrationMeals RegistrationMeal[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+enum MealType {
+  LUNCH
+  DINNER
+}
+
+// Options de repas (entrées, plats, desserts)
+model MealOption {
+  id         String     @id @default(uuid())
+  mealId     String
+  meal       Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  name       String
+  optionType OptionType
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  starterChoices RegistrationMeal[] @relation("StarterOption")
+  mainChoices    RegistrationMeal[] @relation("MainOption")
+  dessertChoices RegistrationMeal[] @relation("DessertOption")
+}
+
+enum OptionType {
+  STARTER
+  MAIN
+  DESSERT
+}
+
+// Activités sur place
+model Activity {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  date            DateTime
+  startTime       String
+  endTime         String
+  maxParticipants Int?
+  price           Decimal  @default(0) @db.Decimal(10, 2)
+  registrationActivities RegistrationActivity[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Inscriptions
+model Registration {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String
+  phone      String
+  totalPrice Decimal  @db.Decimal(10, 2)
+  status     RegistrationStatus @default(PENDING)
+  meals      RegistrationMeal[]
+  activities RegistrationActivity[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// Choix de repas par inscription
+model RegistrationMeal {
+  id             String      @id @default(uuid())
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  mealId         String
+  meal           Meal        @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  quantity       Int         @default(1)
+  
+  starterOptionId String?
+  starterOption   MealOption? @relation("StarterOption", fields: [starterOptionId], references: [id])
+  
+  mainOptionId    String?
+  mainOption      MealOption? @relation("MainOption", fields: [mainOptionId], references: [id])
+  
+  dessertOptionId String?
+  dessertOption   MealOption? @relation("DessertOption", fields: [dessertOptionId], references: [id])
+  
+  createdAt      DateTime    @default(now())
+}
+
+// Choix d'activités par inscription
+model RegistrationActivity {
+  id             String       @id @default(uuid())
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  activityId     String
+  activity       Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+}
+
+// Paramètres du site
+model Setting {
+  id        String   @id @default("site_settings")
+  showProgramme    Boolean  @default(true)
+  showInscription  Boolean  @default(true)
+  showActivities   Boolean  @default(true)
+  showMeals        Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
