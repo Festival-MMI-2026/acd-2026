@@ -1,24 +1,22 @@
 <script setup lang="ts">
 import { signIn } from "~/lib/auth-client";
-import { EnvelopeClosedIcon, LockClosedIcon } from "@radix-icons/vue";
 
 definePageMeta({
-  layout: "default",
+  layout: "auth",
 });
 
 const email = ref("");
-const password = ref("");
 const isLoading = ref(false);
 const error = ref("");
+const magicLinkSent = ref(false);
 
-async function handleLogin() {
+async function handleMagicLink() {
   isLoading.value = true;
   error.value = "";
 
-  const { data, error: signInError } = await signIn.email(
+  const { data, error: signInError } = await signIn.magicLink(
     {
       email: email.value,
-      password: password.value,
       callbackURL: "/",
     },
     {
@@ -31,8 +29,14 @@ async function handleLogin() {
   isLoading.value = false;
 
   if (data && !signInError) {
-    navigateTo("/");
+    magicLinkSent.value = true;
   }
+}
+
+async function handleGithubSignIn() {
+  await signIn.social({
+    provider: "github",
+  });
 }
 </script>
 
@@ -41,94 +45,112 @@ async function handleLogin() {
     <div class="w-full max-w-sm space-y-8">
       <!-- Header -->
       <div class="text-center space-y-2">
+        <div class="flex items-center justify-center">LOGO ACD</div>
         <h1 class="text-3xl font-bold tracking-tight">Connexion</h1>
         <p class="text-muted-foreground">
-          Entrez vos identifiants pour accéder à votre compte
+          Entrez votre email pour recevoir un lien de connexion
         </p>
       </div>
 
-      <!-- Form -->
-      <Card class="rounded-2xl">
+      <!-- Magic Link Sent Confirmation -->
+      <Card v-if="magicLinkSent">
         <CardContent class="pt-6">
-          <form @submit.prevent="handleLogin" class="space-y-5">
-            <!-- Error message -->
-            <Alert v-if="error" variant="destructive" class="rounded-xl">
-              <AlertDescription>{{ error }}</AlertDescription>
-            </Alert>
-
-            <!-- Email field -->
-            <div class="space-y-2">
-              <Label for="email">Email</Label>
-              <div class="relative">
-                <EnvelopeClosedIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="email"
-                  v-model="email"
-                  type="email"
-                  placeholder="exemple@email.com"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Password field -->
-            <div class="space-y-2">
-              <div class="flex items-center justify-between">
-                <Label for="password">Mot de passe</Label>
-                <NuxtLink
-                  to="/auth/forgot-password"
-                  class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Mot de passe oublié ?
-                </NuxtLink>
-              </div>
-              <div class="relative">
-                <LockClosedIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="password"
-                  v-model="password"
-                  type="password"
-                  placeholder="••••••••"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Submit button -->
-            <Button
-              type="submit"
-              class="w-full h-12 rounded-full text-base"
-              :disabled="isLoading"
+          <div class="text-center space-y-4">
+            <div
+              class="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"
             >
-              <Icon
-                v-if="isLoading"
-                name="lucide:loader-2"
-                class="mr-2 h-4 w-4 animate-spin"
-              />
-              {{ isLoading ? "Connexion..." : "Se connecter" }}
+              <Icon name="lucide:mail-check" class="size-6 text-primary" />
+            </div>
+            <div class="space-y-2">
+              <h2 class="text-xl font-semibold">Vérifiez votre email</h2>
+              <p class="text-muted-foreground text-sm">
+                Nous avons envoyé un lien de connexion à
+                <span class="font-medium text-foreground">{{ email }}</span>
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="lg"
+              class="w-full"
+              @click="magicLinkSent = false"
+            >
+              <Icon name="lucide:arrow-left" class="size-4" />
+              Utiliser une autre adresse
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
 
-      <!-- Footer -->
-      <div class="text-center">
-        <p class="text-sm text-muted-foreground">
-          Pas encore de compte ?
-          <NuxtLink
-            to="/auth/signup"
-            class="font-medium text-foreground hover:underline"
-          >
-            Créer un compte
-          </NuxtLink>
-        </p>
-      </div>
+      <!-- Form -->
+      <Card v-else>
+        <CardContent>
+          <form @submit.prevent="handleMagicLink">
+            <FieldGroup class="gap-5">
+              <!-- Error message -->
+              <Alert v-if="error" variant="destructive" class="rounded-xl">
+                <AlertDescription>{{ error }}</AlertDescription>
+              </Alert>
+
+              <!-- Email field -->
+              <Field>
+                <FieldLabel for="email">Email</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Icon
+                      name="lucide:mail"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </InputGroupAddon>
+                  <Input
+                    id="email"
+                    v-model="email"
+                    type="email"
+                    placeholder="exemple@email.com"
+                    class="border-0 shadow-none focus-visible:ring-0"
+                    required
+                  />
+                </InputGroup>
+              </Field>
+
+              <!-- Submit button -->
+              <Button
+                variant="default"
+                size="lg"
+                type="submit"
+                class="w-full"
+                :disabled="isLoading"
+              >
+                <Icon
+                  v-if="isLoading"
+                  name="lucide:loader-2"
+                  class="mr-2 h-4 w-4 animate-spin"
+                />
+                {{ isLoading ? "Envoi en cours..." : "Continuer" }}
+              </Button>
+            </FieldGroup>
+          </form>
+          <Separator orientation="horizontal" />
+          <p class="text-center text-sm text-muted-foreground mt-2 mb-4">ou</p>
+          <div class="flex flex-col space-y-2">
+            <Button
+              variant="outline"
+              class="w-full"
+              @click="handleGithubSignIn"
+            >
+              <Icon name="lucide:github" class="mr-2 h-4 w-4" />
+              Continuer avec Github
+            </Button>
+          </div>
+        </CardContent>
+        <CardFooter class="flex justify-center">
+          <p class="text-sm text-muted-foreground">
+            Pas encore de compte ?
+            <Button variant="link" size="sm" as-child>
+              <NuxtLink to="/auth/signup"> Créer un compte </NuxtLink>
+            </Button>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   </div>
 </template>

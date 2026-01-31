@@ -1,44 +1,26 @@
 <script setup lang="ts">
-import { signUp } from "~/lib/auth-client";
-import {
-  EnvelopeClosedIcon,
-  LockClosedIcon,
-  PersonIcon,
-} from "@radix-icons/vue";
+import { signIn } from "~/lib/auth-client";
 
 definePageMeta({
-  layout: "default",
+  layout: "auth",
 });
 
 const name = ref("");
 const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
 const isLoading = ref(false);
 const error = ref("");
+const magicLinkSent = ref(false);
 
 async function handleRegister() {
-  // Validate passwords match
-  if (password.value !== confirmPassword.value) {
-    error.value = "Les mots de passe ne correspondent pas";
-    return;
-  }
-
-  // Validate password length
-  if (password.value.length < 8) {
-    error.value = "Le mot de passe doit contenir au moins 8 caractères";
-    return;
-  }
-
   isLoading.value = true;
   error.value = "";
 
-  const { data, error: signUpError } = await signUp.email(
+  const { data, error: signInError } = await signIn.magicLink(
     {
-      name: name.value,
       email: email.value,
-      password: password.value,
+      name: name.value,
       callbackURL: "/",
+      newUserCallbackURL: "/", // Redirect new users to welcome page
     },
     {
       onError: (ctx) => {
@@ -49,9 +31,15 @@ async function handleRegister() {
 
   isLoading.value = false;
 
-  if (data && !signUpError) {
-    navigateTo("/");
+  if (data && !signInError) {
+    magicLinkSent.value = true;
   }
+}
+
+async function handleGithubSignIn() {
+  await signIn.social({
+    provider: "github",
+  });
 }
 </script>
 
@@ -62,123 +50,136 @@ async function handleRegister() {
     <div class="w-full max-w-sm space-y-8">
       <!-- Header -->
       <div class="text-center space-y-2">
+        <div class="flex items-center justify-center">LOGO ACD</div>
         <h1 class="text-3xl font-bold tracking-tight">Créer un compte</h1>
         <p class="text-muted-foreground">
           Entrez vos informations pour créer votre compte
         </p>
       </div>
 
-      <!-- Form -->
-      <Card class="rounded-2xl">
+      <!-- Magic Link Sent Confirmation -->
+      <Card v-if="magicLinkSent">
         <CardContent class="pt-6">
-          <form @submit.prevent="handleRegister" class="space-y-5">
-            <!-- Error message -->
-            <Alert v-if="error" variant="destructive" class="rounded-xl">
-              <AlertDescription>{{ error }}</AlertDescription>
-            </Alert>
-
-            <!-- Name field -->
-            <div class="space-y-2">
-              <Label for="name">Nom</Label>
-              <div class="relative">
-                <PersonIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="name"
-                  v-model="name"
-                  type="text"
-                  placeholder="Jean Dupont"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Email field -->
-            <div class="space-y-2">
-              <Label for="email">Email</Label>
-              <div class="relative">
-                <EnvelopeClosedIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="email"
-                  v-model="email"
-                  type="email"
-                  placeholder="exemple@email.com"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Password field -->
-            <div class="space-y-2">
-              <Label for="password">Mot de passe</Label>
-              <div class="relative">
-                <LockClosedIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="password"
-                  v-model="password"
-                  type="password"
-                  placeholder="••••••••"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-              <p class="text-xs text-muted-foreground">Minimum 8 caractères</p>
-            </div>
-
-            <!-- Confirm Password field -->
-            <div class="space-y-2">
-              <Label for="confirmPassword">Confirmer le mot de passe</Label>
-              <div class="relative">
-                <LockClosedIcon
-                  class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  id="confirmPassword"
-                  v-model="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  class="pl-11 h-12 rounded-xl"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Submit button -->
-            <Button
-              type="submit"
-              class="w-full h-12 rounded-full text-base"
-              :disabled="isLoading"
+          <div class="text-center space-y-4">
+            <div
+              class="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"
             >
-              <Icon
-                v-if="isLoading"
-                name="lucide:loader-2"
-                class="mr-2 h-4 w-4 animate-spin"
-              />
-              {{ isLoading ? "Création..." : "Créer mon compte" }}
+              <Icon name="lucide:mail-check" class="size-6 text-primary" />
+            </div>
+            <div class="space-y-2">
+              <h2 class="text-xl font-semibold">Vérifiez votre email</h2>
+              <p class="text-muted-foreground text-sm">
+                Nous avons envoyé un lien de confirmation à
+                <span class="font-medium text-foreground">{{ email }}</span>
+              </p>
+              <p class="text-muted-foreground text-sm">
+                Cliquez sur le lien pour activer votre compte.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="lg"
+              class="w-full"
+              @click="magicLinkSent = false"
+            >
+              <Icon name="lucide:arrow-left" class="size-4" />
+              Utiliser une autre adresse
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
 
-      <!-- Footer -->
-      <div class="text-center">
-        <p class="text-sm text-muted-foreground">
-          Déjà un compte ?
-          <NuxtLink
-            to="/auth/signin"
-            class="font-medium text-foreground hover:underline"
-          >
-            Se connecter
-          </NuxtLink>
-        </p>
-      </div>
+      <!-- Form -->
+      <Card v-else>
+        <CardContent>
+          <form @submit.prevent="handleRegister">
+            <FieldGroup class="gap-5">
+              <!-- Error message -->
+              <Alert v-if="error" variant="destructive" class="rounded-xl">
+                <AlertDescription>{{ error }}</AlertDescription>
+              </Alert>
+
+              <!-- Name field -->
+              <Field>
+                <FieldLabel for="name">Nom</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Icon
+                      name="lucide:user"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </InputGroupAddon>
+                  <Input
+                    id="name"
+                    v-model="name"
+                    type="text"
+                    placeholder="Jean Dupont"
+                    class="border-0 shadow-none focus-visible:ring-0"
+                    required
+                  />
+                </InputGroup>
+              </Field>
+
+              <!-- Email field -->
+              <Field>
+                <FieldLabel for="email">Email</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Icon
+                      name="lucide:mail"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </InputGroupAddon>
+                  <Input
+                    id="email"
+                    v-model="email"
+                    type="email"
+                    placeholder="exemple@email.com"
+                    class="border-0 shadow-none focus-visible:ring-0"
+                    required
+                  />
+                </InputGroup>
+              </Field>
+
+              <!-- Submit button -->
+              <Button
+                variant="default"
+                size="lg"
+                type="submit"
+                class="w-full"
+                :disabled="isLoading"
+              >
+                <Icon
+                  v-if="isLoading"
+                  name="lucide:loader-2"
+                  class="mr-2 h-4 w-4 animate-spin"
+                />
+                {{ isLoading ? "Envoi en cours..." : "Continuer" }}
+              </Button>
+            </FieldGroup>
+          </form>
+          <Separator orientation="horizontal" />
+          <p class="text-center text-sm text-muted-foreground mt-2 mb-4">ou</p>
+          <div class="flex flex-col space-y-2">
+            <Button
+              variant="outline"
+              class="w-full"
+              @click="handleGithubSignIn"
+            >
+              <Icon name="lucide:github" class="mr-2 h-4 w-4" />
+              Continuer avec Github
+            </Button>
+          </div>
+        </CardContent>
+        <CardFooter class="flex justify-center">
+          <p class="text-sm text-muted-foreground">
+            Déjà un compte ?
+            <Button variant="link" size="sm" as-child>
+              <NuxtLink to="/auth/signin"> Se connecter </NuxtLink>
+            </Button>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   </div>
 </template>
