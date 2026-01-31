@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     "@nuxt/scripts",
     "@nuxt/test-utils",
     "shadcn-nuxt",
+    "@nuxtjs/color-mode",
   ],
 
   shadcn: {
