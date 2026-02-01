@@ -2,6 +2,8 @@ import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
 import { Pool } from "pg";
 import nodemailer from "nodemailer";
+import { render } from "@vue-email/render";
+import MagicLinkEmail from "../emails/MagicLinkEmail.vue";
 
 // Configure nodemailer transporter for Mailpit (local dev)
 const transporter = nodemailer.createTransport({
@@ -29,21 +31,19 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }, request) => {
+        // Render Vue email template to HTML
+        const appUrl = process.env.APP_URL || "http://localhost:3000";
+        const html = await render(MagicLinkEmail, {
+          url,
+          email,
+          appUrl,
+        });
+
         await transporter.sendMail({
           from: process.env.MAIL_FROM || "ACD <noreply@acd.local>",
           to: email,
           subject: "Votre lien de connexion ACD",
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #000;">Connexion à ACD</h1>
-              <p>Cliquez sur le bouton ci-dessous pour vous connecter à votre compte :</p>
-              <a href="${url}" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 9999px; text-decoration: none; margin: 16px 0;">
-                Se connecter
-              </a>
-              <p style="color: #666; font-size: 14px;">Ce lien expire dans 5 minutes.</p>
-              <p style="color: #666; font-size: 14px;">Si vous n'avez pas demandé ce lien, ignorez cet email.</p>
-            </div>
-          `,
+          html,
         });
       },
       expiresIn: 300, // 5 minutes
