@@ -25,7 +25,13 @@ async function handleSignOut() {
       <!-- Logo (left) -->
       <div class="flex items-center gap-8">
         <NuxtLink to="/" class="flex items-center gap-2 font-semibold text-lg">
-          <span class="hidden sm:inline">LOGO ACD</span>
+          <img src="/LightLogoACD.svg" alt="ACD Logo" class="h-5 dark:hidden" />
+          <img
+            src="/DarkLogoACD.svg"
+            alt="ACD Logo"
+            class="h-5 hidden dark:block"
+          />
+          <span class="text-lg font-extrabold text-primary">ACD</span>
         </NuxtLink>
 
         <!-- Navigation (center-left) -->

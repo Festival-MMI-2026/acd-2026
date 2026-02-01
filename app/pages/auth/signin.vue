@@ -10,9 +10,24 @@ const isLoading = ref(false);
 const error = ref("");
 const magicLinkSent = ref(false);
 
+const allowedDomains = ["univ-reims.fr", "etudiant.univ-reims.fr"];
+
+function isValidEmailDomain(emailValue: string): boolean {
+  const domain = emailValue.split("@")[1]?.toLowerCase();
+  return domain ? allowedDomains.includes(domain) : false;
+}
+
 async function handleMagicLink() {
-  isLoading.value = true;
   error.value = "";
+
+  // Validate email domain
+  if (!isValidEmailDomain(email.value)) {
+    error.value =
+      "Veuillez utiliser une adresse email @univ-reims.fr ou @etudiant.univ-reims.fr";
+    return;
+  }
+
+  isLoading.value = true;
 
   const { data, error: signInError } = await signIn.magicLink(
     {
@@ -45,7 +60,18 @@ async function handleGithubSignIn() {
     <div class="w-full max-w-sm space-y-8">
       <!-- Header -->
       <div class="text-center space-y-2">
-        <div class="flex items-center justify-center">LOGO ACD</div>
+        <div class="flex items-center justify-center gap-2">
+          <img
+            src="/LightLogoACD.svg"
+            alt="ACD Logo"
+            class="h-10 dark:hidden"
+          />
+          <img
+            src="/DarkLogoACD.svg"
+            alt="ACD Logo"
+            class="h-10 hidden dark:block"
+          />
+        </div>
         <h1 class="text-3xl font-bold tracking-tight">Connexion</h1>
         <p class="text-muted-foreground">
           Entrez votre email pour recevoir un lien de connexion
@@ -151,6 +177,19 @@ async function handleGithubSignIn() {
           </p>
         </CardFooter>
       </Card>
+      <div class="flex justify-center">
+        <Button
+          variant="link"
+          size="sm"
+          class="text-xs text-muted-foreground h-0"
+          as-child
+        >
+          <NuxtLink to="/">
+            <Icon name="lucide:arrow-left" class="mr-2 h-4 w-4" />
+            Retour à l'accueil
+          </NuxtLink>
+        </Button>
+      </div>
     </div>
   </div>
 </template>
