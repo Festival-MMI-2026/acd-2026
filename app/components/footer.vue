@@ -1,39 +1,116 @@
 <template>
-  <!-- Footer -->
-  <footer class="border-t border-border/50 py-8">
-    <div
-      class="container max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 px-6"
-    >
-      <!-- Left: Copyright -->
-      <p class="text-sm text-muted-foreground">
-        © 2026 ACD. Tous droits réservés.
-      </p>
+  <footer class="border-t border-border py-16 bg-muted/50">
+    <div class="container max-w-screen-xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
+        <!-- Logo + CTA -->
+        <div class="md:col-span-2 space-y-6">
+          <div class="flex items-center gap-2">
+            <img
+              src="/LightLogoACD.svg"
+              alt="ACD Logo"
+              class="h-8 dark:hidden"
+            />
+            <img
+              src="/DarkLogoACD.svg"
+              alt="ACD Logo"
+              class="h-8 hidden dark:block"
+            />
+            <span class="text-xl font-bold">ACD</span>
+          </div>
 
-      <!-- Center: Links -->
-      <nav class="flex items-center gap-6 text-sm text-muted-foreground">
-        <NuxtLink
-          to="/programme"
-          class="hover:text-foreground transition-colors"
-        >
-          Programme
-        </NuxtLink>
-        <NuxtLink
-          to="/inscription"
-          class="hover:text-foreground transition-colors"
-        >
-          Inscription
-        </NuxtLink>
-      </nav>
+          <Button variant="secondary" as-child>
+            <NuxtLink to="/inscription">
+              S'inscrire maintenant
+              <Icon name="lucide:arrow-up-right" class="ml-1 h-4 w-4" />
+            </NuxtLink>
+          </Button>
 
-      <!-- Right: Social/Info -->
-      <div class="flex items-center gap-4 text-sm text-muted-foreground">
-        <a
-          href="mailto:contact@acd-iut.fr"
-          class="hover:text-foreground transition-colors flex items-center gap-1"
-        >
-          <Icon name="lucide:mail" class="h-4 w-4" />
-          <span class="hidden sm:inline">Contact</span>
-        </a>
+          <p class="text-sm text-muted-foreground">
+            © {{ new Date().getFullYear() }} ACD. Tous droits réservés.
+          </p>
+
+          <!-- Theme Toggle -->
+          <ToggleTheme />
+        </div>
+
+        <!-- Navigation -->
+        <div class="space-y-4">
+          <h3
+            class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            Navigation
+          </h3>
+          <nav class="flex flex-col space-y-3">
+            <NuxtLink
+              to="/programme"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Programme
+            </NuxtLink>
+            <NuxtLink
+              to="/inscription"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Inscription
+            </NuxtLink>
+            <NuxtLink
+              to="/acces"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Accès
+            </NuxtLink>
+          </nav>
+        </div>
+
+        <!-- Informations -->
+        <div class="space-y-4">
+          <h3
+            class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            Informations
+          </h3>
+          <nav class="flex flex-col space-y-3">
+            <NuxtLink
+              to="/hebergement"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Hébergement
+            </NuxtLink>
+            <NuxtLink
+              to="/restauration"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Restauration
+            </NuxtLink>
+            <NuxtLink
+              to="/activites"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Activités
+            </NuxtLink>
+          </nav>
+        </div>
+
+        <!-- Contact -->
+        <div class="space-y-4">
+          <h3
+            class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            Contact
+          </h3>
+          <nav class="flex flex-col space-y-3">
+            <a
+              href="mailto:contact@acd-iut.fr"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              contact@acd-iut.fr
+            </a>
+            <span class="text-sm text-muted-foreground"> IUT de Troyes </span>
+            <span class="text-sm text-muted-foreground">
+              9 Rue de Québec, 10000 Troyes
+            </span>
+          </nav>
+        </div>
       </div>
     </div>
   </footer>
