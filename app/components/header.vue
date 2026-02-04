@@ -53,7 +53,7 @@ async function handleSignOut() {
           <Badge variant="outline" class="rounded-full text-xs">
             <div class="relative flex h-2 w-2">
               <span
-                class="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground"
+                class="relative inline-flex rounded-full h-2 w-2 bg-primary"
               ></span>
             </div>
             Édition {{ new Date().getFullYear() }}</Badge
