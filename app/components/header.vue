@@ -78,11 +78,6 @@ async function handleSignOut() {
                 <NuxtLink to="/acces">Accès</NuxtLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem v-if="session.data">
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/admin">Admin</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -109,6 +104,15 @@ async function handleSignOut() {
 
         <!-- Logged in -->
         <template v-else>
+          <Button
+            variant="secondary"
+            size="sm"
+            class="rounded-full hidden md:inline-flex"
+            as-child
+          >
+            <NuxtLink to="/admin">Dashboard</NuxtLink>
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button variant="ghost" size="icon" class="rounded-full">
@@ -197,7 +201,20 @@ async function handleSignOut() {
                   <NuxtLink to="/acces">Accès</NuxtLink>
                 </SheetClose>
                 <SheetClose v-if="session.data" as-child>
-                  <NuxtLink to="/admin">Espace Admin</NuxtLink>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="w-full justify-start"
+                    as-child
+                  >
+                    <NuxtLink to="/admin">
+                      <Icon
+                        name="lucide:layout-dashboard"
+                        class="mr-2 h-4 w-4"
+                      />
+                      Dashboard
+                    </NuxtLink>
+                  </Button>
                 </SheetClose>
               </div>
             </div>

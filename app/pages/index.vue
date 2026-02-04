@@ -310,12 +310,7 @@ const tabs = {
               obligatoire pour tous les chefs de départements.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                variant="secondary"
-                size="lg"
-                class="h-14 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all"
-                as-child
-              >
+              <Button variant="secondary" size="lg" as-child>
                 <NuxtLink to="/inscription">
                   Confirmer ma présence
                   <Icon name="lucide:arrow-right" class="ml-2 h-5 w-5" />
