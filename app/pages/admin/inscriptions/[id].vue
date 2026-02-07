@@ -126,35 +126,9 @@ const invoiceDetails = computed(() => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content - Invoice -->
       <div class="lg:col-span-2 space-y-6">
-        <!-- Product Card -->
-        <Card class="rounded-xl overflow-hidden">
-          <div class="p-6 flex items-center gap-4">
-            <div class="w-18 flex items-center justify-center">
-              <Icon
-                name="lucide:ticket"
-                class="text-muted-foreground"
-                size="24"
-              />
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-lg">Inscription ACD 2026</h3>
-                <Badge
-                  :class="['rounded-full', statusColors[registration.status]]"
-                >
-                  {{ statusLabels[registration.status] }}
-                </Badge>
-              </div>
-              <p class="text-muted-foreground">
-                Accès complet à l'événement ACD 2026
-              </p>
-            </div>
-          </div>
-        </Card>
-
         <!-- Invoice Details -->
         <div>
-          <div class="p-6">
+          <div class="pb-0 p-6">
             <h2 class="text-lg font-semibold">Détails de la facture</h2>
           </div>
           <div class="space-y-4 p-6">

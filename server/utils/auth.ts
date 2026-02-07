@@ -1,22 +1,20 @@
 import { betterAuth } from "better-auth";
 import { magicLink, admin } from "better-auth/plugins";
 import { Pool } from "pg";
-import nodemailer from "nodemailer";
 import { render } from "@vue-email/render";
 import MagicLinkEmail from "../emails/MagicLinkEmail.vue";
-
-// Configure nodemailer transporter for Mailpit (local dev)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "localhost",
-  port: Number(process.env.SMTP_PORT) || 1025,
-  secure: false,
-});
+import { sendMail } from "./mail";
 
 export const auth = betterAuth({
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+  user: {
+    deleteUser: {
+      enabled: true,
     },
   },
   experimental: { joins: true },
@@ -39,12 +37,7 @@ export const auth = betterAuth({
           appUrl,
         });
 
-        await transporter.sendMail({
-          from: process.env.MAIL_FROM || "ACD <noreply@acd.local>",
-          to: email,
-          subject: "Votre lien de connexion ACD",
-          html,
-        });
+        await sendMail(email, "Votre lien de connexion ACD", html);
       },
       expiresIn: 300, // 5 minutes
     }),

@@ -85,7 +85,9 @@ async function handleSubmit() {
   isLoading.value = true;
 
   try {
-    const dateValue = formData.value.date.toDate(getLocalTimeZone());
+    // Send date as YYYY-MM-DD string to avoid timezone shift
+    const d = formData.value.date;
+    const dateStr = `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
 
     if (isEditMode.value && props.event?.id) {
       await $fetch(`/api/events/${props.event.id}`, {
@@ -93,7 +95,7 @@ async function handleSubmit() {
         body: {
           title: formData.value.title,
           description: formData.value.description || null,
-          date: dateValue,
+          date: dateStr,
           startTime: formData.value.startTime,
           endTime: formData.value.endTime,
           location: formData.value.location || null,
@@ -106,7 +108,7 @@ async function handleSubmit() {
         body: {
           title: formData.value.title,
           description: formData.value.description || null,
-          date: dateValue,
+          date: dateStr,
           startTime: formData.value.startTime,
           endTime: formData.value.endTime,
           location: formData.value.location || null,
