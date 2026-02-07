@@ -78,6 +78,11 @@ async function handleSignOut() {
                 <NuxtLink to="/acces">Accès</NuxtLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink as-child>
+                <NuxtLink to="/hotels">Hébergement</NuxtLink>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -105,6 +110,7 @@ async function handleSignOut() {
         <!-- Logged in -->
         <template v-else>
           <Button
+            v-if="session.data.user?.role === 'admin'"
             variant="secondary"
             size="sm"
             class="rounded-full hidden md:inline-flex"
@@ -144,7 +150,7 @@ async function handleSignOut() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem as-child class="rounded-lg">
-                <NuxtLink to="/profile" class="flex items-center">
+                <NuxtLink to="/profil" class="flex items-center">
                   <PersonIcon class="mr-2 h-4 w-4" />
                   <span>Mon profil</span>
                 </NuxtLink>
@@ -200,7 +206,13 @@ async function handleSignOut() {
                 <SheetClose as-child>
                   <NuxtLink to="/acces">Accès</NuxtLink>
                 </SheetClose>
-                <SheetClose v-if="session.data" as-child>
+                <SheetClose as-child>
+                  <NuxtLink to="/hotels">Hébergement</NuxtLink>
+                </SheetClose>
+                <SheetClose
+                  v-if="session.data?.user?.role === 'admin'"
+                  as-child
+                >
                   <Button
                     variant="outline"
                     size="sm"

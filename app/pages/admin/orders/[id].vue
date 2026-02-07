@@ -131,7 +131,9 @@ const invoiceItems = computed(() => {
           <Icon name="lucide:arrow-left" class="h-5 w-5" />
         </Button>
         <div>
-          <h1 class="text-2xl font-bold">Commande {{ order.orderNumber }}</h1>
+          <h1 class="text-2xl font-bold">
+            Paiement {{ "N°" + order.orderNumber }}
+          </h1>
           <p class="text-muted-foreground">{{ order.registration.email }}</p>
         </div>
       </div>
@@ -148,45 +150,16 @@ const invoiceItems = computed(() => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content - Invoice -->
       <div class="lg:col-span-2 space-y-6">
-        <!-- Order Card -->
-        <Card class="rounded-xl overflow-hidden">
-          <div class="p-6 flex items-center gap-4">
-            <div class="w-18 flex items-center justify-center">
-              <Icon
-                name="lucide:receipt"
-                class="text-muted-foreground"
-                size="24"
-              />
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-lg">{{ order.orderNumber }}</h3>
-                <Badge
-                  :class="[
-                    'rounded-full',
-                    paymentStatusColors[order.paymentStatus],
-                  ]"
-                >
-                  {{ paymentStatusLabels[order.paymentStatus] }}
-                </Badge>
-              </div>
-              <p class="text-muted-foreground">
-                Commande du {{ formatDate(order.createdAt) }}
-              </p>
-            </div>
-          </div>
-        </Card>
-
         <!-- Invoice Details -->
         <div>
-          <div class="p-6">
+          <div class="pb-0 p-6">
             <h2 class="text-lg font-semibold">Facture</h2>
           </div>
           <div class="space-y-4 p-6">
             <!-- Invoice Info -->
             <div class="grid gap-3 text-sm">
               <div class="flex justify-between py-2 border-b">
-                <span class="text-muted-foreground">N° Commande</span>
+                <span class="text-muted-foreground">N° Paiement</span>
                 <div class="flex items-center gap-2">
                   <code class="bg-muted px-2 py-0.5 rounded text-xs font-mono">
                     {{ order.orderNumber }}

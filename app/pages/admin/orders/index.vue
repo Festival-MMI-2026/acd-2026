@@ -79,8 +79,8 @@ function formatDate(date: string) {
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight">Commandes</h1>
-        <p class="text-muted-foreground">Suivi des paiements et commandes</p>
+        <h1 class="text-2xl font-bold tracking-tight">Paiements</h1>
+        <p class="text-muted-foreground">Suivi des paiements</p>
       </div>
       <Button variant="outline" class="rounded-full">
         <Icon name="lucide:download" class="h-4 w-4" />
@@ -129,7 +129,7 @@ function formatDate(date: string) {
       <div
         class="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-muted-foreground"
       >
-        <div class="col-span-2">N° Commande</div>
+        <div class="col-span-2">N° Paiement</div>
         <div class="col-span-4">Client</div>
         <div class="col-span-2">Date</div>
         <div class="col-span-2">Statut</div>
@@ -142,7 +142,7 @@ function formatDate(date: string) {
           name="lucide:receipt"
           class="h-12 w-12 mx-auto text-muted-foreground/30 mb-4"
         />
-        <p class="text-muted-foreground">Aucune commande trouvée</p>
+        <p class="text-muted-foreground">Aucun paiement trouvé</p>
       </div>
 
       <!-- Table Rows -->
@@ -153,7 +153,7 @@ function formatDate(date: string) {
         @click="goToDetail(order.id)"
       >
         <div class="col-span-2">
-          <code class="text-sm font-mono">{{ order.orderNumber }}</code>
+          <code class="text-xs font-mono">{{ order.orderNumber }}</code>
         </div>
         <div class="col-span-4 flex items-center gap-3">
           <Avatar class="h-8 w-8">
@@ -164,16 +164,11 @@ function formatDate(date: string) {
           </Avatar>
           <span class="text-sm truncate">{{ order.registration.email }}</span>
         </div>
-        <div class="col-span-2 text-sm text-muted-foreground">
-          {{ formatDate(order.createdAt) }}
+        <div class="col-span-2">
+          <Badge variant="outline">{{ formatDate(order.createdAt) }}</Badge>
         </div>
         <div class="col-span-2">
-          <Badge
-            :class="[
-              'rounded-full text-xs',
-              paymentStatusColors[order.paymentStatus],
-            ]"
-          >
+          <Badge :class="[paymentStatusColors[order.paymentStatus]]">
             {{ paymentStatusLabels[order.paymentStatus] }}
           </Badge>
         </div>

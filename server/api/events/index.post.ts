@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     data: {
       title: body.title,
       description: body.description || null,
-      date: new Date(body.date),
+      date: new Date(body.date + "T12:00:00"),
       startTime: body.startTime,
       endTime: body.endTime,
       location: body.location || null,

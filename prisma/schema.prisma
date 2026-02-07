@@ -167,6 +167,9 @@ model Registration {
   lastName   String
   email      String
   phone      String
+  iutId      String?
+  allergens  String?
+  isMotorized Boolean @default(false)
   totalPrice Decimal  @db.Decimal(10, 2)
   status     RegistrationStatus @default(PENDING)
   meals      RegistrationMeal[]
