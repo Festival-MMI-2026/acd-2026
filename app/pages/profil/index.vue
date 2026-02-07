@@ -18,9 +18,15 @@ if (import.meta.client) {
   });
 }
 
+// Fetch IUTs
+const { data: iuts } = await useFetch<{ id: string; name: string; city?: string | null }[]>("/api/iuts");
+
 // Profile form state
 const profileForm = reactive({
-  name: "",
+  firstName: "",
+  lastName: "",
+  tel: "",
+  iut: "",
   isLoading: false,
   error: "",
 });
@@ -45,8 +51,19 @@ const showDeleteDialog = ref(false);
 // Initialize profile form with session data
 watchEffect(() => {
   if (session.value.data?.user) {
-    profileForm.name = session.value.data.user.name || "";
+    const user = session.value.data.user as any;
+    profileForm.firstName = user.firstName || "";
+    profileForm.lastName = user.lastName || "";
+    profileForm.tel = user.tel || "";
+    profileForm.iut = user.iut || "";
   }
+});
+
+// Check if profile is incomplete
+const isProfileIncomplete = computed(() => {
+  if (!session.value.data?.user) return false;
+  const user = session.value.data.user as any;
+  return !user.tel || !user.iut;
 });
 
 // Update profile
@@ -56,7 +73,11 @@ async function handleUpdateProfile() {
 
   try {
     const { error } = await authClient.updateUser({
-      name: profileForm.name,
+      name: `${profileForm.firstName} ${profileForm.lastName}`.trim(),
+      firstName: profileForm.firstName,
+      lastName: profileForm.lastName,
+      tel: profileForm.tel,
+      iut: profileForm.iut,
     });
 
     if (error) {
@@ -158,6 +179,15 @@ async function handleDeleteAccount() {
 
     <!-- Content -->
     <div v-else-if="session.data?.user" class="space-y-8">
+      <!-- Incomplete profile banner -->
+      <Alert v-if="isProfileIncomplete" class="border-primary/50 bg-primary/5">
+        <Icon name="lucide:info" class="h-4 w-4 text-primary" />
+        <AlertDescription class="text-sm">
+          Votre profil est incomplet. Veuillez renseigner votre numéro de
+          téléphone et sélectionner votre IUT pour finaliser votre inscription.
+        </AlertDescription>
+      </Alert>
+
       <!-- Profile Section -->
       <Card>
         <CardHeader>
@@ -197,24 +227,86 @@ async function handleDeleteAccount() {
               </FieldDescription>
             </Field>
 
-            <!-- Name -->
+            <!-- FirstName / LastName -->
+            <div class="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel for="firstName">Prénom</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Icon
+                      name="lucide:user"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </InputGroupAddon>
+                  <Input
+                    id="firstName"
+                    v-model="profileForm.firstName"
+                    type="text"
+                    placeholder="Jean"
+                    class="border-0 shadow-none focus-visible:ring-0"
+                  />
+                </InputGroup>
+              </Field>
+              <Field>
+                <FieldLabel for="lastName">Nom</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Icon
+                      name="lucide:user"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </InputGroupAddon>
+                  <Input
+                    id="lastName"
+                    v-model="profileForm.lastName"
+                    type="text"
+                    placeholder="Dupont"
+                    class="border-0 shadow-none focus-visible:ring-0"
+                  />
+                </InputGroup>
+              </Field>
+            </div>
+
+            <!-- Phone -->
             <Field>
-              <FieldLabel for="name">Nom</FieldLabel>
+              <FieldLabel for="tel">Téléphone</FieldLabel>
               <InputGroup>
                 <InputGroupAddon>
                   <Icon
-                    name="lucide:user"
+                    name="lucide:phone"
                     class="size-4 text-muted-foreground"
                   />
                 </InputGroupAddon>
                 <Input
-                  id="name"
-                  v-model="profileForm.name"
-                  type="text"
-                  placeholder="Votre nom"
+                  id="tel"
+                  v-model="profileForm.tel"
+                  type="tel"
+                  placeholder="06 12 34 56 78"
                   class="border-0 shadow-none focus-visible:ring-0"
                 />
               </InputGroup>
+            </Field>
+
+            <!-- IUT Select -->
+            <Field>
+              <FieldLabel for="iut">IUT</FieldLabel>
+              <Select v-model="profileForm.iut">
+                <SelectTrigger id="iut">
+                  <SelectValue placeholder="Sélectionnez votre IUT" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="item in iuts"
+                    :key="item.id"
+                    :value="item.name"
+                  >
+                    {{ item.name }}
+                    <span v-if="item.city" class="text-muted-foreground">
+                      — {{ item.city }}
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </Field>
 
             <Button

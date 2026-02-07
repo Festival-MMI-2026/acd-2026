@@ -9,34 +9,23 @@ const emit = defineEmits<{
   success: [];
 }>();
 
-const name = ref("");
+const firstName = ref("");
+const lastName = ref("");
 const email = ref("");
 const isLoading = ref(false);
 const error = ref("");
 const magicLinkSent = ref(false);
 
-const allowedDomains = ["univ-reims.fr", "etudiant.univ-reims.fr"];
-
-function isValidEmailDomain(emailValue: string): boolean {
-  const domain = emailValue.split("@")[1]?.toLowerCase();
-  return domain ? allowedDomains.includes(domain) : false;
-}
-
 async function handleSubmit() {
   error.value = "";
-
-  if (!isValidEmailDomain(email.value)) {
-    error.value =
-      "Veuillez utiliser une adresse email @univ-reims.fr ou @etudiant.univ-reims.fr";
-    return;
-  }
-
   isLoading.value = true;
 
   const { data, error: signInError } = await signIn.magicLink(
     {
       email: email.value,
-      ...(props.mode === "signup" ? { name: name.value } : {}),
+      ...(props.mode === "signup"
+        ? { name: `${firstName.value} ${lastName.value}`.trim(), firstName: firstName.value, lastName: lastName.value }
+        : {}),
       callbackURL: "/",
       ...(props.mode === "signup" ? { newUserCallbackURL: "/" } : {}),
     },
@@ -93,23 +82,41 @@ async function handleSubmit() {
         <AlertDescription>{{ error }}</AlertDescription>
       </Alert>
 
-      <!-- Name field (signup only) -->
-      <Field v-if="mode === 'signup'">
-        <FieldLabel for="magic-name">Nom</FieldLabel>
-        <InputGroup>
-          <InputGroupAddon>
-            <Icon name="lucide:user" class="size-4 text-muted-foreground" />
-          </InputGroupAddon>
-          <Input
-            id="magic-name"
-            v-model="name"
-            type="text"
-            placeholder="Jean Dupont"
-            class="border-0 shadow-none focus-visible:ring-0"
-            required
-          />
-        </InputGroup>
-      </Field>
+      <!-- Name fields (signup only) -->
+      <div v-if="mode === 'signup'" class="grid grid-cols-2 gap-3">
+        <Field>
+          <FieldLabel for="magic-firstName">Prénom</FieldLabel>
+          <InputGroup>
+            <InputGroupAddon>
+              <Icon name="lucide:user" class="size-4 text-muted-foreground" />
+            </InputGroupAddon>
+            <Input
+              id="magic-firstName"
+              v-model="firstName"
+              type="text"
+              placeholder="Jean"
+              class="border-0 shadow-none focus-visible:ring-0"
+              required
+            />
+          </InputGroup>
+        </Field>
+        <Field>
+          <FieldLabel for="magic-lastName">Nom</FieldLabel>
+          <InputGroup>
+            <InputGroupAddon>
+              <Icon name="lucide:user" class="size-4 text-muted-foreground" />
+            </InputGroupAddon>
+            <Input
+              id="magic-lastName"
+              v-model="lastName"
+              type="text"
+              placeholder="Dupont"
+              class="border-0 shadow-none focus-visible:ring-0"
+              required
+            />
+          </InputGroup>
+        </Field>
+      </div>
 
       <!-- Email field -->
       <Field>
@@ -122,7 +129,7 @@ async function handleSubmit() {
             id="magic-email"
             v-model="email"
             type="email"
-            placeholder="exemple@univ-reims.fr"
+            placeholder="exemple@email.fr"
             class="border-0 shadow-none focus-visible:ring-0"
             required
           />

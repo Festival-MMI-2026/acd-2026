@@ -103,7 +103,7 @@ async function handleSignOut() {
             class="rounded-full hidden sm:inline-flex"
             as-child
           >
-            <NuxtLink to="/inscription">S'inscrire</NuxtLink>
+            <NuxtLink to="/auth/signup">S'inscrire</NuxtLink>
           </Button>
         </template>
 

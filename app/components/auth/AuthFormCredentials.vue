@@ -9,27 +9,16 @@ const emit = defineEmits<{
   success: [];
 }>();
 
-const name = ref("");
+const firstName = ref("");
+const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const isLoading = ref(false);
 const error = ref("");
-
-const allowedDomains = ["univ-reims.fr", "etudiant.univ-reims.fr"];
-
-function isValidEmailDomain(emailValue: string): boolean {
-  const domain = emailValue.split("@")[1]?.toLowerCase();
-  return domain ? allowedDomains.includes(domain) : false;
-}
+const verificationSent = ref(false);
 
 async function handleSubmit() {
   error.value = "";
-
-  if (!isValidEmailDomain(email.value)) {
-    error.value =
-      "Veuillez utiliser une adresse email @univ-reims.fr ou @etudiant.univ-reims.fr";
-    return;
-  }
 
   if (props.mode === "signup" && password.value.length < 8) {
     error.value = "Le mot de passe doit contenir au moins 8 caractères";
@@ -63,15 +52,17 @@ async function handleSubmit() {
       {
         email: email.value,
         password: password.value,
-        name: name.value,
+        name: `${firstName.value} ${lastName.value}`.trim(),
+        firstName: firstName.value,
+        lastName: lastName.value,
       },
       {
         onError: (ctx) => {
           error.value = ctx.error.message;
         },
         onSuccess: () => {
+          verificationSent.value = true;
           emit("success");
-          navigateTo("/");
         },
       },
     );
@@ -86,29 +77,75 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
+  <!-- Verification Email Sent Confirmation -->
+  <div v-if="verificationSent" class="text-center space-y-4 py-2">
+    <div
+      class="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"
+    >
+      <Icon name="lucide:mail-check" class="size-6 text-primary" />
+    </div>
+    <div class="space-y-2">
+      <h2 class="text-xl font-semibold">Vérifiez votre email</h2>
+      <p class="text-muted-foreground text-sm">
+        Nous avons envoyé un email de vérification à
+        <span class="font-medium text-foreground">{{ email }}</span>
+      </p>
+      <p class="text-muted-foreground text-sm">
+        Cliquez sur le lien dans l'email pour activer votre compte.
+      </p>
+    </div>
+    <Button
+      variant="outline"
+      size="lg"
+      class="w-full"
+      @click="verificationSent = false"
+    >
+      <Icon name="lucide:arrow-left" class="size-4" />
+      Retour
+    </Button>
+  </div>
+
+  <form v-else @submit.prevent="handleSubmit">
     <FieldGroup class="gap-5">
       <Alert v-if="error" variant="destructive" class="rounded-xl">
         <AlertDescription>{{ error }}</AlertDescription>
       </Alert>
 
-      <!-- Name field (signup only) -->
-      <Field v-if="mode === 'signup'">
-        <FieldLabel for="cred-name">Nom</FieldLabel>
-        <InputGroup>
-          <InputGroupAddon>
-            <Icon name="lucide:user" class="size-4 text-muted-foreground" />
-          </InputGroupAddon>
-          <Input
-            id="cred-name"
-            v-model="name"
-            type="text"
-            placeholder="Jean Dupont"
-            class="border-0 shadow-none focus-visible:ring-0"
-            required
-          />
-        </InputGroup>
-      </Field>
+      <!-- Name fields (signup only) -->
+      <div v-if="mode === 'signup'" class="grid grid-cols-2 gap-3">
+        <Field>
+          <FieldLabel for="cred-firstName">Prénom</FieldLabel>
+          <InputGroup>
+            <InputGroupAddon>
+              <Icon name="lucide:user" class="size-4 text-muted-foreground" />
+            </InputGroupAddon>
+            <Input
+              id="cred-firstName"
+              v-model="firstName"
+              type="text"
+              placeholder="Jean"
+              class="border-0 shadow-none focus-visible:ring-0"
+              required
+            />
+          </InputGroup>
+        </Field>
+        <Field>
+          <FieldLabel for="cred-lastName">Nom</FieldLabel>
+          <InputGroup>
+            <InputGroupAddon>
+              <Icon name="lucide:user" class="size-4 text-muted-foreground" />
+            </InputGroupAddon>
+            <Input
+              id="cred-lastName"
+              v-model="lastName"
+              type="text"
+              placeholder="Dupont"
+              class="border-0 shadow-none focus-visible:ring-0"
+              required
+            />
+          </InputGroup>
+        </Field>
+      </div>
 
       <!-- Email field -->
       <Field>
@@ -121,7 +158,7 @@ async function handleSubmit() {
             id="cred-email"
             v-model="email"
             type="email"
-            placeholder="exemple@univ-reims.fr"
+            placeholder="exemple@email.fr"
             class="border-0 shadow-none focus-visible:ring-0"
             required
           />
