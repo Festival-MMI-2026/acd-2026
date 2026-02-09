@@ -61,52 +61,47 @@ const emit = defineEmits(["update:open"]);
           </h4>
 
           <dl class="grid grid-cols-1 gap-4 text-sm">
-            <div class="grid grid-cols-3 gap-4">
-              <dt class="font-medium text-muted-foreground">ID</dt>
-              <dd class="col-span-2 font-mono text-xs break-all">
-                {{ user.id }}
-              </dd>
-            </div>
-
             <div class="grid gap-4 py-4">
               <div class="grid grid-cols-4 items-center gap-4">
+                <span class="text-sm font-medium">ID</span>
+                <span
+                  class="col-span-3 text-xs font-mono text-muted-foreground"
+                  >{{ user.id }}</span
+                >
+              </div>
+              <div class="grid grid-cols-4 items-center gap-4">
                 <span class="text-sm font-medium">Prénom</span>
-                <span class="col-span-3 text-sm text-muted-foreground">{{
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   user.firstName
                 }}</span>
               </div>
               <div class="grid grid-cols-4 items-center gap-4">
                 <span class="text-sm font-medium">Nom</span>
-                <span class="col-span-3 text-sm text-muted-foreground">{{
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   user.lastName
                 }}</span>
               </div>
               <div class="grid grid-cols-4 items-center gap-4">
                 <span class="text-sm font-medium">Email</span>
-                <span class="col-span-3 text-sm text-muted-foreground">{{
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   user.email
                 }}</span>
               </div>
               <div class="grid grid-cols-4 items-center gap-4">
                 <span class="text-sm font-medium">Téléphone</span>
-                <span class="col-span-3 text-sm text-muted-foreground">{{
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   user.tel || "-"
                 }}</span>
               </div>
               <div class="grid grid-cols-4 items-center gap-4">
                 <span class="text-sm font-medium">IUT</span>
-                <span class="col-span-3 text-sm text-muted-foreground">{{
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   user.iut || "Non renseigné"
                 }}</span>
               </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-4">
-              <dt class="font-medium text-muted-foreground">
-                Date d'inscription
-              </dt>
-              <dd class="col-span-2">
-                {{
+              <div class="grid grid-cols-4 items-center gap-4">
+                <span class="text-sm font-medium">Date d'inscription</span>
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   new Date(user.createdAt).toLocaleDateString("fr-FR", {
                     day: "numeric",
                     month: "long",
@@ -114,23 +109,20 @@ const emit = defineEmits(["update:open"]);
                     hour: "2-digit",
                     minute: "2-digit",
                   })
-                }}
-              </dd>
-            </div>
-
-            <div class="grid grid-cols-3 gap-4">
-              <dt class="font-medium text-muted-foreground">
-                Dernière mise à jour
-              </dt>
-              <dd class="col-span-2">
-                {{
+                }}</span>
+              </div>
+              <div class="grid grid-cols-4 items-center gap-4">
+                <span class="text-sm font-medium">Dernière mise à jour</span>
+                <span class="col-span-3 text-xs text-muted-foreground">{{
                   new Date(user.updatedAt).toLocaleDateString("fr-FR", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })
-                }}
-              </dd>
+                }}</span>
+              </div>
             </div>
           </dl>
         </div>

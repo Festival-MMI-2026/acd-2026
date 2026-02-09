@@ -1,22 +1,39 @@
 import { betterAuth } from "better-auth";
 import { magicLink, admin } from "better-auth/plugins";
 import { Pool } from "pg";
-import nodemailer from "nodemailer";
 import { render } from "@vue-email/render";
 import MagicLinkEmail from "../emails/MagicLinkEmail.vue";
-
-// Configure nodemailer transporter for Mailpit (local dev)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "localhost",
-  port: Number(process.env.SMTP_PORT) || 1025,
-  secure: false,
-});
+import VerificationEmail from "../emails/VerificationEmail.vue";
+import { sendMail } from "./mail";
 
 export const auth = betterAuth({
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+    additionalFields: {
+      firstName: {
+        type: "string",
+        defaultValue: "",
+      },
+      lastName: {
+        type: "string",
+        defaultValue: "",
+      },
+      tel: {
+        type: "string",
+        defaultValue: "",
+      },
+      iut: {
+        type: "string",
+        defaultValue: "",
+      },
     },
   },
   experimental: { joins: true },
@@ -27,10 +44,26 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      const appUrl = process.env.APP_URL || "http://localhost:3000";
+      const html = await render(VerificationEmail, {
+        url,
+        email: user.email,
+        name: user.name,
+        appUrl,
+      });
+
+      sendMail(user.email, "Vérifiez votre adresse email - ACD", html);
+    },
   },
   plugins: [
     magicLink({
-      sendMagicLink: async ({ email, url }, request) => {
+      sendMagicLink: async ({ email, url }) => {
         // Render Vue email template to HTML
         const appUrl = process.env.APP_URL || "http://localhost:3000";
         const html = await render(MagicLinkEmail, {
@@ -39,12 +72,7 @@ export const auth = betterAuth({
           appUrl,
         });
 
-        await transporter.sendMail({
-          from: process.env.MAIL_FROM || "ACD <noreply@acd.local>",
-          to: email,
-          subject: "Votre lien de connexion ACD",
-          html,
-        });
+        await sendMail(email, "Votre lien de connexion ACD", html);
       },
       expiresIn: 300, // 5 minutes
     }),

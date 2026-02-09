@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSession, signOut } from "~/lib/auth-client";
+import { useSession } from "~/lib/auth-client";
 import {
   Sidebar,
   SidebarContent,
@@ -26,7 +26,7 @@ const navItems = [
   { title: "Repas", icon: "lucide:utensils", href: "/admin/repas" },
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
-  { title: "Commandes", icon: "lucide:receipt", href: "/admin/orders" },
+  { title: "Paiements", icon: "lucide:receipt", href: "/admin/orders" },
   { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
 ];
 
@@ -43,11 +43,6 @@ const bottomNavItems = [
 function isActive(href: string) {
   if (href === "/admin") return route.path === "/admin";
   return route.path === href || route.path.startsWith(href + "/");
-}
-
-async function handleSignOut() {
-  await signOut();
-  navigateTo("/");
 }
 </script>
 
@@ -177,21 +172,23 @@ async function handleSignOut() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem as-child>
-                  <NuxtLink to="/" class="cursor-pointer">
-                    <Icon name="lucide:arrow-left" class="mr-2 h-4 w-4" />
-                    Retour au site
+                  <NuxtLink to="/compte" class="cursor-pointer">
+                    <Icon name="lucide:user" class="h-4 w-4" />
+                    Voir mon compte
                   </NuxtLink>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="text-destructive cursor-pointer"
-                  @click="handleSignOut"
-                >
-                  <Icon name="lucide:log-out" class="mr-2 h-4 w-4" />
-                  Déconnexion
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <SidebarMenuButton
+              as-child
+              tooltip="Retour au site"
+              class="text-xs w-full text-center flex items-center justify-center"
+            >
+              <NuxtLink to="/">
+                <Icon name="lucide:arrow-left" class="h-4 w-4" />
+                <span>Retour à l'accueil</span>
+              </NuxtLink>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
