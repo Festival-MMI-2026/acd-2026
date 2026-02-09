@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSession } from "~/lib/auth-client";
+import { Switch } from "~/components/ui/switch";
 
 interface Iut {
   id: string;
@@ -30,6 +31,7 @@ const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
 
 // Pre-fill from session if available
 onMounted(() => {
+  console.log("StepPersonalInfo monté");
   const userData = session.value?.data?.user;
   if (userData) {
     const nameParts = (userData.name || "").split(" ");
@@ -45,6 +47,14 @@ onMounted(() => {
 function updateField(field: keyof typeof props.modelValue, value: any) {
   emit("update:modelValue", { ...props.modelValue, [field]: value });
 }
+
+const isMotorizedProxy = computed({
+  get: () => props.modelValue.isMotorized,
+  set: (val) => {
+    updateField("isMotorized", val);
+    console.log("Statut motorisé modifié :", val);
+  },
+});
 </script>
 
 <template>
@@ -122,22 +132,27 @@ function updateField(field: keyof typeof props.modelValue, value: any) {
       <!-- IUT Select -->
       <Field>
         <FieldLabel for="iut">IUT d'origine</FieldLabel>
-        <Select
-          :model-value="modelValue.iutId"
-          @update:model-value="updateField('iutId', $event)"
-        >
-          <SelectTrigger id="iut">
-            <SelectValue placeholder="Sélectionnez votre IUT" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="iut in iuts" :key="iut.id" :value="iut.id">
-              {{ iut.name }}
-              <span v-if="iut.city" class="text-muted-foreground">
-                - {{ iut.city }}
-              </span>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <ClientOnly>
+          <Select
+            :model-value="modelValue.iutId"
+            @update:model-value="updateField('iutId', $event)"
+          >
+            <SelectTrigger id="iut">
+              <SelectValue placeholder="Sélectionnez votre IUT" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="iut in iuts" :key="iut.id" :value="iut.id">
+                {{ iut.name }}
+                <span v-if="iut.city" class="text-muted-foreground">
+                  - {{ iut.city }}
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <template #fallback>
+            <div class="h-10 w-full animate-pulse bg-muted rounded-md"></div>
+          </template>
+        </ClientOnly>
       </Field>
 
       <!-- Allergènes -->
@@ -165,11 +180,7 @@ function updateField(field: keyof typeof props.modelValue, value: any) {
             Indiquez si vous disposez d'un véhicule pour vos déplacements
           </p>
         </div>
-        <Switch
-          id="motorized"
-          :checked="modelValue.isMotorized"
-          @update:checked="updateField('isMotorized', $event)"
-        />
+        <Switch id="motorized" v-model="isMotorizedProxy" />
       </div>
     </div>
   </div>

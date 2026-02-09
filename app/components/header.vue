@@ -50,122 +50,142 @@ async function handleSignOut() {
             />
             <span class="text-lg font-extrabold text-primary">ACD</span>
           </div>
-          <Badge variant="outline" class="rounded-full text-xs">
-            <div class="relative flex h-2 w-2">
-              <span
-                class="relative inline-flex rounded-full h-2 w-2 bg-primary"
-              ></span>
-            </div>
-            Édition {{ new Date().getFullYear() }}</Badge
-          >
+          <ClientOnly>
+            <Badge variant="outline" class="rounded-full text-xs">
+              <div class="relative flex h-2 w-2">
+                <span
+                  class="relative inline-flex rounded-full h-2 w-2 bg-primary"
+                ></span>
+              </div>
+              Édition {{ new Date().getFullYear() }}</Badge
+            >
+          </ClientOnly>
         </NuxtLink>
 
         <!-- Navigation (center-left) -->
-        <NavigationMenu class="hidden md:flex">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/programme">Programme</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/inscription">Inscription</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/acces">Accès</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink as-child>
-                <NuxtLink to="/hotels">Hébergement</NuxtLink>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
+        <ClientOnly>
+          <NavigationMenu aria-label="Navigation principale" class="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink as-child>
+                  <NuxtLink to="/programme">Programme</NuxtLink>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink as-child>
+                  <NuxtLink to="/inscription">Inscription</NuxtLink>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink as-child>
+                  <NuxtLink to="/acces">Accès</NuxtLink>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink as-child>
+                  <NuxtLink to="/hotels">Hébergement</NuxtLink>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          <template #fallback>
+            <div class="hidden md:flex gap-6 items-center">
+              <div class="h-4 w-20 bg-muted animate-pulse rounded"></div>
+              <div class="h-4 w-20 bg-muted animate-pulse rounded"></div>
+              <div class="h-4 w-20 bg-muted animate-pulse rounded"></div>
+              <div class="h-4 w-20 bg-muted animate-pulse rounded"></div>
+            </div>
+          </template>
+        </ClientOnly>
       </div>
 
       <!-- Right side -->
       <div class="flex items-center gap-3">
-        <!-- Not logged in -->
-        <template v-if="!session.data">
-          <Button
-            variant="secondary"
-            class="rounded-full hidden sm:inline-flex"
-            as-child
-          >
-            <NuxtLink to="/auth/signin">Se connecter</NuxtLink>
-          </Button>
-          <Button
-            variant="default"
-            class="rounded-full hidden sm:inline-flex"
-            as-child
-          >
-            <NuxtLink to="/auth/signup">S'inscrire</NuxtLink>
-          </Button>
-        </template>
+        <ClientOnly>
+          <!-- Not logged in -->
+          <template v-if="!session.data">
+            <Button
+              variant="secondary"
+              class="rounded-full hidden sm:inline-flex"
+              as-child
+            >
+              <NuxtLink to="/auth/signin">Se connecter</NuxtLink>
+            </Button>
+            <Button
+              variant="default"
+              class="rounded-full hidden sm:inline-flex"
+              as-child
+            >
+              <NuxtLink to="/auth/signup">S'inscrire</NuxtLink>
+            </Button>
+          </template>
 
-        <!-- Logged in -->
-        <template v-else>
-          <Button
-            v-if="session.data.user?.role === 'admin'"
-            variant="secondary"
-            size="sm"
-            class="rounded-full hidden md:inline-flex"
-            as-child
-          >
-            <NuxtLink to="/admin">Dashboard</NuxtLink>
-          </Button>
+          <!-- Logged in -->
+          <template v-else>
+            <Button
+              v-if="session.data.user?.role === 'admin'"
+              variant="secondary"
+              size="sm"
+              class="rounded-full hidden md:inline-flex"
+              as-child
+            >
+              <NuxtLink to="/admin">Dashboard</NuxtLink>
+            </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="ghost" size="icon" class="rounded-full">
-                <Avatar class="h-8 w-8">
-                  <AvatarImage
-                    :src="session.data.user?.image || ''"
-                    :alt="session.data.user?.name || 'User'"
-                  />
-                  <AvatarFallback
-                    class="bg-primary text-primary-foreground text-sm"
-                  >
-                    {{
-                      session.data.user?.name?.charAt(0).toUpperCase() || "U"
-                    }}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-56 rounded-xl">
-              <DropdownMenuLabel class="font-normal">
-                <div class="flex flex-col space-y-1">
-                  <p class="text-sm font-medium">
-                    {{ session.data.user?.name }}
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    {{ session.data.user?.email }}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem as-child class="rounded-lg">
-                <NuxtLink to="/profil" class="flex items-center">
-                  <PersonIcon class="mr-2 h-4 w-4" />
-                  <span>Mon profil</span>
-                </NuxtLink>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                @click="handleSignOut"
-                class="text-destructive focus:text-destructive rounded-lg"
-              >
-                <ExitIcon class="mr-2 h-4 w-4" />
-                <span>Déconnexion</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </template>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="ghost" size="icon" class="rounded-full">
+                  <Avatar class="h-8 w-8">
+                    <AvatarImage
+                      :src="session.data.user?.image || ''"
+                      :alt="session.data.user?.name || 'User'"
+                    />
+                    <AvatarFallback
+                      class="bg-primary text-primary-foreground text-sm"
+                    >
+                      {{
+                        session.data.user?.name?.charAt(0).toUpperCase() || "U"
+                      }}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" class="w-56 rounded-xl">
+                <DropdownMenuLabel class="font-normal">
+                  <div class="flex flex-col space-y-1">
+                    <p class="text-sm font-medium">
+                      {{ session.data.user?.name }}
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                      {{ session.data.user?.email }}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem as-child class="rounded-lg">
+                  <NuxtLink to="/profil" class="flex items-center">
+                    <PersonIcon class="mr-2 h-4 w-4" />
+                    <span>Mon profil</span>
+                  </NuxtLink>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  @click="handleSignOut"
+                  class="text-destructive focus:text-destructive rounded-lg"
+                >
+                  <ExitIcon class="mr-2 h-4 w-4" />
+                  <span>Déconnexion</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </template>
+          <template #fallback>
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"></div>
+              <div class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"></div>
+            </div>
+          </template>
+        </ClientOnly>
 
         <!-- Mobile Menu -->
         <Sheet>

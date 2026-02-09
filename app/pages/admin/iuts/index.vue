@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">Gestion des IUTs</h1>
@@ -39,7 +39,7 @@ onMounted(() => {
       </div>
       <div class="flex gap-2">
         <Button @click="showImportDialog = true" variant="default" size="sm">
-          <Icon name="lucide:upload" class="mr-2 h-4 w-4" />
+          <Icon name="lucide:upload" class="h-4 w-4" />
           Importer CSV
         </Button>
       </div>

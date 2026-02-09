@@ -172,7 +172,7 @@ function isActive(href: string) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem as-child>
-                  <NuxtLink to="/compte" class="cursor-pointer">
+                  <NuxtLink to="/profil" class="cursor-pointer">
                     <Icon name="lucide:user" class="h-4 w-4" />
                     Voir mon compte
                   </NuxtLink>
@@ -197,9 +197,10 @@ function isActive(href: string) {
     <!-- Main content -->
     <SidebarInset>
       <!-- Header -->
-      <header class="h-16 border-b bg-background flex items-center gap-4 px-4">
-        <SidebarTrigger />
-        <Separator orientation="vertical" class="h-4" />
+      <header class="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <div class="flex items-center gap-2 px-4">
+          <SidebarTrigger class="-ml-1" />
+          <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -241,12 +242,13 @@ function isActive(href: string) {
             </template>
           </BreadcrumbList>
         </Breadcrumb>
+        </div>
       </header>
 
       <!-- Content -->
-      <main class="flex-1 p-8 overflow-auto">
+      <div class="flex flex-1 flex-col gap-4 p-8 overflow-auto">
         <slot />
-      </main>
+      </div>
     </SidebarInset>
   </SidebarProvider>
 </template>

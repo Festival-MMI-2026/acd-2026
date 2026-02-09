@@ -8,6 +8,15 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
+  app: {
+    head: {
+      htmlAttrs: {
+        lang: 'fr',
+      },
+      title: 'ACD MMI 2026',
+    },
+  },
+
   nitro: {
     rollupConfig: {
       plugins: [vue()],

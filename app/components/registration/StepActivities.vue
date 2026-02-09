@@ -91,46 +91,40 @@ function formatDate(dateStr: string) {
 
       <!-- Activities list -->
       <div v-else class="grid gap-4 sm:grid-cols-2">
-        <div
+        <Label
           v-for="activity in activities"
           :key="activity.id"
-          class="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors"
-          :class="{
-            'border-primary bg-primary/5 dark:bg-primary/10':
-              isActivitySelected(activity.id),
-          }"
-          @click="toggleActivity(activity.id)"
+          class="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors has-aria-checked:border-primary has-aria-checked:bg-primary/5 dark:has-aria-checked:bg-primary/10"
         >
           <Checkbox
             :id="`activity-${activity.id}`"
-            :checked="isActivitySelected(activity.id)"
+            :model-value="isActivitySelected(activity.id)"
             class="mt-1 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white"
-            @click.stop
-            @update:checked="toggleActivity(activity.id)"
+            @update:model-value="toggleActivity(activity.id)"
           />
           <div class="grid gap-2 font-normal flex-1">
-            <p class="text-base leading-none font-medium">
+            <p class="text-sm leading-none font-medium">
               {{ activity.name }}
             </p>
-            <p class="text-sm text-muted-foreground flex items-center gap-1">
+            <p class="text-muted-foreground text-sm flex items-center gap-1">
               <Icon name="lucide:calendar" class="h-3 w-3" />
               {{ formatDate(activity.date) }}
             </p>
             <p
               v-if="activity.location"
-              class="text-xs text-muted-foreground flex items-center gap-1"
+              class="text-muted-foreground text-xs flex items-center gap-1"
             >
               <Icon name="lucide:map-pin" class="h-3 w-3" />
               {{ activity.location }}
             </p>
             <p
               v-if="activity.description"
-              class="text-sm text-muted-foreground mt-1"
+              class="text-muted-foreground text-sm mt-1"
             >
               {{ activity.description }}
             </p>
           </div>
-        </div>
+        </Label>
       </div>
     </template>
   </div>

@@ -19,7 +19,7 @@ const settings = ref({
 </script>
 
 <template>
-  <div class="max-w-4xl space-y-6">
+  <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -104,7 +104,7 @@ const settings = ref({
               Autoriser les nouvelles inscriptions
             </p>
           </div>
-          <Switch v-model:checked="settings.registrationOpen" />
+          <Switch v-model="settings.registrationOpen" />
         </div>
         <div class="space-y-2">
           <Label>Nombre maximum de participants</Label>

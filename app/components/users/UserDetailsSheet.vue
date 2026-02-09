@@ -39,8 +39,8 @@ const emit = defineEmits(["update:open"]);
             <p class="text-muted-foreground">{{ user.email }}</p>
           </div>
           <div class="flex gap-2">
-            <Badge variant="outline" class="capitalize">
-              {{ user.role || "User" }}
+            <Badge variant="outline">
+              {{ user.role === "admin" ? "Administrateur" : "Utilisateur" }}
             </Badge>
             <Badge v-if="user.banned" variant="destructive">Banni</Badge>
             <Badge

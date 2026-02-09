@@ -142,21 +142,14 @@ function formatAllergens(allergens: string[]): string {
       <div v-else class="space-y-6">
         <div v-for="meal in meals" :key="meal.id" class="space-y-3">
           <!-- Meal checkbox card with details -->
-          <div
-            class="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors"
-            :class="{
-              'border-primary bg-primary/5 dark:bg-primary/10': isMealSelected(
-                meal.id,
-              ),
-            }"
-            @click="toggleMeal(meal.id)"
+          <Label
+            class="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors has-aria-checked:border-primary has-aria-checked:bg-primary/5 dark:has-aria-checked:bg-primary/10"
           >
             <Checkbox
               :id="`meal-${meal.id}`"
-              :checked="isMealSelected(meal.id)"
+              :model-value="isMealSelected(meal.id)"
               class="mt-1 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white"
-              @click.stop
-              @update:checked="toggleMeal(meal.id)"
+              @update:model-value="toggleMeal(meal.id)"
             />
             <div class="grid gap-3 font-normal flex-1">
               <!-- Header -->
@@ -242,7 +235,7 @@ function formatAllergens(allergens: string[]): string {
                 </span>
               </div>
             </div>
-          </div>
+          </Label>
 
           <!-- Options selection (show when selected) -->
           <Card v-if="isMealSelected(meal.id)" class="ml-8 border-primary/30">

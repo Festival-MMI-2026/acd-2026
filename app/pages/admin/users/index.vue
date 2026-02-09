@@ -83,7 +83,7 @@ const handleSuccess = () => {
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">Utilisateurs</h1>
@@ -94,7 +94,7 @@ const handleSuccess = () => {
       <Button @click="fetchUsers" variant="outline" size="sm">
         <Icon
           name="lucide:refresh-cw"
-          class="mr-2 h-4 w-4"
+          class="h-4 w-4"
           :class="{ 'animate-spin': isLoading }"
         />
         Actualiser
@@ -157,8 +157,10 @@ const handleSuccess = () => {
                   <span class="text-sm">{{ user.iut || "-" }}</span>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" class="capitalize">
-                    {{ user.role || "user" }}
+                  <Badge variant="outline">
+                    {{
+                      user.role === "admin" ? "Administrateur" : "Utilisateur"
+                    }}
                   </Badge>
                 </TableCell>
                 <TableCell>

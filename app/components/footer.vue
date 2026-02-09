@@ -40,7 +40,7 @@
           >
             Navigation
           </h3>
-          <nav class="flex flex-col space-y-3">
+          <nav aria-label="Navigation secondaire" class="flex flex-col space-y-3">
             <NuxtLink
               to="/programme"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -69,24 +69,18 @@
           >
             Informations
           </h3>
-          <nav class="flex flex-col space-y-3">
+          <nav aria-label="Informations utiles" class="flex flex-col space-y-3">
             <NuxtLink
-              to="/hebergement"
+              to="/hotels"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Hébergement
             </NuxtLink>
             <NuxtLink
-              to="/restauration"
+              to="/acces"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Restauration
-            </NuxtLink>
-            <NuxtLink
-              to="/activites"
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Activités
+              Accès
             </NuxtLink>
           </nav>
         </div>
@@ -98,7 +92,7 @@
           >
             Contact
           </h3>
-          <nav class="flex flex-col space-y-3">
+          <div class="flex flex-col space-y-3">
             <a
               href="mailto:contact@acd-iut.fr"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -109,7 +103,7 @@
             <span class="text-sm text-muted-foreground">
               9 Rue de Québec, 10000 Troyes
             </span>
-          </nav>
+          </div>
         </div>
       </div>
     </div>

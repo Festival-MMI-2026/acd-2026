@@ -199,7 +199,7 @@ async function executeDeleteOption() {
 </script>
 
 <template>
-  <div v-if="meal" class="max-w-4xl space-y-6">
+  <div v-if="meal" class="space-y-6">
     <!-- Header -->
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-4">

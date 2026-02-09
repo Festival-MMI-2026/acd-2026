@@ -25,6 +25,8 @@ const { data: orders, status } = await useFetch<Order[]>("/api/orders");
 
 const searchQuery = ref("");
 const statusFilter = ref<string | null>(null);
+const currentPage = ref(1);
+const itemsPerPage = 10;
 
 const filteredOrders = computed(() => {
   let result = orders.value || [];
@@ -45,6 +47,15 @@ const filteredOrders = computed(() => {
   }
 
   return result;
+});
+
+watch([searchQuery, statusFilter], () => {
+  currentPage.value = 1;
+});
+
+const paginatedOrders = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredOrders.value.slice(start, start + itemsPerPage);
 });
 
 function goToDetail(id: string) {
@@ -75,7 +86,7 @@ function formatDate(date: string) {
 </script>
 
 <template>
-  <div class="max-w-5xl space-y-6">
+  <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -124,7 +135,7 @@ function formatDate(date: string) {
     </div>
 
     <!-- Table -->
-    <div v-else class="rounded-xl overflow-hidden border-0">
+    <div v-else class="overflow-hidden border-0">
       <!-- Table Header -->
       <div
         class="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-muted-foreground"
@@ -147,7 +158,7 @@ function formatDate(date: string) {
 
       <!-- Table Rows -->
       <div
-        v-for="order in filteredOrders"
+        v-for="order in paginatedOrders"
         :key="order.id"
         class="grid grid-cols-12 gap-4 px-4 py-4 items-center cursor-pointer transition-colors hover:bg-muted/50 border-t border-border/50"
         @click="goToDetail(order.id)"
@@ -175,6 +186,41 @@ function formatDate(date: string) {
         <div class="col-span-2 text-right text-sm font-medium">
           {{ Number(order.amount).toFixed(2) }} €
         </div>
+      </div>
+
+      <!-- Pagination -->
+      <div
+        v-if="filteredOrders.length > itemsPerPage"
+        class="flex items-center justify-between pt-4"
+      >
+        <p class="text-sm text-muted-foreground">
+          {{ (currentPage - 1) * itemsPerPage + 1 }}-{{
+            Math.min(currentPage * itemsPerPage, filteredOrders.length)
+          }}
+          sur {{ filteredOrders.length }} paiement(s)
+        </p>
+        <Pagination
+          v-model:page="currentPage"
+          :total="filteredOrders.length"
+          :items-per-page="itemsPerPage"
+          :sibling-count="1"
+          show-edges
+        >
+          <PaginationContent v-slot="{ items }">
+            <PaginationPrevious />
+            <template v-for="(item, index) in items" :key="index">
+              <PaginationItem
+                v-if="item.type === 'page'"
+                :value="item.value"
+                :is-active="item.value === currentPage"
+              >
+                {{ item.value }}
+              </PaginationItem>
+              <PaginationEllipsis v-else :index="index" />
+            </template>
+            <PaginationNext />
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   </div>

@@ -222,28 +222,33 @@ async function submitRegistration() {
     <template v-else>
       <div class="max-w-3xl mx-auto space-y-8">
         <!-- Stepper Navigation -->
-        <Stepper v-model="currentStep" class="flex w-full items-start gap-2">
-          <StepperItem
-            v-for="(stepItem, index) in steps"
-            :key="stepItem.step"
-            :step="stepItem.step"
-            class="relative flex w-full flex-col items-center justify-center"
-          >
-            <StepperTrigger class="flex flex-col items-center gap-2">
-              <StepperIndicator>
-                <Icon :name="stepItem.icon" class="h-4 w-4" />
-              </StepperIndicator>
-              <StepperTitle class="text-sm hidden sm:block">
-                {{ stepItem.title }}
-              </StepperTitle>
-            </StepperTrigger>
+        <ClientOnly>
+          <Stepper v-model="currentStep" class="flex w-full items-start gap-2">
+            <StepperItem
+              v-for="(stepItem, index) in steps"
+              :key="stepItem.step"
+              :step="stepItem.step"
+              class="relative flex w-full flex-col items-center justify-center"
+            >
+              <StepperTrigger class="flex flex-col items-center gap-2">
+                <StepperIndicator>
+                  <Icon :name="stepItem.icon" class="h-4 w-4" />
+                </StepperIndicator>
+                <StepperTitle class="text-sm hidden sm:block">
+                  {{ stepItem.title }}
+                </StepperTitle>
+              </StepperTrigger>
 
-            <StepperSeparator
-              v-if="index < steps.length - 1"
-              class="absolute left-[calc(50%+20px)] right-[calc(-50%+20px)] top-5 block h-0.5 shrink-0 bg-muted group-data-[state=completed]:bg-primary"
-            />
-          </StepperItem>
-        </Stepper>
+              <StepperSeparator
+                v-if="index < steps.length - 1"
+                class="absolute left-[calc(50%+20px)] right-[calc(-50%+20px)] top-5 block h-0.5 shrink-0 bg-muted group-data-[state=completed]:bg-primary"
+              />
+            </StepperItem>
+          </Stepper>
+          <template #fallback>
+            <div class="h-20 w-full animate-pulse bg-muted rounded-xl"></div>
+          </template>
+        </ClientOnly>
 
         <!-- Form Content -->
         <Card>
