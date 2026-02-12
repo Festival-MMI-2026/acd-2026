@@ -1,70 +1,79 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 
 definePageMeta({
   layout: "default",
 });
 
-// Gradient Cards Data
-const gradientCards = [
+// Fetch editable content from DB
+const { data: homeContent } = await useFetch("/api/home-content");
+
+type TabKey = string;
+const activeTab = ref<TabKey>("partage");
+
+interface TabItem {
+  key: string;
+  label: string;
+  title: string;
+  description: string;
+  stat: string;
+  image: string;
+}
+
+const tabs = computed<Record<string, TabItem>>(() => {
+  const rawTabs = (homeContent.value?.tabs as unknown as TabItem[]) || [];
+
+  const result: Record<string, TabItem> = {};
+  for (const tab of rawTabs) {
+    result[tab.key] = tab;
+  }
+  return result;
+});
+
+// Gradient cards visual config
+const cardVisualConfig = [
   {
     icon: "lucide:book-open",
-    title: "Nouveaux Programmes",
-    description: "Adaptation au BUT",
     color: "from-purple-500/20 to-blue-500/20",
     iconColor: "text-purple-500",
-    features: ["Référentiel 2027", "Compétences clés", "Adaptation parcours"],
   },
   {
     icon: "lucide:users",
-    title: "Travail Collaboratif",
-    description: "Co-construction",
     color: "from-emerald-500/20 to-teal-500/20",
     iconColor: "text-emerald-500",
-    features: ["Ateliers par thèmes", "Partage de ressources", "Harmonisation"],
   },
   {
     icon: "lucide:shield-check",
-    title: "Enjeux & Avenir",
-    description: "Stratégie MMI",
     color: "from-red-500/20 to-orange-500/20",
     iconColor: "text-red-500",
-    features: ["Évolution métiers", "Partenariats pros", "Conférences"],
   },
 ];
 
-// Dynamic Tabs Data
-type TabKey = "partage" | "travail" | "decouverte";
-const activeTab = ref<TabKey>("partage");
+const gradientCards = computed(() => {
+  const rawCards =
+    (homeContent.value?.gradientCards as unknown as Array<{
+      title: string;
+      description: string;
+      features: string[];
+    }>) || [];
 
-const tabs = {
-  partage: {
-    label: "Partage",
-    title: "Échanger pour mieux construire.",
-    description:
-      "L'ACD est avant tout un moment de rencontre. Profitez de ces instants pour échanger sur vos pratiques pédagogiques et vos retours d'expérience.",
-    image: "/gala-dinner.png",
-    stat: "50+ Chefs de départements",
-  },
-  travail: {
-    label: "Travail",
-    title: "Collaborer sur le futur.",
-    description:
-      "Des ateliers dédiés à la rédaction des nouveaux référentiels. Une occasion unique d'impacter directement la formation de demain.",
-    image: "/conference-hall.png",
-    stat: "34 Départements MMI",
-  },
-  decouverte: {
-    label: "Découverte",
-    title: "Vivre l'expérience Troyes.",
-    description:
-      "Au-delà du travail, découvrez la richesse culturelle de Troyes et sa gastronomie locale lors de nos événements conviviaux.",
-    image:
-      "https://static-otelico.com/cache/troyes_troyes/hotel-de-troyes-a-troyes.jpg",
-    stat: "Patrimoine & Gastronomie",
-  },
-};
+  return rawCards.map((card, i) => ({
+    ...cardVisualConfig[i],
+    title: card.title,
+    description: card.description,
+    features: card.features,
+  }));
+});
+
+const logos = computed(() => {
+  return (
+    (homeContent.value?.logos as unknown as Array<{
+      src: string;
+      alt: string;
+    }>) || []
+  );
+});
 </script>
 
 <template>
@@ -76,8 +85,8 @@ const tabs = {
         class="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none overflow-hidden"
       >
         <img
-          src="https://www.mesvitrauxfavoris.fr/Supp_e/index_htm_files/98833.jpg"
-          alt="Rosace Notre-Dame"
+          :src="homeContent?.heroImage"
+          alt="Image de fond"
           class="w-full h-full object-cover opacity-[0.1]"
         />
       </div>
@@ -98,22 +107,21 @@ const tabs = {
               class="relative inline-flex rounded-full h-2 w-2 bg-primary"
             ></span>
           </span>
-          15–17 Juin 2026 · IUT de Troyes
+          {{ homeContent?.heroBadge }}
         </Badge>
 
         <!-- Main Title -->
         <h1
           class="text-6xl md:text-8xl font-bold tracking-tight text-foreground -mt-4"
         >
-          Assemblée des Chefs de Départements MMI
+          {{ homeContent?.heroTitle }}
         </h1>
 
         <!-- Subtitle -->
         <p
           class="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
         >
-          L'IUT de Troyes accueille l'ACD MMI 2026. Un événement réunissant plus
-          de 50 chefs de départements.
+          {{ homeContent?.heroSubtitle }}
         </p>
 
         <!-- CTA Buttons -->
@@ -144,21 +152,14 @@ const tabs = {
           >
           <div class="flex items-center justify-center gap-4">
             <div
+              v-for="(logo, index) in logos"
+              :key="index"
               class="w-36 flex items-center justify-center p-2 shadow-sm grayscale hover:grayscale-0 transition-all duration-300"
             >
               <img
-                src="https://www.univ-reims.fr/iut-troyes/media-images/49449/logo-iutt.png"
-                alt="IUT de Troyes"
+                :src="logo.src"
+                :alt="logo.alt"
                 class="w-full h-full object-contain invert dark:invert-0"
-              />
-            </div>
-            <div
-              class="w-36 flex items-center justify-center p-2 shadow-sm grayscale hover:grayscale-0 transition-all duration-300"
-            >
-              <img
-                src="https://www.univ-reims.fr/ufrsesg/media-images/61471/logo_urca_blanc-removebg-preview.png"
-                alt="URCA"
-                class="w-full object-contain invert dark:invert-0"
               />
             </div>
           </div>
@@ -175,12 +176,12 @@ const tabs = {
               <h2
                 class="text-3xl md:text-5xl font-bold tracking-tight text-foreground transition-all duration-300"
               >
-                {{ tabs[activeTab].title }}
+                {{ tabs[activeTab]?.title }}
               </h2>
               <p
                 class="text-lg text-muted-foreground leading-relaxed transition-all duration-300"
               >
-                {{ tabs[activeTab].description }}
+                {{ tabs[activeTab]?.description }}
               </p>
             </div>
 
@@ -189,7 +190,7 @@ const tabs = {
               <button
                 v-for="(tab, key) in tabs"
                 :key="key"
-                @click="activeTab = key"
+                @click="activeTab = key as string"
                 :class="[
                   'px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300',
                   activeTab === key
@@ -208,7 +209,7 @@ const tabs = {
               class="relative overflow-hidden rounded-4xl border-0 shadow-2xl aspect-4/3 lg:aspect-square"
             >
               <img
-                :src="tabs[activeTab].image"
+                :src="tabs[activeTab]?.image"
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform scale-100 group-hover:scale-105"
                 alt="Tab Image"
               />
@@ -219,10 +220,10 @@ const tabs = {
               <!-- Overlay Content -->
               <div class="absolute bottom-8 left-8 right-8 text-white">
                 <div class="text-4xl font-bold mb-2">
-                  {{ tabs[activeTab].stat.split(" ")[0] }}
+                  {{ tabs[activeTab]?.stat?.split(" ")[0] }}
                 </div>
                 <div class="text-base font-medium opacity-90">
-                  {{ tabs[activeTab].stat.split(" ").slice(1).join(" ") }}
+                  {{ tabs[activeTab]?.stat?.split(" ").slice(1).join(" ") }}
                 </div>
               </div>
             </Card>
@@ -256,7 +257,7 @@ const tabs = {
                   card.iconColor,
                 ]"
               >
-                <Icon :name="card.icon" class="w-6 h-6" />
+                <Icon :name="card.icon || 'lucide:star'" class="w-6 h-6" />
               </div>
 
               <h3 class="text-xl font-bold mb-2">{{ card.title }}</h3>
@@ -282,15 +283,10 @@ const tabs = {
     <section class="py-16 px-6 bg-muted/30 border-y border-border/50">
       <div class="container max-w-4xl mx-auto text-center space-y-6">
         <h2 class="text-2xl font-semibold">
-          Une édition tournée vers l'avenir
+          {{ homeContent?.contextTitle }}
         </h2>
         <p class="text-lg text-muted-foreground leading-relaxed">
-          Les échanges porteront sur les
-          <span class="text-foreground font-medium"
-            >nouveaux programmes nationaux du BUT MMI</span
-          >, qui entreront en vigueur en 2027. L’objectif est de poursuivre la
-          rédaction du référentiel de formation afin d’adapter les programmes
-          aux besoins et aux évolutions des métiers du numérique.
+          {{ homeContent?.contextText }}
         </p>
       </div>
     </section>
@@ -321,11 +317,10 @@ const tabs = {
           <div class="absolute inset-0 bg-primary/85"></div>
           <CardContent class="p-12 md:p-16 text-center space-y-8 relative z-10">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight">
-              Rejoignez l'Assemblée
+              {{ homeContent?.ctaTitle }}
             </h2>
             <p class="text-primary-foreground/80 text-lg max-w-xl mx-auto">
-              Participez à la construction de l'avenir du BUT MMI. Inscription
-              obligatoire pour tous les chefs de départements.
+              {{ homeContent?.ctaText }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="secondary" size="lg" as-child>

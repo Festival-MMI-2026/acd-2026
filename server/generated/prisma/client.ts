@@ -114,3 +114,28 @@ export type Hotel = Prisma.HotelModel
  * 
  */
 export type Iut = Prisma.IutModel
+/**
+ * Model HomeContent
+ * 
+ */
+export type HomeContent = Prisma.HomeContentModel
+/**
+ * Model AccessContent
+ * 
+ */
+export type AccessContent = Prisma.AccessContentModel
+/**
+ * Model ProgrammeContent
+ * 
+ */
+export type ProgrammeContent = Prisma.ProgrammeContentModel
+/**
+ * Model InscriptionContent
+ * 
+ */
+export type InscriptionContent = Prisma.InscriptionContentModel
+/**
+ * Model HotelsContent
+ * 
+ */
+export type HotelsContent = Prisma.HotelsContentModel

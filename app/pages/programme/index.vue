@@ -13,6 +13,7 @@ interface EventData {
   location?: string | null;
 }
 
+const { data: siteSettings } = await useFetch("/api/settings");
 const { data: events, status } = await useFetch<EventData[]>("/api/events");
 
 // Parse date string without timezone shift (treat as local date)
@@ -67,6 +68,29 @@ function formatDateShort(dateStr: string) {
 
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
+    <!-- Hidden page state -->
+    <div
+      v-if="siteSettings && !siteSettings.showProgramme"
+      class="text-center py-24 space-y-6"
+    >
+      <div
+        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
+      >
+        <Icon
+          name="lucide:clock"
+          class="h-10 w-10 text-muted-foreground"
+        />
+      </div>
+      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
+      <p class="text-muted-foreground max-w-md mx-auto">
+        Le programme de l'événement sera bientôt disponible. Revenez prochainement !
+      </p>
+      <Button variant="outline" class="rounded-full" as-child>
+        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+      </Button>
+    </div>
+
+    <template v-else>
     <!-- Header -->
     <div class="text-center space-y-4">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Programme</h1>
@@ -176,26 +200,6 @@ function formatDateShort(dateStr: string) {
         </div>
       </div>
     </div>
-
-    <!-- Info card -->
-    <Card class="max-w-4xl mx-auto bg-muted/30 border-dashed">
-      <CardContent class="p-6 text-center">
-        <div
-          class="flex items-center justify-center gap-2 text-muted-foreground"
-        >
-          <Icon name="lucide:info" class="h-5 w-5" />
-          <p>
-            Le programme est susceptible d'être modifié. Pour toute question,
-            contactez-nous à
-            <a
-              href="mailto:acd@iut-troyes.univ-reims.fr"
-              class="text-primary hover:underline"
-            >
-              acd@iut-troyes.univ-reims.fr
-            </a>
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    </template>
   </div>
 </template>

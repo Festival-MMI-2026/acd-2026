@@ -113,55 +113,96 @@ function formatDate(dateStr: string) {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8">
+    <!-- Header -->
     <div class="space-y-2">
-      <h2 class="text-2xl font-bold">Récapitulatif</h2>
-      <p class="text-muted-foreground">
-        Vérifiez vos informations avant de confirmer
-      </p>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"
+        >
+          <Icon name="lucide:clipboard-check" class="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Récapitulatif</h2>
+          <p class="text-sm text-muted-foreground">
+            Vérifiez vos informations avant de confirmer
+          </p>
+        </div>
+      </div>
     </div>
+
+    <Separator />
 
     <!-- Personal Info Summary -->
     <Card>
       <CardHeader class="pb-3">
-        <CardTitle class="text-lg flex items-center gap-2">
-          <Icon name="lucide:user" class="h-4 w-4" />
+        <CardTitle class="text-base flex items-center gap-2">
+          <div
+            class="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
+          >
+            <Icon name="lucide:user" class="h-3.5 w-3.5 text-primary" />
+          </div>
           Informations personnelles
         </CardTitle>
       </CardHeader>
-      <CardContent class="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <p class="text-muted-foreground">Nom complet</p>
-          <p class="font-medium">
-            {{ personalInfo.firstName }} {{ personalInfo.lastName }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground">Email</p>
-          <p class="font-medium">{{ personalInfo.email }}</p>
-        </div>
-        <div>
-          <p class="text-muted-foreground">Téléphone</p>
-          <p class="font-medium">{{ personalInfo.phone }}</p>
-        </div>
-        <div v-if="personalInfo.iutId">
-          <p class="text-muted-foreground">IUT d'origine</p>
-          <p class="font-medium">
-            {{ getIutById(personalInfo.iutId)?.name || "Non spécifié" }}
-          </p>
-        </div>
-        <div v-if="personalInfo.allergens" class="col-span-2">
-          <p class="text-muted-foreground">Allergies alimentaires</p>
-          <p class="font-medium text-amber-600 dark:text-amber-400">
-            <Icon name="lucide:alert-triangle" class="inline h-3 w-3 mr-1" />
-            {{ personalInfo.allergens }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground">Motorisé</p>
-          <p class="font-medium">
-            {{ personalInfo.isMotorized ? "Oui" : "Non" }}
-          </p>
+      <CardContent>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+          <div class="space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Nom complet
+            </p>
+            <p class="font-medium">
+              {{ personalInfo.firstName }} {{ personalInfo.lastName }}
+            </p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Email
+            </p>
+            <p class="font-medium">{{ personalInfo.email }}</p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Téléphone
+            </p>
+            <p class="font-medium">{{ personalInfo.phone }}</p>
+          </div>
+          <div v-if="personalInfo.iutId" class="space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              IUT d'origine
+            </p>
+            <p class="font-medium">
+              {{ getIutById(personalInfo.iutId)?.name || "Non spécifié" }}
+            </p>
+          </div>
+          <div v-if="personalInfo.allergens" class="col-span-2 space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Allergies alimentaires
+            </p>
+            <div
+              class="flex items-center gap-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1.5 w-fit"
+            >
+              <Icon
+                name="lucide:alert-triangle"
+                class="h-3.5 w-3.5 text-amber-500"
+              />
+              <span class="text-sm font-medium text-amber-700 dark:text-amber-400">
+                {{ personalInfo.allergens }}
+              </span>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Motorisé
+            </p>
+            <Badge :variant="personalInfo.isMotorized ? 'default' : 'outline'">
+              <Icon
+                :name="personalInfo.isMotorized ? 'lucide:car' : 'lucide:x'"
+                class="h-3 w-3 mr-1"
+              />
+              {{ personalInfo.isMotorized ? "Oui" : "Non" }}
+            </Badge>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -169,19 +210,26 @@ function formatDate(dateStr: string) {
     <!-- Meals Summary -->
     <Card v-if="selectedMeals.length">
       <CardHeader class="pb-3">
-        <CardTitle class="text-lg flex items-center gap-2">
-          <Icon name="lucide:utensils" class="h-4 w-4" />
-          Repas sélectionnés ({{ selectedMeals.length }})
+        <CardTitle class="text-base flex items-center gap-2">
+          <div
+            class="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
+          >
+            <Icon name="lucide:utensils" class="h-3.5 w-3.5 text-primary" />
+          </div>
+          Repas sélectionnés
+          <Badge variant="secondary" class="ml-auto tabular-nums">
+            {{ selectedMeals.length }}
+          </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent class="space-y-3">
+      <CardContent class="space-y-0 divide-y">
         <div
           v-for="selectedMeal in selectedMeals"
           :key="selectedMeal.mealId"
-          class="flex items-start justify-between border-b last:border-0 pb-3 last:pb-0"
+          class="flex items-start justify-between py-3 first:pt-0 last:pb-0"
         >
-          <div>
-            <p class="font-medium">
+          <div class="space-y-1.5">
+            <p class="font-medium text-sm">
               {{ getMealById(selectedMeal.mealId)?.name }}
             </p>
             <p class="text-xs text-muted-foreground">
@@ -189,59 +237,62 @@ function formatDate(dateStr: string) {
             </p>
             <div
               v-if="getMealById(selectedMeal.mealId)"
-              class="text-sm text-muted-foreground mt-1 space-y-0.5"
+              class="flex flex-wrap gap-1.5 mt-1"
             >
-              <p
+              <Badge
                 v-if="
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.starterOptionId,
                   )
                 "
+                variant="outline"
+                class="text-xs font-normal"
               >
-                Entrée:
                 {{
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.starterOptionId,
                   )
                 }}
-              </p>
-              <p
+              </Badge>
+              <Badge
                 v-if="
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.mainOptionId,
                   )
                 "
+                variant="outline"
+                class="text-xs font-normal"
               >
-                Plat:
                 {{
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.mainOptionId,
                   )
                 }}
-              </p>
-              <p
+              </Badge>
+              <Badge
                 v-if="
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.dessertOptionId,
                   )
                 "
+                variant="outline"
+                class="text-xs font-normal"
               >
-                Dessert:
                 {{
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.dessertOptionId,
                   )
                 }}
-              </p>
+              </Badge>
             </div>
           </div>
-          <Badge variant="secondary">
+          <Badge variant="secondary" class="tabular-nums shrink-0">
             {{
               Number(getMealById(selectedMeal.mealId)?.price || 0).toFixed(2)
             }}
@@ -254,9 +305,16 @@ function formatDate(dateStr: string) {
     <!-- Activities Summary -->
     <Card v-if="selectedActivities.length">
       <CardHeader class="pb-3">
-        <CardTitle class="text-lg flex items-center gap-2">
-          <Icon name="lucide:activity" class="h-4 w-4" />
-          Activités sélectionnées ({{ selectedActivities.length }})
+        <CardTitle class="text-base flex items-center gap-2">
+          <div
+            class="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
+          >
+            <Icon name="lucide:activity" class="h-3.5 w-3.5 text-primary" />
+          </div>
+          Activités sélectionnées
+          <Badge variant="secondary" class="ml-auto tabular-nums">
+            {{ selectedActivities.length }}
+          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -265,7 +323,9 @@ function formatDate(dateStr: string) {
             v-for="activityId in selectedActivities"
             :key="activityId"
             variant="outline"
+            class="py-1.5 px-3"
           >
+            <Icon name="lucide:check" class="h-3 w-3 mr-1 text-primary" />
             {{ getActivityById(activityId)?.name }}
           </Badge>
         </div>
@@ -273,30 +333,40 @@ function formatDate(dateStr: string) {
     </Card>
 
     <!-- Total -->
-    <Card class="bg-primary/5 border-primary/20">
-      <CardContent class="pt-6">
+    <Card class="bg-primary/5 border-primary/20 overflow-hidden">
+      <CardContent class="pt-6 relative">
         <div class="flex items-center justify-between">
-          <span class="text-lg font-medium">Total à payer</span>
-          <span class="text-3xl font-bold">{{ totalPrice.toFixed(2) }} €</span>
+          <div class="space-y-1">
+            <span class="text-sm font-medium text-muted-foreground">
+              Total à payer
+            </span>
+            <p
+              v-if="totalPrice === 0"
+              class="text-xs text-muted-foreground"
+            >
+              Aucun repas sélectionné
+            </p>
+          </div>
+          <span class="text-3xl font-bold tabular-nums">
+            {{ totalPrice.toFixed(2) }} €
+          </span>
         </div>
-        <p v-if="totalPrice === 0" class="text-sm text-muted-foreground mt-2">
-          Aucun repas sélectionné
-        </p>
       </CardContent>
     </Card>
 
     <!-- Submit Button -->
     <Button
       size="lg"
-      class="w-full"
+      class="w-full rounded-xl h-12 text-base font-semibold"
       :disabled="isSubmitting"
       @click="emit('submit')"
     >
       <Icon
         v-if="isSubmitting"
         name="lucide:loader-2"
-        class="mr-2 h-4 w-4 animate-spin"
+        class="mr-2 h-5 w-5 animate-spin"
       />
+      <Icon v-else name="lucide:check-circle" class="mr-2 h-5 w-5" />
       {{ isSubmitting ? "Inscription en cours..." : "Confirmer l'inscription" }}
     </Button>
   </div>

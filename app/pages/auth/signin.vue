@@ -20,20 +20,18 @@ async function handleGithubSignIn() {
       <div class="text-center space-y-2">
         <div class="flex items-center justify-center gap-2">
           <img
-            src="/LightLogoACD.svg"
+            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-10 dark:hidden"
+            class="h-12 dark:hidden"
           />
           <img
-            src="/DarkLogoACD.svg"
+            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
-            class="h-10 hidden dark:block"
+            class="h-12 hidden dark:block dark:grayscale dark:contrast-1"
           />
         </div>
         <h1 class="text-3xl font-bold tracking-tight">Connexion</h1>
-        <p class="text-muted-foreground">
-          Connectez-vous à votre compte
-        </p>
+        <p class="text-muted-foreground">Connectez-vous à votre compte</p>
       </div>
 
       <!-- Card with Tabs -->
