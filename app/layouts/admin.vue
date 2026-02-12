@@ -30,6 +30,34 @@ const navItems = [
   { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
 ];
 
+const navItemsContent = [
+  {
+    title: "Page d'accueil",
+    icon: "lucide:file-text",
+    href: "/admin/contenu/accueil",
+  },
+  {
+    title: "Page d'accès",
+    icon: "lucide:map-pin",
+    href: "/admin/contenu/acces",
+  },
+  {
+    title: "Page programme",
+    icon: "lucide:calendar",
+    href: "/admin/contenu/programme",
+  },
+  {
+    title: "Page inscription",
+    icon: "lucide:clipboard-list",
+    href: "/admin/contenu/inscription",
+  },
+  {
+    title: "Page hôtels",
+    icon: "lucide:building-2",
+    href: "/admin/contenu/hotels",
+  },
+];
+
 const navItemsAdmin = [
   { title: "Utilisateurs", icon: "lucide:users", href: "/admin/users" },
   { title: "Liste IUT", icon: "lucide:building-2", href: "/admin/iuts" },
@@ -57,14 +85,14 @@ function isActive(href: string) {
               <NuxtLink to="/admin" class="flex items-center gap-2">
                 <div class="flex items-center gap-2">
                   <img
-                    src="/LightLogoACD.svg"
+                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-5 dark:hidden"
+                    class="h-6 dark:hidden"
                   />
                   <img
-                    src="/DarkLogoACD.svg"
+                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-5 hidden dark:block"
+                    class="h-6 hidden dark:block dark:grayscale dark:contrast-1"
                   />
                 </div>
                 <span class="text-lg font-extrabold text-primary">ACD</span>
@@ -81,6 +109,25 @@ function isActive(href: string) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem v-for="item in navItems" :key="item.href">
+                <SidebarMenuButton
+                  as-child
+                  :tooltip="item.title"
+                  :data-active="isActive(item.href)"
+                >
+                  <NuxtLink :to="item.href">
+                    <Icon :name="item.icon" class="h-4 w-4" />
+                    <span>{{ item.title }}</span>
+                  </NuxtLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Contenu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem v-for="item in navItemsContent" :key="item.href">
                 <SidebarMenuButton
                   as-child
                   :tooltip="item.title"
@@ -172,7 +219,7 @@ function isActive(href: string) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem as-child>
-                  <NuxtLink to="/compte" class="cursor-pointer">
+                  <NuxtLink to="/profil" class="cursor-pointer">
                     <Icon name="lucide:user" class="h-4 w-4" />
                     Voir mon compte
                   </NuxtLink>
@@ -197,56 +244,63 @@ function isActive(href: string) {
     <!-- Main content -->
     <SidebarInset>
       <!-- Header -->
-      <header class="h-16 border-b bg-background flex items-center gap-4 px-4">
-        <SidebarTrigger />
-        <Separator orientation="vertical" class="h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">
-                <Icon name="lucide:home" class="h-4 w-4" />
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <template
-              v-for="(segment, index) in route.path
-                .split('/')
-                .filter((s) => s && s !== 'admin')"
-              :key="index"
-            >
-              <BreadcrumbSeparator />
+      <header
+        class="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
+      >
+        <div class="flex items-center gap-2 px-4">
+          <SidebarTrigger class="-ml-1" />
+          <Separator
+            orientation="vertical"
+            class="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink
-                  v-if="
-                    index <
-                    route.path.split('/').filter((s) => s && s !== 'admin')
-                      .length -
-                      1
-                  "
-                  :href="`/admin/${route.path
-                    .split('/')
-                    .filter((s) => s && s !== 'admin')
-                    .slice(0, index + 1)
-                    .join('/')}`"
-                  class="capitalize"
-                >
-                  {{ segment }}
+                <BreadcrumbLink href="/admin">
+                  <Icon name="lucide:home" class="h-4 w-4" />
                 </BreadcrumbLink>
-                <BreadcrumbPage
-                  v-else
-                  class="capitalize truncate max-w-[200px]"
-                >
-                  {{ segment }}
-                </BreadcrumbPage>
               </BreadcrumbItem>
-            </template>
-          </BreadcrumbList>
-        </Breadcrumb>
+              <template
+                v-for="(segment, index) in route.path
+                  .split('/')
+                  .filter((s) => s && s !== 'admin')"
+                :key="index"
+              >
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    v-if="
+                      index <
+                      route.path.split('/').filter((s) => s && s !== 'admin')
+                        .length -
+                        1
+                    "
+                    :href="`/admin/${route.path
+                      .split('/')
+                      .filter((s) => s && s !== 'admin')
+                      .slice(0, index + 1)
+                      .join('/')}`"
+                    class="capitalize"
+                  >
+                    {{ segment }}
+                  </BreadcrumbLink>
+                  <BreadcrumbPage
+                    v-else
+                    class="capitalize truncate max-w-[200px]"
+                  >
+                    {{ segment }}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </template>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
       </header>
 
       <!-- Content -->
-      <main class="flex-1 p-8 overflow-auto">
+      <div class="flex flex-1 flex-col gap-4 p-8 overflow-auto">
         <slot />
-      </main>
+      </div>
     </SidebarInset>
   </SidebarProvider>
 </template>

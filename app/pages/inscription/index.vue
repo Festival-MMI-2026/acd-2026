@@ -14,6 +14,10 @@ definePageMeta({
   layout: "default",
 });
 
+// Fetch editable content from DB
+const { data: pageContent } = await useFetch("/api/inscription-content");
+const { data: siteSettings } = await useFetch("/api/settings");
+
 const session = useSession();
 const router = useRouter();
 
@@ -166,12 +170,36 @@ async function submitRegistration() {
 
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
+    <!-- Hidden page state -->
+    <div
+      v-if="siteSettings && !siteSettings.showInscription"
+      class="text-center py-24 space-y-6"
+    >
+      <div
+        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
+      >
+        <Icon
+          name="lucide:clock"
+          class="h-10 w-10 text-muted-foreground"
+        />
+      </div>
+      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
+      <p class="text-muted-foreground max-w-md mx-auto">
+        Les inscriptions seront bientôt ouvertes. Revenez prochainement !
+      </p>
+      <Button variant="outline" class="rounded-full" as-child>
+        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+      </Button>
+    </div>
+
+    <template v-else>
     <!-- Header -->
     <div class="text-center space-y-4">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Inscription</h1>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+        {{ pageContent?.pageTitle }}
+      </h1>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        Inscrivez-vous pour participer à l'Assemblée des Chefs de Départements
-        MMI 2026 à Troyes.
+        {{ pageContent?.pageSubtitle }}
       </p>
     </div>
 
@@ -222,32 +250,44 @@ async function submitRegistration() {
     <template v-else>
       <div class="max-w-3xl mx-auto space-y-8">
         <!-- Stepper Navigation -->
-        <Stepper v-model="currentStep" class="flex w-full items-start gap-2">
-          <StepperItem
-            v-for="(stepItem, index) in steps"
-            :key="stepItem.step"
-            :step="stepItem.step"
-            class="relative flex w-full flex-col items-center justify-center"
-          >
-            <StepperTrigger class="flex flex-col items-center gap-2">
-              <StepperIndicator>
-                <Icon :name="stepItem.icon" class="h-4 w-4" />
-              </StepperIndicator>
-              <StepperTitle class="text-sm hidden sm:block">
-                {{ stepItem.title }}
-              </StepperTitle>
-            </StepperTrigger>
+        <ClientOnly>
+          <Card class="border-border/50 bg-muted/30">
+            <CardContent class="py-5">
+              <Stepper
+                v-model="currentStep"
+                class="flex w-full items-start gap-2"
+              >
+                <StepperItem
+                  v-for="(stepItem, index) in steps"
+                  :key="stepItem.step"
+                  :step="stepItem.step"
+                  class="relative flex w-full flex-col items-center justify-center"
+                >
+                  <StepperTrigger class="flex flex-col items-center gap-2">
+                    <StepperIndicator>
+                      <Icon :name="stepItem.icon" class="h-4 w-4" />
+                    </StepperIndicator>
+                    <StepperTitle class="text-xs font-medium hidden sm:block">
+                      {{ stepItem.title }}
+                    </StepperTitle>
+                  </StepperTrigger>
 
-            <StepperSeparator
-              v-if="index < steps.length - 1"
-              class="absolute left-[calc(50%+20px)] right-[calc(-50%+20px)] top-5 block h-0.5 shrink-0 bg-muted group-data-[state=completed]:bg-primary"
-            />
-          </StepperItem>
-        </Stepper>
+                  <StepperSeparator
+                    v-if="index < steps.length - 1"
+                    class="absolute left-[calc(50%+20px)] right-[calc(-50%+20px)] top-5 block h-0.5 shrink-0 bg-muted group-data-[state=completed]:bg-primary"
+                  />
+                </StepperItem>
+              </Stepper>
+            </CardContent>
+          </Card>
+          <template #fallback>
+            <Skeleton class="h-24 w-full rounded-xl" />
+          </template>
+        </ClientOnly>
 
         <!-- Form Content -->
-        <Card>
-          <CardContent class="pt-6">
+        <Card class="overflow-hidden">
+          <CardContent class="pt-8 pb-6">
             <!-- Step 1: Personal Info -->
             <RegistrationStepPersonalInfo
               v-if="currentStep === 1"
@@ -282,9 +322,11 @@ async function submitRegistration() {
           </CardContent>
 
           <!-- Navigation -->
-          <CardFooter class="flex justify-between border-t pt-6">
+          <CardFooter
+            class="flex items-center justify-between border-t bg-muted/30 px-6 py-4"
+          >
             <Button
-              variant="outline"
+              variant="ghost"
               :disabled="currentStep === 1"
               @click="prevStep"
             >
@@ -292,9 +334,18 @@ async function submitRegistration() {
               Précédent
             </Button>
 
-            <span class="text-sm text-muted-foreground">
-              Étape {{ currentStep }} sur {{ totalSteps }}
-            </span>
+            <div class="flex items-center gap-1.5">
+              <div
+                v-for="step in totalSteps"
+                :key="step"
+                class="h-1.5 rounded-full transition-all duration-300"
+                :class="
+                  step <= currentStep
+                    ? 'w-6 bg-primary'
+                    : 'w-1.5 bg-muted-foreground/20'
+                "
+              />
+            </div>
 
             <Button v-if="currentStep < totalSteps" @click="nextStep">
               Suivant
@@ -304,6 +355,7 @@ async function submitRegistration() {
           </CardFooter>
         </Card>
       </div>
+    </template>
     </template>
   </div>
 </template>

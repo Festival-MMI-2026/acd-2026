@@ -65,10 +65,10 @@ defineProps({
             <Row>
               <Column>
                 <Img
-                  :src="`${appUrl}/LightLogoACD.svg`"
+                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD Logo"
-                  width="32"
-                  height="32"
+                  width="64"
+                  height="64"
                   class="inline-block align-middle"
                 />
                 <Text
@@ -211,10 +211,10 @@ defineProps({
               </Column>
               <Column align="center">
                 <Img
-                  :src="`${appUrl}/LightLogoACD.svg`"
+                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD Logo"
-                  width="24"
-                  height="24"
+                  width="48"
+                  height="48"
                   class="inline-block align-left"
                 />
               </Column>

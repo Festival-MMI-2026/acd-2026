@@ -56,81 +56,106 @@ function formatDate(dateStr: string) {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8">
+    <!-- Header -->
     <div class="space-y-2">
-      <h2 class="text-2xl font-bold">Choix des activités</h2>
-      <p class="text-muted-foreground">
-        Sélectionnez les activités auxquelles vous souhaitez participer
-        (optionnel)
-      </p>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"
+        >
+          <Icon name="lucide:activity" class="h-5 w-5 text-primary" />
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-bold tracking-tight">
+              Choix des activités
+            </h2>
+            <Badge
+              v-if="modelValue.length > 0"
+              variant="secondary"
+              class="tabular-nums"
+            >
+              {{ modelValue.length }} sélectionnée{{
+                modelValue.length > 1 ? "s" : ""
+              }}
+            </Badge>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            Sélectionnez les activités auxquelles vous souhaitez participer
+            (optionnel)
+          </p>
+        </div>
+      </div>
     </div>
 
+    <Separator />
+
     <!-- Loading -->
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <Icon
-        name="lucide:loader-2"
-        class="h-8 w-8 animate-spin text-muted-foreground"
-      />
+    <div v-if="isLoading" class="grid gap-4 sm:grid-cols-2">
+      <Skeleton v-for="i in 4" :key="i" class="h-32 w-full rounded-xl" />
     </div>
 
     <!-- Content -->
     <template v-else>
       <!-- Empty state -->
-      <div v-if="!activities?.length" class="text-center py-12">
-        <Icon
-          name="lucide:activity"
-          class="h-12 w-12 mx-auto text-muted-foreground/50 mb-4"
-        />
-        <p class="text-muted-foreground">
-          Aucune activité disponible pour le moment
-        </p>
-        <p class="text-sm text-muted-foreground mt-2">
-          Vous pouvez passer à l'étape suivante
-        </p>
-      </div>
+      <Card v-if="!activities?.length" class="border-dashed">
+        <CardContent class="flex flex-col items-center justify-center py-12">
+          <div
+            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
+          >
+            <Icon
+              name="lucide:activity"
+              class="h-7 w-7 text-muted-foreground"
+            />
+          </div>
+          <p class="font-medium text-muted-foreground">
+            Aucune activité disponible pour le moment
+          </p>
+          <p class="mt-1 text-sm text-muted-foreground/70">
+            Vous pouvez passer à l'étape suivante
+          </p>
+        </CardContent>
+      </Card>
 
       <!-- Activities list -->
       <div v-else class="grid gap-4 sm:grid-cols-2">
-        <div
+        <Label
           v-for="activity in activities"
           :key="activity.id"
-          class="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors"
-          :class="{
-            'border-primary bg-primary/5 dark:bg-primary/10':
-              isActivitySelected(activity.id),
-          }"
-          @click="toggleActivity(activity.id)"
+          class="group hover:bg-accent/50 flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-all duration-200 has-aria-checked:border-primary has-aria-checked:bg-primary/5 has-aria-checked:shadow-sm dark:has-aria-checked:bg-primary/10"
         >
           <Checkbox
             :id="`activity-${activity.id}`"
-            :checked="isActivitySelected(activity.id)"
+            :model-value="isActivitySelected(activity.id)"
             class="mt-1 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white"
-            @click.stop
-            @update:checked="toggleActivity(activity.id)"
+            @update:model-value="toggleActivity(activity.id)"
           />
           <div class="grid gap-2 font-normal flex-1">
-            <p class="text-base leading-none font-medium">
+            <p class="text-sm leading-none font-medium">
               {{ activity.name }}
             </p>
-            <p class="text-sm text-muted-foreground flex items-center gap-1">
-              <Icon name="lucide:calendar" class="h-3 w-3" />
-              {{ formatDate(activity.date) }}
-            </p>
-            <p
-              v-if="activity.location"
-              class="text-xs text-muted-foreground flex items-center gap-1"
-            >
-              <Icon name="lucide:map-pin" class="h-3 w-3" />
-              {{ activity.location }}
-            </p>
+            <div class="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" class="text-xs font-normal gap-1">
+                <Icon name="lucide:calendar" class="h-3 w-3" />
+                {{ formatDate(activity.date) }}
+              </Badge>
+              <Badge
+                v-if="activity.location"
+                variant="outline"
+                class="text-xs font-normal gap-1"
+              >
+                <Icon name="lucide:map-pin" class="h-3 w-3" />
+                {{ activity.location }}
+              </Badge>
+            </div>
             <p
               v-if="activity.description"
-              class="text-sm text-muted-foreground mt-1"
+              class="text-muted-foreground text-xs leading-relaxed mt-1"
             >
               {{ activity.description }}
             </p>
           </div>
-        </div>
+        </Label>
       </div>
     </template>
   </div>

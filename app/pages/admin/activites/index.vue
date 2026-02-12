@@ -69,7 +69,7 @@ function getDuration(start: string, end: string) {
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -77,7 +77,7 @@ function getDuration(start: string, end: string) {
         <p class="text-muted-foreground">Gestion des activités et excursions</p>
       </div>
       <Button class="rounded-full" @click="openCreateDialog">
-        <Icon name="lucide:plus" class="mr-2 h-4 w-4" />
+        <Icon name="lucide:plus" class="h-4 w-4" />
         Ajouter une activité
       </Button>
     </div>
@@ -194,7 +194,7 @@ function getDuration(start: string, end: string) {
         Commencez par ajouter une nouvelle activité au programme.
       </p>
       <Button class="mt-4 rounded-full" @click="openCreateDialog">
-        <Icon name="lucide:plus" class="mr-2 h-4 w-4" />
+        <Icon name="lucide:plus" class="h-4 w-4" />
         Ajouter une activité
       </Button>
     </div>

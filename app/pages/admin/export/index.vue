@@ -137,220 +137,150 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">Export de données</h1>
         <p class="text-muted-foreground">
-          Exporter les inscriptions et données en CSV/Excel
+          Exporter les inscriptions et données en CSV ou JSON
         </p>
+      </div>
+      <Button
+        class="rounded-full"
+        @click="handleExport"
+        :disabled="isExporting || !selectedCategories.length"
+      >
+        <Icon
+          v-if="isExporting"
+          name="lucide:loader-2"
+          class="h-4 w-4 animate-spin"
+        />
+        <Icon v-else name="lucide:download" class="h-4 w-4" />
+        {{ isExporting ? "Export en cours..." : "Exporter" }}
+      </Button>
+    </div>
+
+    <!-- Data Selection -->
+    <div>
+      <h2 class="text-sm font-medium text-muted-foreground mb-3">
+        Données à exporter
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div
+          v-for="cat in dataCategories"
+          :key="cat.id"
+          @click="cat.selected = !cat.selected"
+          :class="[
+            'flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors',
+            cat.selected
+              ? 'border-primary bg-primary/5'
+              : 'border-border bg-card hover:bg-muted/50',
+          ]"
+        >
+          <div
+            :class="[
+              'h-9 w-9 rounded-lg flex items-center justify-center shrink-0',
+              cat.selected ? 'bg-primary/10' : 'bg-muted',
+            ]"
+          >
+            <Icon
+              :name="cat.icon"
+              :class="[
+                'h-4 w-4',
+                cat.selected ? 'text-primary' : 'text-muted-foreground',
+              ]"
+            />
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium truncate">{{ cat.name }}</p>
+            <p class="text-xs text-muted-foreground">
+              {{ cat.count }} entrées
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Export Form -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Data Selection -->
-        <Card class="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Données à exporter</CardTitle>
-            <CardDescription
-              >Sélectionnez les catégories de données</CardDescription
-            >
-          </CardHeader>
-          <CardContent>
-            <div class="grid grid-cols-2 gap-3">
-              <div
-                v-for="cat in dataCategories"
-                :key="cat.id"
-                @click="cat.selected = !cat.selected"
-                :class="[
-                  'flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all',
-                  cat.selected
-                    ? 'border-primary bg-primary/5'
-                    : 'border-transparent bg-muted/50 hover:bg-muted',
-                ]"
-              >
-                <div
-                  :class="[
-                    'h-10 w-10 rounded-xl flex items-center justify-center',
-                    cat.selected ? 'bg-primary/10' : 'bg-background',
-                  ]"
-                >
-                  <Icon
-                    :name="cat.icon"
-                    :class="[
-                      'h-5 w-5',
-                      cat.selected ? 'text-primary' : 'text-muted-foreground',
-                    ]"
-                  />
-                </div>
-                <div class="flex-1">
-                  <p class="font-medium">{{ cat.name }}</p>
-                  <p class="text-xs text-muted-foreground">
-                    {{ cat.count }} entrées
-                  </p>
-                </div>
-                <Icon
-                  :name="cat.selected ? 'lucide:check-circle' : 'lucide:circle'"
-                  :class="[
-                    'h-5 w-5',
-                    cat.selected ? 'text-primary' : 'text-muted-foreground/30',
-                  ]"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Format Selection -->
-        <Card class="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Format d'export</CardTitle>
-            <CardDescription>Choisissez le format de fichier</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div class="grid grid-cols-4 gap-3">
-              <div
-                v-for="format in exportFormats"
-                :key="format.id"
-                @click="selectedFormat = format.id"
-                :class="[
-                  'text-center p-4 rounded-xl border-2 cursor-pointer transition-all',
-                  selectedFormat === format.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-transparent bg-muted/50 hover:bg-muted',
-                ]"
-              >
-                <Icon
-                  :name="format.icon"
-                  :class="[
-                    'h-8 w-8 mx-auto mb-2',
-                    selectedFormat === format.id
-                      ? 'text-primary'
-                      : 'text-muted-foreground',
-                  ]"
-                />
-                <p class="font-medium text-sm">{{ format.name }}</p>
-                <p class="text-xs text-muted-foreground mt-1">
-                  {{ format.description }}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Export Options -->
-        <Card class="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Options</CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium">Inclure les en-têtes</p>
-                <p class="text-sm text-muted-foreground">
-                  Ajouter les noms de colonnes
-                </p>
-              </div>
-              <Switch v-model:checked="includeHeaders" />
-            </div>
-            <Separator />
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="font-medium">Filtrer par date</p>
-                  <p class="text-sm text-muted-foreground">
-                    Exporter seulement une période
-                  </p>
-                </div>
-                <Switch v-model:checked="filterByDate" />
-              </div>
-              <div v-if="filterByDate" class="grid grid-cols-2 gap-4 pt-2">
-                <div class="space-y-2">
-                  <Label class="text-xs">Date de début</Label>
-                  <DatePicker v-model="startDate" placeholder="Début" />
-                </div>
-                <div class="space-y-2">
-                  <Label class="text-xs">Date de fin</Label>
-                  <DatePicker v-model="endDate" placeholder="Fin" />
-                </div>
-              </div>
-            </div>
-            <Separator />
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium">Anonymiser les données</p>
-                <p class="text-sm text-muted-foreground">
-                  Masquer les informations personnelles
-                </p>
-              </div>
-              <Switch v-model:checked="anonymize" />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              class="w-full rounded-full"
-              size="lg"
-              @click="handleExport"
-              :disabled="isExporting || !selectedCategories.length"
-            >
-              <Icon
-                v-if="isExporting"
-                name="lucide:loader-2"
-                class="mr-2 h-4 w-4 animate-spin"
-              />
-              <Icon v-else name="lucide:download" class="mr-2 h-4 w-4" />
-              {{ isExporting ? "Export en cours..." : "Exporter les données" }}
-            </Button>
-          </CardFooter>
-        </Card>
+    <!-- Format Selection -->
+    <div>
+      <h2 class="text-sm font-medium text-muted-foreground mb-3">
+        Format d'export
+      </h2>
+      <div class="flex gap-3">
+        <div
+          v-for="format in exportFormats"
+          :key="format.id"
+          @click="selectedFormat = format.id"
+          :class="[
+            'flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-colors',
+            selectedFormat === format.id
+              ? 'border-primary bg-primary/5'
+              : 'border-border bg-card hover:bg-muted/50',
+          ]"
+        >
+          <Icon
+            :name="format.icon"
+            :class="[
+              'h-5 w-5',
+              selectedFormat === format.id
+                ? 'text-primary'
+                : 'text-muted-foreground',
+            ]"
+          />
+          <div>
+            <p class="text-sm font-medium">{{ format.name }}</p>
+            <p class="text-xs text-muted-foreground">
+              {{ format.description }}
+            </p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <!-- Info Card -->
-      <div>
-        <Card class="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Informations</CardTitle>
-            <CardDescription>Conseils d'export</CardDescription>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <div class="flex items-start gap-3">
-              <Icon name="lucide:info" class="h-5 w-5 text-blue-500 mt-0.5" />
-              <div>
-                <p class="font-medium text-sm">Format CSV</p>
-                <p class="text-xs text-muted-foreground">
-                  Compatible avec Excel, Google Sheets et autres tableurs.
-                </p>
-              </div>
+    <!-- Options -->
+    <div>
+      <h2 class="text-sm font-medium text-muted-foreground mb-3">Options</h2>
+      <div class="border rounded-lg divide-y bg-card">
+        <div class="flex items-center justify-between px-4 py-3">
+          <div>
+            <p class="text-sm font-medium">Inclure les en-têtes</p>
+            <p class="text-xs text-muted-foreground">
+              Ajouter les noms de colonnes
+            </p>
+          </div>
+          <Switch v-model="includeHeaders" />
+        </div>
+        <div class="px-4 py-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium">Filtrer par date</p>
+              <p class="text-xs text-muted-foreground">
+                Exporter seulement une période
+              </p>
             </div>
-            <div class="flex items-start gap-3">
-              <Icon
-                name="lucide:shield"
-                class="h-5 w-5 text-green-500 mt-0.5"
-              />
-              <div>
-                <p class="font-medium text-sm">Anonymisation</p>
-                <p class="text-xs text-muted-foreground">
-                  Masque les noms, emails et téléphones pour le partage.
-                </p>
-              </div>
+            <Switch v-model="filterByDate" />
+          </div>
+          <div v-if="filterByDate" class="grid grid-cols-2 gap-4 pt-1">
+            <div class="space-y-1.5">
+              <Label class="text-xs">Date de début</Label>
+              <DatePicker v-model="startDate" placeholder="Début" />
             </div>
-            <div class="flex items-start gap-3">
-              <Icon
-                name="lucide:calendar"
-                class="h-5 w-5 text-orange-500 mt-0.5"
-              />
-              <div>
-                <p class="font-medium text-sm">Filtre par date</p>
-                <p class="text-xs text-muted-foreground">
-                  Filtrez les données par période de création.
-                </p>
-              </div>
+            <div class="space-y-1.5">
+              <Label class="text-xs">Date de fin</Label>
+              <DatePicker v-model="endDate" placeholder="Fin" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <div>
+            <p class="text-sm font-medium">Anonymiser les données</p>
+            <p class="text-xs text-muted-foreground">
+              Masquer les informations personnelles
+            </p>
+          </div>
+          <Switch v-model="anonymize" />
+        </div>
       </div>
     </div>
   </div>

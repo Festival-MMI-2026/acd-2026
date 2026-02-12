@@ -1,0 +1,86 @@
+name: Preprod Deploy
+
+on:
+  push:
+    branches: [preprod]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+
+      - name: Create artifact
+        run: |
+          tar -czf app.tar.gz \
+            .output \
+            prisma \
+            package.json \
+            package-lock.json \
+            docker-compose.yml \
+            Dockerfile
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preprod-build
+          path: app.tar.gz
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: preprod-build
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            mkdir -p /var/www/app-preprod
+            cd /var/www/app-preprod
+
+            rm -rf *
+            tar -xzf - < <(cat)
+
+      - name: Copy artifact
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "app.tar.gz"
+          target: "/var/www/app-preprod/"
+
+      - name: Restart services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /var/www/app-preprod
+            tar -xzf app.tar.gz
+            rm app.tar.gz
+
+            docker compose down
+            docker compose up -d --build
+
+            docker compose exec app npx prisma migrate deploy

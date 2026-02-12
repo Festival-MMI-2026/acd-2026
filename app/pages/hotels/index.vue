@@ -3,6 +3,10 @@ definePageMeta({
   layout: "default",
 });
 
+// Fetch editable content from DB
+const { data: pageContent } = await useFetch("/api/hotels-content");
+const { data: siteSettings } = await useFetch("/api/settings");
+
 // Fetch hotels from API
 const { data: hotels, pending } = await useFetch("/api/hotels");
 
@@ -39,14 +43,36 @@ function clearSelection() {
 
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
+    <!-- Hidden page state -->
+    <div
+      v-if="siteSettings && !siteSettings.showHotels"
+      class="text-center py-24 space-y-6"
+    >
+      <div
+        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
+      >
+        <Icon
+          name="lucide:clock"
+          class="h-10 w-10 text-muted-foreground"
+        />
+      </div>
+      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
+      <p class="text-muted-foreground max-w-md mx-auto">
+        Les informations sur les hébergements seront bientôt disponibles. Revenez prochainement !
+      </p>
+      <Button variant="outline" class="rounded-full" as-child>
+        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+      </Button>
+    </div>
+
+    <template v-else>
     <!-- Header -->
     <div class="text-center space-y-4">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
-        Hébergements à Troyes
+        {{ pageContent?.pageTitle }}
       </h1>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        Découvrez nos hôtels partenaires pour votre séjour lors de l'Assemblée
-        des Chefs de Départements MMI.
+        {{ pageContent?.pageSubtitle }}
       </p>
     </div>
 
@@ -215,26 +241,7 @@ function clearSelection() {
         </Map>
       </div>
     </div>
-
-    <!-- Additional info -->
-    <Card class="bg-muted/30 border-dashed">
-      <CardContent class="p-6 text-center">
-        <div
-          class="flex items-center justify-center gap-2 text-muted-foreground"
-        >
-          <Icon name="lucide:info" class="h-5 w-5" />
-          <p>
-            Pour toute question concernant l'hébergement, contactez-nous à
-            <a
-              href="mailto:acd@iut-troyes.univ-reims.fr"
-              class="text-primary hover:underline"
-            >
-              acd@iut-troyes.univ-reims.fr
-            </a>
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    </template>
   </div>
 </template>
 

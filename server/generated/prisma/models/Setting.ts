@@ -30,6 +30,9 @@ export type SettingMinAggregateOutputType = {
   showInscription: boolean | null
   showActivities: boolean | null
   showMeals: boolean | null
+  showAcces: boolean | null
+  showHotels: boolean | null
+  headerBadgeText: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +43,9 @@ export type SettingMaxAggregateOutputType = {
   showInscription: boolean | null
   showActivities: boolean | null
   showMeals: boolean | null
+  showAcces: boolean | null
+  showHotels: boolean | null
+  headerBadgeText: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +56,9 @@ export type SettingCountAggregateOutputType = {
   showInscription: number
   showActivities: number
   showMeals: number
+  showAcces: number
+  showHotels: number
+  headerBadgeText: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -62,6 +71,9 @@ export type SettingMinAggregateInputType = {
   showInscription?: true
   showActivities?: true
   showMeals?: true
+  showAcces?: true
+  showHotels?: true
+  headerBadgeText?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +84,9 @@ export type SettingMaxAggregateInputType = {
   showInscription?: true
   showActivities?: true
   showMeals?: true
+  showAcces?: true
+  showHotels?: true
+  headerBadgeText?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +97,9 @@ export type SettingCountAggregateInputType = {
   showInscription?: true
   showActivities?: true
   showMeals?: true
+  showAcces?: true
+  showHotels?: true
+  headerBadgeText?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -165,6 +183,9 @@ export type SettingGroupByOutputType = {
   showInscription: boolean
   showActivities: boolean
   showMeals: boolean
+  showAcces: boolean
+  showHotels: boolean
+  headerBadgeText: string
   createdAt: Date
   updatedAt: Date
   _count: SettingCountAggregateOutputType | null
@@ -196,6 +217,9 @@ export type SettingWhereInput = {
   showInscription?: Prisma.BoolFilter<"Setting"> | boolean
   showActivities?: Prisma.BoolFilter<"Setting"> | boolean
   showMeals?: Prisma.BoolFilter<"Setting"> | boolean
+  showAcces?: Prisma.BoolFilter<"Setting"> | boolean
+  showHotels?: Prisma.BoolFilter<"Setting"> | boolean
+  headerBadgeText?: Prisma.StringFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
 }
@@ -206,6 +230,9 @@ export type SettingOrderByWithRelationInput = {
   showInscription?: Prisma.SortOrder
   showActivities?: Prisma.SortOrder
   showMeals?: Prisma.SortOrder
+  showAcces?: Prisma.SortOrder
+  showHotels?: Prisma.SortOrder
+  headerBadgeText?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -219,6 +246,9 @@ export type SettingWhereUniqueInput = Prisma.AtLeast<{
   showInscription?: Prisma.BoolFilter<"Setting"> | boolean
   showActivities?: Prisma.BoolFilter<"Setting"> | boolean
   showMeals?: Prisma.BoolFilter<"Setting"> | boolean
+  showAcces?: Prisma.BoolFilter<"Setting"> | boolean
+  showHotels?: Prisma.BoolFilter<"Setting"> | boolean
+  headerBadgeText?: Prisma.StringFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
 }, "id">
@@ -229,6 +259,9 @@ export type SettingOrderByWithAggregationInput = {
   showInscription?: Prisma.SortOrder
   showActivities?: Prisma.SortOrder
   showMeals?: Prisma.SortOrder
+  showAcces?: Prisma.SortOrder
+  showHotels?: Prisma.SortOrder
+  headerBadgeText?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SettingCountOrderByAggregateInput
@@ -245,6 +278,9 @@ export type SettingScalarWhereWithAggregatesInput = {
   showInscription?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
   showActivities?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
   showMeals?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
+  showAcces?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
+  showHotels?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
+  headerBadgeText?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Setting"> | Date | string
 }
@@ -255,6 +291,9 @@ export type SettingCreateInput = {
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -265,6 +304,9 @@ export type SettingUncheckedCreateInput = {
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -275,6 +317,9 @@ export type SettingUpdateInput = {
   showInscription?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showActivities?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showMeals?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showAcces?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showHotels?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  headerBadgeText?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -285,6 +330,9 @@ export type SettingUncheckedUpdateInput = {
   showInscription?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showActivities?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showMeals?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showAcces?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showHotels?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  headerBadgeText?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -295,6 +343,9 @@ export type SettingCreateManyInput = {
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -305,6 +356,9 @@ export type SettingUpdateManyMutationInput = {
   showInscription?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showActivities?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showMeals?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showAcces?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showHotels?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  headerBadgeText?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -315,6 +369,9 @@ export type SettingUncheckedUpdateManyInput = {
   showInscription?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showActivities?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showMeals?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showAcces?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  showHotels?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  headerBadgeText?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -325,6 +382,9 @@ export type SettingCountOrderByAggregateInput = {
   showInscription?: Prisma.SortOrder
   showActivities?: Prisma.SortOrder
   showMeals?: Prisma.SortOrder
+  showAcces?: Prisma.SortOrder
+  showHotels?: Prisma.SortOrder
+  headerBadgeText?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -335,6 +395,9 @@ export type SettingMaxOrderByAggregateInput = {
   showInscription?: Prisma.SortOrder
   showActivities?: Prisma.SortOrder
   showMeals?: Prisma.SortOrder
+  showAcces?: Prisma.SortOrder
+  showHotels?: Prisma.SortOrder
+  headerBadgeText?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -345,6 +408,9 @@ export type SettingMinOrderByAggregateInput = {
   showInscription?: Prisma.SortOrder
   showActivities?: Prisma.SortOrder
   showMeals?: Prisma.SortOrder
+  showAcces?: Prisma.SortOrder
+  showHotels?: Prisma.SortOrder
+  headerBadgeText?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -357,6 +423,9 @@ export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -367,6 +436,9 @@ export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -377,6 +449,9 @@ export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -387,11 +462,14 @@ export type SettingSelectScalar = {
   showInscription?: boolean
   showActivities?: boolean
   showMeals?: boolean
+  showAcces?: boolean
+  showHotels?: boolean
+  headerBadgeText?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "showAcces" | "showHotels" | "headerBadgeText" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
 
 export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Setting"
@@ -402,6 +480,9 @@ export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     showInscription: boolean
     showActivities: boolean
     showMeals: boolean
+    showAcces: boolean
+    showHotels: boolean
+    headerBadgeText: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["setting"]>
@@ -832,6 +913,9 @@ export interface SettingFieldRefs {
   readonly showInscription: Prisma.FieldRef<"Setting", 'Boolean'>
   readonly showActivities: Prisma.FieldRef<"Setting", 'Boolean'>
   readonly showMeals: Prisma.FieldRef<"Setting", 'Boolean'>
+  readonly showAcces: Prisma.FieldRef<"Setting", 'Boolean'>
+  readonly showHotels: Prisma.FieldRef<"Setting", 'Boolean'>
+  readonly headerBadgeText: Prisma.FieldRef<"Setting", 'String'>
   readonly createdAt: Prisma.FieldRef<"Setting", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Setting", 'DateTime'>
 }

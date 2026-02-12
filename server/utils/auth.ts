@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { render } from "@vue-email/render";
 import MagicLinkEmail from "../emails/MagicLinkEmail.vue";
 import VerificationEmail from "../emails/VerificationEmail.vue";
+import ResetPasswordEmail from "../emails/ResetPasswordEmail.vue";
 import { sendMail } from "./mail";
 
 export const auth = betterAuth({
@@ -45,9 +46,25 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const appUrl = process.env.APP_URL || "http://localhost:3000";
+      const html = await render(ResetPasswordEmail, {
+        url,
+        email: user.email,
+        name: user.name,
+        appUrl,
+      });
+
+      sendMail(
+        user.email,
+        "Réinitialisation de votre mot de passe - ACD",
+        html,
+      );
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
+    sendOnSignIn: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       const appUrl = process.env.APP_URL || "http://localhost:3000";

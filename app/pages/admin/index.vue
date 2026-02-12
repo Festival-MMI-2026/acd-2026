@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useSession } from "~/lib/auth-client";
 import type { ChartConfig } from "@/components/ui/chart";
-import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
+import {
+  VisArea,
+  VisAxis,
+  VisGroupedBar,
+  VisLine,
+  VisXYContainer,
+} from "@unovis/vue";
 import {
   ChartContainer,
   ChartCrosshair,
-  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -61,12 +64,6 @@ const stats = computed(() => [
   },
 ]);
 
-// Calculate total revenue
-const totalRevenue = computed(() => {
-  if (!registrations.value) return 0;
-  return registrations.value.reduce((acc, r) => acc + Number(r.totalPrice), 0);
-});
-
 // Fetch real chart data from API
 const { data: chartDataRaw } =
   await useFetch<{ date: string; inscriptions: number; revenus: number }[]>(
@@ -85,40 +82,50 @@ const chartData = computed(() => {
 });
 
 type ChartData = { date: Date; inscriptions: number; revenus: number };
+type BarData = { date: Date; revenus: number };
 
 const chartConfig = {
   inscriptions: {
     label: "Inscriptions",
     color: "var(--chart-2)",
   },
-  revenus: {
-    label: "Revenus (€)",
-    color: "var(--chart-1)",
-  },
 } satisfies ChartConfig;
 
+const tooltipTemplate = () => {
+  return (_data: any, x: number | Date) => {
+    const data = "data" in _data ? _data.data : _data;
+    const dateStr = new Date(x).toLocaleDateString("fr-FR", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    return `
+      <div class="border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl">
+        <div class="font-medium">${dateStr}</div>
+        <div class="grid gap-1.5">
+          <div class="flex w-full items-center gap-2">
+            <div class="shrink-0 rounded-[2px] h-2.5 w-2.5" style="background-color: var(--chart-2); border-color: var(--chart-2);"></div>
+            <div class="flex flex-1 justify-between items-center leading-none">
+              <span class="text-muted-foreground">Inscriptions</span>
+              <span class="font-mono font-medium tabular-nums">${(data.inscriptions as number)?.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  };
+};
+
 const svgDefs = `
-  <linearGradient id="fillRevenus" x1="0" y1="0" x2="0" y2="1">
-    <stop
-      offset="5%"
-      stop-color="var(--color-chart-1)"
-      stop-opacity="0.8"
-    />
-    <stop
-      offset="95%"
-      stop-color="var(--color-chart-1)"
-      stop-opacity="0.1"
-    />
-  </linearGradient>
   <linearGradient id="fillInscriptions" x1="0" y1="0" x2="0" y2="1">
     <stop
       offset="5%"
-      stop-color="var(--color-chart-2)"
+      stop-color="var(--color-inscriptions)"
       stop-opacity="0.8"
     />
     <stop
       offset="95%"
-      stop-color="var(--color-chart-2)"
+      stop-color="var(--color-inscriptions)"
       stop-opacity="0.1"
     />
   </linearGradient>
@@ -145,6 +152,57 @@ const filterRange = computed(() => {
   return chartData.value.filter((item) => item.date >= startDate);
 });
 
+// Bar chart config for payments (revenues only)
+const barChartConfig = {
+  revenus: {
+    label: "Revenus (€)",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig;
+
+// Filter chart data to last 3 months for bar chart (only date + revenus)
+const barChartData = computed(() => {
+  if (!chartData.value.length) return [];
+
+  const dates = chartData.value.map((item) => item.date.getTime());
+  const referenceDate = new Date(Math.max(...dates));
+  const startDate = new Date(referenceDate);
+  startDate.setDate(startDate.getDate() - 90);
+
+  return chartData.value
+    .filter((item) => item.date >= startDate)
+    .map((item) => ({ date: item.date, revenus: item.revenus }));
+});
+
+const barTotal = computed(() =>
+  barChartData.value.reduce((acc, d) => acc + d.revenus, 0),
+);
+
+const barTooltipTemplate = () => {
+  return (_data: any, x: number | Date) => {
+    const data = "data" in _data ? _data.data : _data;
+    const dateStr = new Date(x).toLocaleDateString("fr-FR", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    return `
+      <div class="border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl">
+        <div class="font-medium">${dateStr}</div>
+        <div class="grid gap-1.5">
+          <div class="flex w-full items-center gap-2">
+            <div class="shrink-0 rounded-[2px] h-2.5 w-2.5" style="background-color: var(--chart-1); border-color: var(--chart-1);"></div>
+            <div class="flex flex-1 justify-between items-center leading-none">
+              <span class="text-muted-foreground">Revenus</span>
+              <span class="font-mono font-medium tabular-nums">${data.revenus?.toFixed(2)} €</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  };
+};
+
 const quickActions = [
   {
     title: "Ajouter un événement",
@@ -166,7 +224,7 @@ const quickActions = [
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-8">
+  <div class="space-y-8">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -177,7 +235,7 @@ const quickActions = [
       </div>
       <Button class="rounded-full" as-child>
         <NuxtLink to="/admin/inscriptions">
-          <Icon name="lucide:download" class="mr-2 h-4 w-4" />
+          <Icon name="lucide:download" class="h-4 w-4" />
           Exporter
         </NuxtLink>
       </Button>
@@ -217,15 +275,13 @@ const quickActions = [
     <!-- Revenue + Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Chart -->
-      <Card class="rounded-2xl lg:col-span-2 flex flex-col">
+      <Card class="rounded-2xl lg:col-span-2 flex flex-col pt-0">
         <CardHeader
           class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row"
         >
           <div class="grid flex-1 gap-1">
-            <CardTitle>Évolution des inscriptions</CardTitle>
-            <CardDescription>
-              Comparaison inscriptions et revenus (derniers mois)
-            </CardDescription>
+            <CardTitle>Inscriptions</CardTitle>
+            <CardDescription> Évolution des inscriptions </CardDescription>
           </div>
           <Select v-model="timeRange">
             <SelectTrigger
@@ -252,40 +308,24 @@ const quickActions = [
             <ChartContainer
               :config="chartConfig"
               class="aspect-auto h-[250px] w-full"
-              :cursor="false"
+              :cursor="true"
             >
               <VisXYContainer
                 :data="filterRange"
                 :svg-defs="svgDefs"
-                :margin="{ left: 0, right: 0 }"
-                :y-domain="[0, undefined]"
+                :margin="{ left: -40 }"
               >
                 <VisArea
                   :x="(d: ChartData) => d.date"
-                  :y="[
-                    (d: ChartData) => d.inscriptions,
-                    (d: ChartData) => d.revenus,
-                  ]"
-                  :color="
-                    (d: ChartData, i: number) =>
-                      ['url(#fillInscriptions)', 'url(#fillRevenus)'][i]
-                  "
+                  :y="(d: ChartData) => d.inscriptions"
+                  color="url(#fillInscriptions)"
                   :opacity="0.6"
                 />
                 <VisLine
                   :x="(d: ChartData) => d.date"
-                  :y="[
-                    (d: ChartData) => d.inscriptions,
-                    (d: ChartData) => d.revenus,
-                  ]"
-                  :color="
-                    (d: ChartData, i: number) =>
-                      [
-                        chartConfig.inscriptions.color,
-                        chartConfig.revenus.color,
-                      ][i]
-                  "
-                  :line-width="2"
+                  :y="(d: ChartData) => d.inscriptions"
+                  :color="chartConfig.inscriptions.color"
+                  :line-width="1"
                 />
                 <VisAxis
                   type="x"
@@ -309,33 +349,14 @@ const quickActions = [
                   :num-ticks="3"
                   :tick-line="false"
                   :domain-line="false"
-                  :tick-format="(d: number) => d"
                 />
                 <ChartTooltip />
                 <ChartCrosshair
-                  :x="(d: ChartData) => d.date"
-                  :template="
-                    componentToString(chartConfig, ChartTooltipContent, {
-                      labelFormatter: (d) => {
-                        return new Date(d).toLocaleDateString('fr-FR', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        });
-                      },
-                    })
-                  "
-                  :color="
-                    (d: ChartData, i: number) =>
-                      [
-                        chartConfig.inscriptions.color,
-                        chartConfig.revenus.color,
-                      ][i]
-                  "
+                  :hide-when-far-from-pointer="false"
+                  :template="tooltipTemplate()"
+                  :color="chartConfig.inscriptions.color"
                 />
               </VisXYContainer>
-
-              <ChartLegendContent />
             </ChartContainer>
           </ClientOnly>
         </CardContent>
@@ -355,13 +376,80 @@ const quickActions = [
             as-child
           >
             <NuxtLink :to="action.href">
-              <Icon :name="action.icon" class="mr-3 h-4 w-4" />
+              <Icon :name="action.icon" class="h-4 w-4" />
               {{ action.title }}
             </NuxtLink>
           </Button>
         </CardContent>
       </Card>
     </div>
+
+    <!-- Bar Chart - Paiements -->
+    <Card class="rounded-2xl py-4 sm:py-0">
+      <CardHeader class="flex flex-col items-stretch border-b p-0! sm:flex-row">
+        <div
+          class="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6"
+        >
+          <CardTitle>Paiements</CardTitle>
+          <CardDescription> Revenus sur les 3 derniers mois </CardDescription>
+        </div>
+        <div
+          class="flex flex-col justify-center gap-1 border-t px-6 py-4 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+        >
+          <span class="text-muted-foreground text-xs">Total</span>
+          <span class="text-lg leading-none font-bold sm:text-3xl">
+            {{ barTotal.toFixed(2) }} €
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent class="px-2 sm:p-6">
+        <ClientOnly>
+          <ChartContainer
+            :config="barChartConfig"
+            class="aspect-auto h-[250px] w-full"
+            cursor
+          >
+            <VisXYContainer :data="barChartData" :margin="{ left: -24 }">
+              <VisGroupedBar
+                :x="(d: BarData) => d.date"
+                :y="(d: BarData) => d.revenus"
+                :color="barChartConfig.revenus.color"
+                :bar-padding="0.1"
+                :rounded-corners="false"
+              />
+              <VisAxis
+                type="x"
+                :x="(d: BarData) => d.date"
+                :tick-line="false"
+                :domain-line="false"
+                :grid-line="false"
+                :tick-format="
+                  (d: number) => {
+                    const date = new Date(d);
+                    return date.toLocaleDateString('fr-FR', {
+                      month: 'short',
+                      day: 'numeric',
+                    });
+                  }
+                "
+              />
+              <VisAxis
+                type="y"
+                :num-ticks="3"
+                :tick-line="false"
+                :domain-line="false"
+              />
+              <ChartTooltip />
+              <ChartCrosshair
+                :hide-when-far-from-pointer="false"
+                :template="barTooltipTemplate()"
+                color="#0000"
+              />
+            </VisXYContainer>
+          </ChartContainer>
+        </ClientOnly>
+      </CardContent>
+    </Card>
 
     <!-- Recent registrations -->
     <Card class="rounded-2xl">
@@ -376,7 +464,7 @@ const quickActions = [
           <Button variant="outline" class="rounded-full" as-child>
             <NuxtLink to="/admin/inscriptions">
               Voir tout
-              <Icon name="lucide:arrow-right" class="ml-2 h-4 w-4" />
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
             </NuxtLink>
           </Button>
         </div>
