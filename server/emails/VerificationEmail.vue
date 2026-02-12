@@ -46,11 +46,6 @@ defineProps({
                   height="64"
                   class="inline-block align-middle"
                 />
-                <Text
-                  class="inline-block align-middle text-xl font-bold text-foreground m-0 ml-2"
-                >
-                  ACD
-                </Text>
               </Column>
             </Row>
           </Section>

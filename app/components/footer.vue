@@ -8,14 +8,13 @@
             <img
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-12 dark:hidden"
+              class="h-20 dark:hidden"
             />
             <img
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-12 hidden dark:block dark:grayscale dark:contrast-1"
+              class="h-20 hidden dark:block dark:grayscale dark:contrast-1"
             />
-            <span class="text-xl font-bold">ACD</span>
           </div>
 
           <Button variant="secondary" as-child>

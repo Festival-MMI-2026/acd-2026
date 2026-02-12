@@ -11,9 +11,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: {
-        lang: 'fr',
+        lang: "fr",
       },
-      title: 'ACD MMI 2026',
+      title: "ACD MMI 2026",
     },
   },
 

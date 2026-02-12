@@ -314,7 +314,7 @@ const logos = computed(() => {
               />
             </LMap>
           </div>
-          <div class="absolute inset-0 bg-primary/85"></div>
+          <div class="absolute inset-0 bg-primary/75"></div>
           <CardContent class="p-12 md:p-16 text-center space-y-8 relative z-10">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight">
               {{ homeContent?.ctaTitle }}

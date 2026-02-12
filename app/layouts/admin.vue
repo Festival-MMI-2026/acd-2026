@@ -87,15 +87,14 @@ function isActive(href: string) {
                   <img
                     src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-6 dark:hidden"
+                    class="h-14 dark:hidden"
                   />
                   <img
                     src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-6 hidden dark:block dark:grayscale dark:contrast-1"
+                    class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
                   />
                 </div>
-                <span class="text-lg font-extrabold text-primary">ACD</span>
               </NuxtLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
