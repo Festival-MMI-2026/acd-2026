@@ -40,10 +40,10 @@ defineProps({
             <Row>
               <Column>
                 <Img
-                  :src="`${appUrl}/LightLogoACD.svg`"
+                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD Logo"
-                  width="32"
-                  height="32"
+                  width="64"
+                  height="64"
                   class="inline-block align-middle"
                 />
                 <Text
@@ -91,9 +91,9 @@ defineProps({
                 Finalisez votre profil
               </Text>
               <Text class="text-sm text-muted-foreground m-0">
-                Une fois votre email vérifié, pensez à compléter votre profil
-                en ajoutant votre numéro de téléphone et en sélectionnant
-                votre IUT. Rendez-vous sur votre page
+                Une fois votre email vérifié, pensez à compléter votre profil en
+                ajoutant votre numéro de téléphone et en sélectionnant votre
+                IUT. Rendez-vous sur votre page
                 <a
                   :href="`${appUrl}/profil`"
                   style="color: #000000; text-decoration: underline"
@@ -127,15 +127,16 @@ defineProps({
             <Row>
               <Column>
                 <Text class="text-xs text-muted text-left m-0 mb-6">
-                  &copy; {{ new Date().getFullYear() }} ACD. Tous droits réservés.
+                  &copy; {{ new Date().getFullYear() }} ACD. Tous droits
+                  réservés.
                 </Text>
               </Column>
               <Column align="center">
                 <Img
-                  :src="`${appUrl}/LightLogoACD.svg`"
+                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                   alt="ACD Logo"
-                  width="24"
-                  height="24"
+                  width="48"
+                  height="48"
                   class="inline-block align-left"
                 />
               </Column>

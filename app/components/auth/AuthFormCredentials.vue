@@ -35,7 +35,11 @@ async function handleSubmit() {
       },
       {
         onError: (ctx) => {
-          error.value = ctx.error.message;
+          if (ctx.error.status === 403) {
+            verificationSent.value = true;
+          } else {
+            error.value = ctx.error.message;
+          }
         },
         onSuccess: () => {
           emit("success");
@@ -44,7 +48,7 @@ async function handleSubmit() {
       },
     );
 
-    if (signInError) {
+    if (signInError && signInError.status !== 403) {
       error.value = signInError.message || "Erreur lors de la connexion";
     }
   } else {
@@ -185,6 +189,18 @@ async function handleSubmit() {
         <p v-if="mode === 'signup'" class="text-xs text-muted-foreground mt-1">
           8 caractères minimum
         </p>
+        <div v-if="mode === 'signin'" class="flex justify-end">
+          <Button
+            variant="link"
+            size="sm"
+            class="h-auto p-0 text-xs text-muted-foreground"
+            as-child
+          >
+            <NuxtLink to="/auth/reset-password">
+              Mot de passe oublié ?
+            </NuxtLink>
+          </Button>
+        </div>
       </Field>
 
       <Button

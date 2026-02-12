@@ -6,14 +6,14 @@
         <div class="md:col-span-2 space-y-6">
           <div class="flex items-center gap-2">
             <img
-              src="/LightLogoACD.svg"
+              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-8 dark:hidden"
+              class="h-12 dark:hidden"
             />
             <img
-              src="/DarkLogoACD.svg"
+              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-8 hidden dark:block"
+              class="h-12 hidden dark:block dark:grayscale dark:contrast-1"
             />
             <span class="text-xl font-bold">ACD</span>
           </div>
@@ -40,7 +40,10 @@
           >
             Navigation
           </h3>
-          <nav aria-label="Navigation secondaire" class="flex flex-col space-y-3">
+          <nav
+            aria-label="Navigation secondaire"
+            class="flex flex-col space-y-3"
+          >
             <NuxtLink
               to="/programme"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"

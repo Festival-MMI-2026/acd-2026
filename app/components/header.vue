@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { TriangleAlertIcon } from "lucide-vue-next";
 
 const session = useSession();
 const router = useRouter();
@@ -23,10 +24,25 @@ async function handleSignOut() {
     },
   });
 }
+
+const { data: siteSettings } = useFetch("/api/settings");
+
+const badgeText = computed(() => {
+  return (
+    siteSettings.value?.headerBadgeText || `Édition ${new Date().getFullYear()}`
+  );
+});
+
+const isProfileIncomplete = computed(() => {
+  if (!session.value.data?.user) return false;
+  const user = session.value.data.user as any;
+  return !user.tel || !user.iut;
+});
 </script>
 
 <template>
   <!-- Header -->
+
   <header class="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm">
     <div
       class="container flex h-16 w-full max-w-screen-xl items-center justify-between px-6 mx-auto"
@@ -39,14 +55,14 @@ async function handleSignOut() {
         >
           <div class="flex items-center gap-2">
             <img
-              src="/LightLogoACD.svg"
+              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-5 dark:hidden"
+              class="h-10 dark:hidden"
             />
             <img
-              src="/DarkLogoACD.svg"
+              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-5 hidden dark:block"
+              class="h-10 hidden dark:block dark:grayscale dark:contrast-1"
             />
             <span class="text-lg font-extrabold text-primary">ACD</span>
           </div>
@@ -57,14 +73,17 @@ async function handleSignOut() {
                   class="relative inline-flex rounded-full h-2 w-2 bg-primary"
                 ></span>
               </div>
-              Édition {{ new Date().getFullYear() }}</Badge
+              {{ badgeText }}</Badge
             >
           </ClientOnly>
         </NuxtLink>
 
         <!-- Navigation (center-left) -->
         <ClientOnly>
-          <NavigationMenu aria-label="Navigation principale" class="hidden md:flex">
+          <NavigationMenu
+            aria-label="Navigation principale"
+            class="hidden md:flex"
+          >
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuLink as-child>
@@ -181,8 +200,12 @@ async function handleSignOut() {
           </template>
           <template #fallback>
             <div class="flex items-center gap-3">
-              <div class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"></div>
-              <div class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"></div>
+              <div
+                class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"
+              ></div>
+              <div
+                class="h-9 w-24 rounded-full bg-muted animate-pulse hidden sm:block"
+              ></div>
             </div>
           </template>
         </ClientOnly>
@@ -288,4 +311,24 @@ async function handleSignOut() {
       </div>
     </div>
   </header>
+  <div v-if="isProfileIncomplete" class="sticky z-50 w-full border">
+    <div class="container mx-auto px-6 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-red-700 dark:text-red-400">
+          <TriangleAlertIcon class="h-4 w-4" />
+          <span class="text-xs font-medium">
+            Votre profil est incomplet. Veuillez compléter vos informations.
+          </span>
+        </div>
+        <Button
+          variant="link"
+          size="sm"
+          class="text-xs text-red-700 dark:text-red-400"
+          as-child
+        >
+          <NuxtLink to="/profil"> Compléter mon profil </NuxtLink>
+        </Button>
+      </div>
+    </div>
+  </div>
 </template>

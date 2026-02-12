@@ -3,7 +3,6 @@ import {
   LMap,
   LTileLayer,
   LMarker,
-  LPopup,
   LTooltip,
   LIcon,
 } from "@vue-leaflet/vue-leaflet";
@@ -13,10 +12,20 @@ definePageMeta({
   layout: "default",
 });
 
+// Fetch editable content from DB
+const { data: accessContent } = await useFetch("/api/access-content");
+const { data: siteSettings } = await useFetch("/api/settings");
+
 const colorMode = useColorMode();
 const zoom = ref(15);
-const center = ref([48.269096, 4.066911]); // Coordinates for IUT de Troyes (approx)
-const iutPosition = ref([48.269096, 4.066911]);
+const center = computed<[number, number]>(() => [
+  accessContent.value?.mapLatitude ?? 48.2682678,
+  accessContent.value?.mapLongitude ?? 4.079772,
+]);
+const iutPosition = computed<[number, number]>(() => [
+  accessContent.value?.mapLatitude ?? 48.2682678,
+  accessContent.value?.mapLongitude ?? 4.079772,
+]);
 
 // Computed tile URL based on color mode
 const tileUrl = computed(() => {
@@ -30,33 +39,50 @@ const attribution = computed(() => {
 });
 
 // Custom Icon
-// Using a slightly larger and cleaner marker if possible, or sticking to default but ensuring it loads cleanly.
-// We can use a custom DivIcon or just the standard one. The user asked to "modify the point".
-// Let's use a custom icon URL to a simple pin that looks cleaner.
-// For now, let's stick to valid clear defaults or a known good SVG URL.
-// Actually, let's use a local SVG or a CDN for a "Map Pin" style icon.
 const customIconUrl = ref(
   "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png",
 );
 const customShadowUrl = ref(
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
 );
-const iconSize = [25, 41];
-const iconAnchor = [12, 41];
-const popupAnchor = [1, -34];
-const shadowSize = [41, 41];
+const iconSize: [number, number] = [25, 41];
+const iconAnchor: [number, number] = [12, 41];
+const popupAnchor: [number, number] = [1, -34];
+const shadowSize: [number, number] = [41, 41];
 </script>
 
 <template>
   <div class="container mx-auto px-6 py-24 space-y-12">
+    <!-- Hidden page state -->
+    <div
+      v-if="siteSettings && !siteSettings.showAcces"
+      class="text-center py-24 space-y-6"
+    >
+      <div
+        class="bg-muted/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto"
+      >
+        <Icon
+          name="lucide:clock"
+          class="h-10 w-10 text-muted-foreground"
+        />
+      </div>
+      <h2 class="text-2xl font-bold tracking-tight">Bientôt disponible</h2>
+      <p class="text-muted-foreground max-w-md mx-auto">
+        Les informations d'accès seront bientôt disponibles. Revenez prochainement !
+      </p>
+      <Button variant="outline" class="rounded-full" as-child>
+        <NuxtLink to="/">Retour à l'accueil</NuxtLink>
+      </Button>
+    </div>
+
+    <template v-else>
     <!-- Header -->
     <div class="text-center space-y-4">
       <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
-        Accès & Transports
+        {{ accessContent?.pageTitle }}
       </h1>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        Toutes les informations pour vous rendre à l'Assemblée des Chefs de
-        Départements à Troyes.
+        {{ accessContent?.pageSubtitle }}
       </p>
     </div>
 
@@ -68,17 +94,19 @@ const shadowSize = [41, 41];
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Icon name="lucide:map-pin" class="h-5 w-5 text-primary" />
-              Le lieu
+              {{ accessContent?.locationTitle }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-2 text-sm text-muted-foreground">
-            <p class="font-medium text-foreground text-base">IUT de Troyes</p>
-            <p>9 Rue de Québec</p>
-            <p>10000 Troyes</p>
+            <p class="font-medium text-foreground text-base">
+              {{ accessContent?.locationName }}
+            </p>
+            <p>{{ accessContent?.locationAddress1 }}</p>
+            <p>{{ accessContent?.locationAddress2 }}</p>
             <div class="pt-4">
               <Button variant="outline" class="w-full" as-child>
                 <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=IUT+de+Troyes"
+                  :href="accessContent?.locationMapUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -95,19 +123,23 @@ const shadowSize = [41, 41];
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Icon name="lucide:train" class="h-5 w-5 text-primary" />
-              Venir en train
+              {{ accessContent?.trainTitle }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4 text-sm text-muted-foreground">
             <div>
-              <p class="font-medium text-foreground">Gare de Troyes</p>
-              <p>À 1h30 de Paris-Est (TER Grand Est)</p>
+              <p class="font-medium text-foreground">
+                {{ accessContent?.trainStation }}
+              </p>
+              <p>{{ accessContent?.trainDuration }}</p>
             </div>
             <Separator />
             <div>
-              <p class="font-medium text-foreground">Accès depuis la gare</p>
-              <p>Bus Ligne 6 (Direction Chartreux), Arrêt "IUT".</p>
-              <p class="mt-1">Environ 15 minutes de trajet.</p>
+              <p class="font-medium text-foreground">
+                {{ accessContent?.trainAccessTitle }}
+              </p>
+              <p>{{ accessContent?.trainAccessLine }}</p>
+              <p class="mt-1">{{ accessContent?.trainAccessTime }}</p>
             </div>
           </CardContent>
         </Card>
@@ -116,14 +148,12 @@ const shadowSize = [41, 41];
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Icon name="lucide:car" class="h-5 w-5 text-primary" />
-              Venir en voiture
+              {{ accessContent?.carTitle }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-2 text-sm text-muted-foreground">
-            <p>
-              Parking gratuit disponible pour les visiteurs à l'entrée de l'IUT.
-            </p>
-            <p>Accès facile depuis l'A5 et l'A26.</p>
+            <p>{{ accessContent?.carParking }}</p>
+            <p>{{ accessContent?.carAccess }}</p>
           </CardContent>
         </Card>
       </div>
@@ -163,20 +193,21 @@ const shadowSize = [41, 41];
                 }"
               >
                 <div class="text-center">
-                  <span class="font-bold">IUT de Troyes</span>
+                  <strong class="text-sm font-bold">{{
+                    accessContent?.mapTooltipTitle
+                  }}</strong
+                  ><br />
+                  <span class="text-xs">{{
+                    accessContent?.mapTooltipSubtitle
+                  }}</span>
                 </div>
               </LTooltip>
-              <LPopup>
-                <div class="text-center">
-                  <strong class="text-sm font-bold">IUT de Troyes</strong><br />
-                  <span class="text-xs">Lieu de l'ACD MMI 2026</span>
-                </div>
-              </LPopup>
             </LMarker>
           </LMap>
         </ClientOnly>
       </div>
     </div>
+    </template>
   </div>
 </template>
 

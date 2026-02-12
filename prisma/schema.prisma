@@ -252,6 +252,9 @@ model Setting {
   showInscription  Boolean  @default(true)
   showActivities   Boolean  @default(true)
   showMeals        Boolean  @default(true)
+  showAcces        Boolean  @default(true)
+  showHotels       Boolean  @default(true)
+  headerBadgeText  String   @default("Édition 2026")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -279,6 +282,108 @@ model Iut {
   name      String
   city      String?
   code      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contenu éditable de la page d'accueil (singleton)
+model HomeContent {
+  id        String   @id @default("home_content")
+
+  // Hero Section
+  heroBadge    String @default("15–17 Juin 2026 · IUT de Troyes")
+  heroTitle    String @default("Assemblée des Chefs de Départements MMI")
+  heroSubtitle String @default("L'IUT de Troyes accueille l'ACD MMI 2026. Un événement réunissant 34 chefs de départements.")
+  heroImage    String @default("https://www.mesvitrauxfavoris.fr/Supp_e/index_htm_files/98833.jpg")
+
+  // Tabs (JSON - includes image URLs)
+  tabs         Json   @default("[{\"key\":\"partage\",\"label\":\"Partage\",\"title\":\"Échanger pour mieux construire.\",\"description\":\"L'ACD est avant tout un moment de rencontre. Profitez de ces instants pour échanger sur vos pratiques pédagogiques et vos retours d'expérience.\",\"stat\":\"50+ Chefs de départements\",\"image\":\"/gala-dinner.png\"},{\"key\":\"travail\",\"label\":\"Travail\",\"title\":\"Collaborer sur le futur.\",\"description\":\"Des ateliers dédiés à la rédaction des nouveaux référentiels. Une occasion unique d'impacter directement la formation de demain.\",\"stat\":\"34 Départements MMI\",\"image\":\"/conference-hall.png\"},{\"key\":\"decouverte\",\"label\":\"Découverte\",\"title\":\"Vivre l'expérience Troyes.\",\"description\":\"Au-delà du travail, découvrez la richesse culturelle de Troyes et sa gastronomie locale lors de nos événements conviviaux.\",\"stat\":\"Patrimoine & Gastronomie\",\"image\":\"https://static-otelico.com/cache/troyes_troyes/hotel-de-troyes-a-troyes.jpg\"}]")
+
+  // Gradient Cards (JSON)
+  gradientCards Json  @default("[{\"title\":\"Nouveaux Programmes\",\"description\":\"Adaptation au BUT\",\"features\":[\"Référentiel 2027\",\"Compétences clés\",\"Adaptation parcours\"]},{\"title\":\"Travail Collaboratif\",\"description\":\"Co-construction\",\"features\":[\"Ateliers par thèmes\",\"Partage de ressources\",\"Harmonisation\"]},{\"title\":\"Enjeux & Avenir\",\"description\":\"Stratégie MMI\",\"features\":[\"Évolution métiers\",\"Partenariats pros\",\"Conférences\"]}]")
+
+  // Partner Logos (JSON)
+  logos         Json  @default("[{\"src\":\"https://www.univ-reims.fr/iut-troyes/media-images/49449/logo-iutt.png\",\"alt\":\"IUT de Troyes\"},{\"src\":\"https://www.univ-reims.fr/ufrsesg/media-images/61471/logo_urca_blanc-removebg-preview.png\",\"alt\":\"URCA\"}]")
+
+  // Context Section
+  contextTitle String @default("Une édition tournée vers l'avenir")
+  contextText  String @default("Les échanges porteront sur les nouveaux programmes nationaux du BUT MMI, qui entreront en vigueur en 2027. L'objectif est de poursuivre la rédaction du référentiel de formation afin d'adapter les programmes aux besoins et aux évolutions des métiers du numérique.")
+
+  // Final CTA
+  ctaTitle     String @default("Rejoignez l'Assemblée")
+  ctaText      String @default("Participez à la construction de l'avenir du BUT MMI. Inscription obligatoire pour tous les chefs de départements.")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contenu éditable de la page d'accès (singleton)
+model AccessContent {
+  id        String   @id @default("access_content")
+
+  // Header
+  pageTitle       String @default("Accès & Transports")
+  pageSubtitle    String @default("Toutes les informations pour vous rendre à l'Assemblée des Chefs de Départements à Troyes.")
+
+  // Location Card
+  locationTitle    String @default("Le lieu")
+  locationName     String @default("IUT de Troyes")
+  locationAddress1 String @default("9 Rue de Québec")
+  locationAddress2 String @default("10000 Troyes")
+  locationMapUrl   String @default("https://www.google.com/maps/dir/?api=1&destination=IUT+de+Troyes")
+
+  // Train Card
+  trainTitle       String @default("Venir en train")
+  trainStation     String @default("Gare de Troyes")
+  trainDuration    String @default("À 1h30 de Paris-Est (TER Grand Est)")
+  trainAccessTitle String @default("Accès depuis la gare")
+  trainAccessLine  String @default("Bus Ligne 6 (Direction Chartreux), Arrêt \"IUT\".")
+  trainAccessTime  String @default("Environ 15 minutes de trajet.")
+
+  // Car Card
+  carTitle         String @default("Venir en voiture")
+  carParking       String @default("Parking gratuit disponible pour les visiteurs à l'entrée de l'IUT.")
+  carAccess        String @default("Accès facile depuis l'A5 et l'A26.")
+
+  // Map
+  mapLatitude        Float  @default(48.2682678)
+  mapLongitude       Float  @default(4.079772)
+  mapTooltipTitle    String @default("IUT de Troyes")
+  mapTooltipSubtitle String @default("Lieu de l'ACD MMI 2026")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contenu éditable de la page programme (singleton)
+model ProgrammeContent {
+  id        String   @id @default("programme_content")
+
+  pageTitle    String @default("Programme")
+  pageSubtitle String @default("Retrouvez le programme complet de l'Assemblée des Chefs de Départements MMI 2026 à Troyes.")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contenu éditable de la page inscription (singleton)
+model InscriptionContent {
+  id        String   @id @default("inscription_content")
+
+  pageTitle    String @default("Inscription")
+  pageSubtitle String @default("Inscrivez-vous pour participer à l'Assemblée des Chefs de Départements MMI 2026 à Troyes.")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contenu éditable de la page hôtels (singleton)
+model HotelsContent {
+  id        String   @id @default("hotels_content")
+
+  pageTitle    String @default("Hébergements à Troyes")
+  pageSubtitle String @default("Découvrez nos hôtels partenaires pour votre séjour lors de l'Assemblée des Chefs de Départements MMI.")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

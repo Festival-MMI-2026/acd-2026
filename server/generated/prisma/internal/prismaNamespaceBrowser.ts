@@ -65,7 +65,12 @@ export const ModelName = {
   RegistrationActivity: 'RegistrationActivity',
   Setting: 'Setting',
   Hotel: 'Hotel',
-  Iut: 'Iut'
+  Iut: 'Iut',
+  HomeContent: 'HomeContent',
+  AccessContent: 'AccessContent',
+  ProgrammeContent: 'ProgrammeContent',
+  InscriptionContent: 'InscriptionContent',
+  HotelsContent: 'HotelsContent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -273,6 +278,9 @@ export const SettingScalarFieldEnum = {
   showInscription: 'showInscription',
   showActivities: 'showActivities',
   showMeals: 'showMeals',
+  showAcces: 'showAcces',
+  showHotels: 'showHotels',
+  headerBadgeText: 'headerBadgeText',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -311,12 +319,101 @@ export const IutScalarFieldEnum = {
 export type IutScalarFieldEnum = (typeof IutScalarFieldEnum)[keyof typeof IutScalarFieldEnum]
 
 
+export const HomeContentScalarFieldEnum = {
+  id: 'id',
+  heroBadge: 'heroBadge',
+  heroTitle: 'heroTitle',
+  heroSubtitle: 'heroSubtitle',
+  heroImage: 'heroImage',
+  tabs: 'tabs',
+  gradientCards: 'gradientCards',
+  logos: 'logos',
+  contextTitle: 'contextTitle',
+  contextText: 'contextText',
+  ctaTitle: 'ctaTitle',
+  ctaText: 'ctaText',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HomeContentScalarFieldEnum = (typeof HomeContentScalarFieldEnum)[keyof typeof HomeContentScalarFieldEnum]
+
+
+export const AccessContentScalarFieldEnum = {
+  id: 'id',
+  pageTitle: 'pageTitle',
+  pageSubtitle: 'pageSubtitle',
+  locationTitle: 'locationTitle',
+  locationName: 'locationName',
+  locationAddress1: 'locationAddress1',
+  locationAddress2: 'locationAddress2',
+  locationMapUrl: 'locationMapUrl',
+  trainTitle: 'trainTitle',
+  trainStation: 'trainStation',
+  trainDuration: 'trainDuration',
+  trainAccessTitle: 'trainAccessTitle',
+  trainAccessLine: 'trainAccessLine',
+  trainAccessTime: 'trainAccessTime',
+  carTitle: 'carTitle',
+  carParking: 'carParking',
+  carAccess: 'carAccess',
+  mapLatitude: 'mapLatitude',
+  mapLongitude: 'mapLongitude',
+  mapTooltipTitle: 'mapTooltipTitle',
+  mapTooltipSubtitle: 'mapTooltipSubtitle',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccessContentScalarFieldEnum = (typeof AccessContentScalarFieldEnum)[keyof typeof AccessContentScalarFieldEnum]
+
+
+export const ProgrammeContentScalarFieldEnum = {
+  id: 'id',
+  pageTitle: 'pageTitle',
+  pageSubtitle: 'pageSubtitle',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProgrammeContentScalarFieldEnum = (typeof ProgrammeContentScalarFieldEnum)[keyof typeof ProgrammeContentScalarFieldEnum]
+
+
+export const InscriptionContentScalarFieldEnum = {
+  id: 'id',
+  pageTitle: 'pageTitle',
+  pageSubtitle: 'pageSubtitle',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InscriptionContentScalarFieldEnum = (typeof InscriptionContentScalarFieldEnum)[keyof typeof InscriptionContentScalarFieldEnum]
+
+
+export const HotelsContentScalarFieldEnum = {
+  id: 'id',
+  pageTitle: 'pageTitle',
+  pageSubtitle: 'pageSubtitle',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelsContentScalarFieldEnum = (typeof HotelsContentScalarFieldEnum)[keyof typeof HotelsContentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -333,4 +430,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
