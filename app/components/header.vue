@@ -57,14 +57,13 @@ const isProfileIncomplete = computed(() => {
             <img
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-10 dark:hidden"
+              class="h-14 dark:hidden"
             />
             <img
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
-              class="h-10 hidden dark:block dark:grayscale dark:contrast-1"
+              class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
             />
-            <span class="text-lg font-extrabold text-primary">ACD</span>
           </div>
           <ClientOnly>
             <Badge variant="outline" class="rounded-full text-xs">
@@ -223,16 +222,15 @@ const isProfileIncomplete = computed(() => {
               <SheetHeader>
                 <SheetTitle class="text-left flex items-center gap-2">
                   <img
-                    src="/LightLogoACD.svg"
+                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-6 dark:hidden"
+                    class="h-20 dark:hidden"
                   />
                   <img
-                    src="/DarkLogoACD.svg"
+                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                     alt="ACD Logo"
-                    class="h-6 hidden dark:block"
+                    class="h-20 hidden dark:block dark:grayscale dark:contrast-1"
                   />
-                  <span class="font-bold text-xl">ACD MMI</span>
                 </SheetTitle>
                 <SheetDescription class="text-left sr-only">
                   Menu de navigation principal
