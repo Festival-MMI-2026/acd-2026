@@ -61,7 +61,6 @@ jobs:
             set -e
             mkdir -p /var/www/acd-preprod
             cd /var/www/acd-preprod
-
             rm -rf *
             tar -xzf - < <(cat)
 
