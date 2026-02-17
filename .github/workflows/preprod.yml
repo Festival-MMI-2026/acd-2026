@@ -7,6 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -27,14 +34,12 @@ jobs:
             prisma \
             package.json \
             package-lock.json \
-            docker-compose.yml \
-            Dockerfile
+            docker-compose.yml
 
       - uses: actions/upload-artifact@v4
         with:
           name: preprod-build
           path: app.tar.gz
-
 
   deploy:
     needs: build
@@ -45,30 +50,16 @@ jobs:
         with:
           name: preprod-build
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            mkdir -p /var/www/app-preprod
-            cd /var/www/app-preprod
-
-            rm -rf *
-            tar -xzf - < <(cat)
-
-      - name: Copy artifact
+      - name: Copy artifact to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "app.tar.gz"
-          target: "/var/www/app-preprod/"
+          target: "/var/www/acd-preprod/"
 
-      - name: Restart services
+      - name: Deploy and start services
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -76,11 +67,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd /var/www/app-preprod
+            cd /var/www/acd-preprod
+
+            rm -rf .output prisma package.json package-lock.json docker-compose.yml
             tar -xzf app.tar.gz
             rm app.tar.gz
 
-            docker compose down
             docker compose up -d --build
-
-            docker compose exec app npx prisma migrate deploy
