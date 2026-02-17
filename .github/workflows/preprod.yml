@@ -59,7 +59,7 @@ jobs:
           source: "app.tar.gz"
           target: "/var/www/acd-preprod/"
 
-      - name: Deploy and start services
+      - name: Deploy and restart PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -69,8 +69,11 @@ jobs:
             set -e
             cd /var/www/acd-preprod
 
-            rm -rf .output prisma package.json package-lock.json docker-compose.yml
+            rm -rf .output prisma package.json package-lock.json ecosystem.config.js
             tar -xzf app.tar.gz
             rm app.tar.gz
 
-            docker compose up -d --build
+            pm2 start ecosystem.config.js || pm2 restart acd-preprod
+            pm2 save
+
+            docker compose up -d
