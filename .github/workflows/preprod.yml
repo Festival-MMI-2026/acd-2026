@@ -35,7 +35,7 @@ jobs:
             package.json \
             package-lock.json \
             docker-compose.yml \
-            ecosystem.config.js
+            ecosystem.config.cjs
 
       - uses: actions/upload-artifact@v4
         with:
@@ -73,13 +73,13 @@ jobs:
 
             cd /var/www/acd-preprod
 
-            rm -rf .output prisma package.json package-lock.json ecosystem.config.js
+            rm -rf .output prisma package.json package-lock.json ecosystem.config.cjs
 
             tar -xzf app.tar.gz
             rm app.tar.gz
 
             $PM2 delete acd-preprod || true
-            $PM2 start ecosystem.config.js
+            $PM2 start ecosystem.config.cjs
             $PM2 save
 
             docker compose up -d
