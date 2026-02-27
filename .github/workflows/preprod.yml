@@ -79,7 +79,7 @@ jobs:
             rm app.tar.gz
 
             $PM2 delete acd-preprod || true
-            $PM2 start ecosystem.config.cjs
+            $PM2 start ecosystem.config.cjs --force
             $PM2 save
 
             docker compose up -d
