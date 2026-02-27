@@ -34,7 +34,8 @@ jobs:
             prisma \
             package.json \
             package-lock.json \
-            docker-compose.yml
+            docker-compose.yml \
+            ecosystem.config.js
 
       - uses: actions/upload-artifact@v4
         with:
@@ -69,11 +70,9 @@ jobs:
             set -e
             cd /var/www/acd-preprod
 
-            rm -rf .output prisma package.json package-lock.json ecosystem.config.js
-            tar -xzf app.tar.gz
-            rm app.tar.gz
+            pm2 delete acd-preprod || true
 
-            /root/.nvm/versions/node/v20.19.6/bin/pm2 start ecosystem.config.js || /root/.nvm/versions/node/v20.19.6/bin/pm2 restart acd-preprod
-            /root/.nvm/versions/node/v20.19.6/bin/pm2 save
+            pm2 start ecosystem.config.js
+            pm2 save
 
             docker compose up -d
