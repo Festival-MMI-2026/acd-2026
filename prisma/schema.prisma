@@ -162,21 +162,23 @@ model Activity {
 
 // Inscriptions
 model Registration {
-  id         String   @id @default(uuid())
-  firstName  String
-  lastName   String
-  email      String
-  phone      String
-  iutId      String?
-  allergens  String?
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String
+  iutId       String?
+  allergens   String?
   isMotorized Boolean @default(false)
-  totalPrice Decimal  @db.Decimal(10, 2)
-  status     RegistrationStatus @default(PENDING)
-  meals      RegistrationMeal[]
-  activities RegistrationActivity[]
-  order      Order?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  totalPrice  Decimal  @db.Decimal(10, 2)
+  status      RegistrationStatus @default(PENDING)
+  checkedIn   Boolean  @default(false)
+  checkedInAt DateTime?
+  meals       RegistrationMeal[]
+  activities  RegistrationActivity[]
+  order       Order?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum RegistrationStatus {

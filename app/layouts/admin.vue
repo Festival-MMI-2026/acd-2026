@@ -26,6 +26,7 @@ const navItems = [
   { title: "Repas", icon: "lucide:utensils", href: "/admin/repas" },
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
+  { title: "Check-in", icon: "lucide:scan-qr-code", href: "/admin/checkin" },
   { title: "Paiements", icon: "lucide:receipt", href: "/admin/orders" },
   { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
 ];

@@ -45,6 +45,8 @@ export type RegistrationMinAggregateOutputType = {
   isMotorized: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
+  checkedIn: boolean | null
+  checkedInAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +62,8 @@ export type RegistrationMaxAggregateOutputType = {
   isMotorized: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
+  checkedIn: boolean | null
+  checkedInAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +79,8 @@ export type RegistrationCountAggregateOutputType = {
   isMotorized: number
   totalPrice: number
   status: number
+  checkedIn: number
+  checkedInAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +106,8 @@ export type RegistrationMinAggregateInputType = {
   isMotorized?: true
   totalPrice?: true
   status?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,6 +123,8 @@ export type RegistrationMaxAggregateInputType = {
   isMotorized?: true
   totalPrice?: true
   status?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +140,8 @@ export type RegistrationCountAggregateInputType = {
   isMotorized?: true
   totalPrice?: true
   status?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -232,6 +244,8 @@ export type RegistrationGroupByOutputType = {
   isMotorized: boolean
   totalPrice: runtime.Decimal
   status: $Enums.RegistrationStatus
+  checkedIn: boolean
+  checkedInAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: RegistrationCountAggregateOutputType | null
@@ -270,6 +284,8 @@ export type RegistrationWhereInput = {
   isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFilter<"Registration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
@@ -288,6 +304,8 @@ export type RegistrationOrderByWithRelationInput = {
   isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   meals?: Prisma.RegistrationMealOrderByRelationAggregateInput
@@ -309,6 +327,8 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFilter<"Registration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   meals?: Prisma.RegistrationMealListRelationFilter
@@ -327,6 +347,8 @@ export type RegistrationOrderByWithAggregationInput = {
   isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.RegistrationCountOrderByAggregateInput
@@ -350,6 +372,8 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   isMotorized?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalWithAggregatesFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusWithAggregatesFilter<"Registration"> | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
 }
@@ -365,6 +389,8 @@ export type RegistrationCreateInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
@@ -383,6 +409,8 @@ export type RegistrationUncheckedCreateInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
@@ -401,6 +429,8 @@ export type RegistrationUpdateInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
@@ -419,6 +449,8 @@ export type RegistrationUncheckedUpdateInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
@@ -437,6 +469,8 @@ export type RegistrationCreateManyInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -452,6 +486,8 @@ export type RegistrationUpdateManyMutationInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -467,6 +503,8 @@ export type RegistrationUncheckedUpdateManyInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -482,6 +520,8 @@ export type RegistrationCountOrderByAggregateInput = {
   isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -501,6 +541,8 @@ export type RegistrationMaxOrderByAggregateInput = {
   isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -516,6 +558,8 @@ export type RegistrationMinOrderByAggregateInput = {
   isMotorized?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -586,6 +630,8 @@ export type RegistrationCreateWithoutOrderInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
@@ -603,6 +649,8 @@ export type RegistrationUncheckedCreateWithoutOrderInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
@@ -636,6 +684,8 @@ export type RegistrationUpdateWithoutOrderInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
@@ -653,6 +703,8 @@ export type RegistrationUncheckedUpdateWithoutOrderInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
@@ -670,6 +722,8 @@ export type RegistrationCreateWithoutMealsInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityCreateNestedManyWithoutRegistrationInput
@@ -687,6 +741,8 @@ export type RegistrationUncheckedCreateWithoutMealsInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.RegistrationActivityUncheckedCreateNestedManyWithoutRegistrationInput
@@ -720,6 +776,8 @@ export type RegistrationUpdateWithoutMealsInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUpdateManyWithoutRegistrationNestedInput
@@ -737,6 +795,8 @@ export type RegistrationUncheckedUpdateWithoutMealsInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.RegistrationActivityUncheckedUpdateManyWithoutRegistrationNestedInput
@@ -754,6 +814,8 @@ export type RegistrationCreateWithoutActivitiesInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealCreateNestedManyWithoutRegistrationInput
@@ -771,6 +833,8 @@ export type RegistrationUncheckedCreateWithoutActivitiesInput = {
   isMotorized?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   meals?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutRegistrationInput
@@ -804,6 +868,8 @@ export type RegistrationUpdateWithoutActivitiesInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUpdateManyWithoutRegistrationNestedInput
@@ -821,6 +887,8 @@ export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meals?: Prisma.RegistrationMealUncheckedUpdateManyWithoutRegistrationNestedInput
@@ -878,6 +946,8 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
@@ -897,6 +967,8 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["registration"]>
@@ -912,6 +984,8 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["registration"]>
@@ -927,11 +1001,13 @@ export type RegistrationSelectScalar = {
   isMotorized?: boolean
   totalPrice?: boolean
   status?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "iutId" | "allergens" | "isMotorized" | "totalPrice" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "iutId" | "allergens" | "isMotorized" | "totalPrice" | "status" | "checkedIn" | "checkedInAt" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
@@ -959,6 +1035,8 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     isMotorized: boolean
     totalPrice: runtime.Decimal
     status: $Enums.RegistrationStatus
+    checkedIn: boolean
+    checkedInAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["registration"]>
@@ -1397,6 +1475,8 @@ export interface RegistrationFieldRefs {
   readonly isMotorized: Prisma.FieldRef<"Registration", 'Boolean'>
   readonly totalPrice: Prisma.FieldRef<"Registration", 'Decimal'>
   readonly status: Prisma.FieldRef<"Registration", 'RegistrationStatus'>
+  readonly checkedIn: Prisma.FieldRef<"Registration", 'Boolean'>
+  readonly checkedInAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Registration", 'DateTime'>
 }

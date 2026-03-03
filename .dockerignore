@@ -1,0 +1,19 @@
+node_modules
+.output
+.nuxt
+.git
+.gitignore
+*.log
+.env
+.env.*
+!.env.example
+
+# Tests
+test
+tests
+playwright.config.ts
+vitest.config.ts
+
+# Divers
+README.md
+*.csv
