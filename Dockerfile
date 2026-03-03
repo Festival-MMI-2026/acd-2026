@@ -7,10 +7,10 @@ COPY prisma ./prisma/
 
 # --ignore-scripts évite que postinstall plante (nuxt prepare nécessite
 # les sources, prisma generate tourne juste après)
-RUN npm ci --ignore-scripts
+RUN npm install --ignore-scripts
 
-# Génération du client Prisma (ne nécessite pas de connexion DB)
-RUN npx prisma generate
+# Génération du client Prisma (DATABASE_URL factice — generate ne se connecte pas)
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
 # ── Stage 2 : Build ───────────────────────────────────────────────
 FROM node:20-alpine AS builder
