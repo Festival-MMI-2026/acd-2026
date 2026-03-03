@@ -32,6 +32,13 @@ ENV NUXT_PORT=3000
 
 COPY --from=builder /app/.output ./.output
 
+# Prisma CLI + schema + config pour le db push au démarrage
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+
 EXPOSE 3000
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma db push && node .output/server/index.mjs"]
