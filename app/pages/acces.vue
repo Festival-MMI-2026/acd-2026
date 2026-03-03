@@ -207,26 +207,3 @@ const shadowSize: [number, number] = [41, 41];
   </div>
 </template>
 
-<style>
-/* Ensure map container has height */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-  z-index: 0;
-  font-family: inherit;
-}
-
-/* Dark mode overrides for Leaflet controls */
-.dark .leaflet-control-zoom a,
-.dark .leaflet-control-attribution {
-  background-color: hsl(var(--card)) !important;
-  color: hsl(var(--foreground)) !important;
-  border-color: hsl(var(--border)) !important;
-}
-.dark .leaflet-control-zoom a:hover {
-  background-color: hsl(var(--muted)) !important;
-}
-.dark .leaflet-bar a {
-  border-bottom: 1px solid hsl(var(--border)) !important;
-}
-</style>

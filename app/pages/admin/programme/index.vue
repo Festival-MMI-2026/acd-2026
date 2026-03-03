@@ -38,6 +38,7 @@ const filteredEvents = computed(() => {
 // Dialog states
 const isFormDialogOpen = ref(false);
 const isDeleteDialogOpen = ref(false);
+const isImportDialogOpen = ref(false);
 const selectedEvent = ref<EventData | null>(null);
 
 function openCreateDialog() {
@@ -68,10 +69,16 @@ function handleSuccess() {
         <h1 class="text-2xl font-bold tracking-tight">Programme</h1>
         <p class="text-muted-foreground">Gestion du programme de l'événement</p>
       </div>
-      <Button class="rounded-full" @click="openCreateDialog">
-        <Icon name="lucide:plus" class="h-4 w-4" />
-        Ajouter un événement
-      </Button>
+      <div class="flex items-center gap-2">
+        <Button variant="outline" class="rounded-full" @click="isImportDialogOpen = true">
+          <Icon name="lucide:upload" class="h-4 w-4" />
+          Importer CSV
+        </Button>
+        <Button class="rounded-full" @click="openCreateDialog">
+          <Icon name="lucide:plus" class="h-4 w-4" />
+          Ajouter un événement
+        </Button>
+      </div>
     </div>
 
     <!-- Search -->
@@ -121,6 +128,12 @@ function handleSuccess() {
     <ProgrammeDeleteDialog
       v-model:open="isDeleteDialogOpen"
       :event="selectedEvent"
+      @success="handleSuccess"
+    />
+
+    <!-- Import Dialog -->
+    <ProgrammeImportDialog
+      v-model:open="isImportDialogOpen"
       @success="handleSuccess"
     />
   </div>

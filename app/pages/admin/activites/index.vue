@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ActivityFormDialog from "@/components/activities/ActivityFormDialog.vue";
 import ActivityDeleteDialog from "@/components/activities/ActivityDeleteDialog.vue";
+import ActivityImportDialog from "@/components/activities/ActivityImportDialog.vue";
 
 definePageMeta({
   layout: "admin",
@@ -27,6 +28,7 @@ const filteredActivities = computed(() => {
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
+const showImportDialog = ref(false);
 const selectedActivity = ref<any>(null);
 
 function openCreateDialog() {
@@ -76,10 +78,16 @@ function getDuration(start: string, end: string) {
         <h1 class="text-2xl font-bold tracking-tight">Activités</h1>
         <p class="text-muted-foreground">Gestion des activités et excursions</p>
       </div>
-      <Button class="rounded-full" @click="openCreateDialog">
-        <Icon name="lucide:plus" class="h-4 w-4" />
-        Ajouter une activité
-      </Button>
+      <div class="flex items-center gap-2">
+        <Button variant="outline" class="rounded-full" @click="showImportDialog = true">
+          <Icon name="lucide:upload" class="h-4 w-4" />
+          Importer CSV
+        </Button>
+        <Button class="rounded-full" @click="openCreateDialog">
+          <Icon name="lucide:plus" class="h-4 w-4" />
+          Ajouter une activité
+        </Button>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -218,6 +226,12 @@ function getDuration(start: string, end: string) {
       @update:open="showDeleteDialog = $event"
       :activity-id="selectedActivity?.id"
       :activity-name="selectedActivity?.name"
+      @success="handleSuccess"
+    />
+
+    <ActivityImportDialog
+      :open="showImportDialog"
+      @update:open="showImportDialog = $event"
       @success="handleSuccess"
     />
   </div>
