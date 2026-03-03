@@ -1,4 +1,30 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: acd-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://admin:password@postgresql:5432/acd_db
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GOTENBERG_URL: http://gotenberg:3000
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-ACD <noreply@acd.local>}
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      gotenberg:
+        condition: service_started
+      mailpit:
+        condition: service_started
+
   postgresql:
     image: postgres:16-alpine
     container_name: acd-postgresql
@@ -11,6 +37,11 @@ services:
       POSTGRES_DB: acd_db
     volumes:
       - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d acd_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   adminer:
     image: adminer:latest

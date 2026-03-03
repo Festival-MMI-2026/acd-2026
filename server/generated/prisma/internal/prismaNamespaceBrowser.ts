@@ -225,6 +225,8 @@ export const RegistrationScalarFieldEnum = {
   isMotorized: 'isMotorized',
   totalPrice: 'totalPrice',
   status: 'status',
+  checkedIn: 'checkedIn',
+  checkedInAt: 'checkedInAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

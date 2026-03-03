@@ -16,6 +16,8 @@ interface Registration {
   phone: string;
   totalPrice: number | string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  checkedIn: boolean;
+  checkedInAt: string | null;
   createdAt: string;
   updatedAt: string;
   meals?: any[];
@@ -27,6 +29,26 @@ const { data: registration, refresh } = await useFetch<Registration>(
 );
 
 const isLoading = ref(false);
+const isCheckingIn = ref(false);
+
+async function toggleCheckin() {
+  if (!registration.value) return;
+  isCheckingIn.value = true;
+  try {
+    await $fetch(`/api/registrations/${registration.value.id}/checkin`, {
+      method: "PATCH",
+      body: { checkedIn: !registration.value.checkedIn },
+    });
+    toast.success(
+      registration.value.checkedIn ? "Check-in annulé" : "Présence confirmée",
+    );
+    refresh();
+  } catch {
+    toast.error("Erreur lors du check-in");
+  } finally {
+    isCheckingIn.value = false;
+  }
+}
 
 async function updateStatus(newStatus: string) {
   if (!registration.value) return;
@@ -368,6 +390,91 @@ const invoiceDetails = computed(() => {
               <Icon v-else name="lucide:download" class="mr-2 h-4 w-4" />
               {{
                 downloadingInvoice ? "Génération..." : "Télécharger la facture"
+              }}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <!-- Check-in & QR Code -->
+        <Card class="rounded-xl">
+          <CardHeader class="pb-3">
+            <div class="flex items-center justify-between">
+              <CardTitle class="text-base">Présence</CardTitle>
+              <Badge
+                :class="[
+                  'rounded-full text-xs',
+                  registration.checkedIn
+                    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                    : 'bg-muted text-muted-foreground',
+                ]"
+              >
+                <Icon
+                  :name="registration.checkedIn ? 'lucide:check-circle' : 'lucide:circle'"
+                  class="h-3 w-3 mr-1"
+                />
+                {{ registration.checkedIn ? "Présent" : "Absent" }}
+              </Badge>
+            </div>
+            <p
+              v-if="registration.checkedIn && registration.checkedInAt"
+              class="text-xs text-muted-foreground mt-1"
+            >
+              Enregistré le
+              {{
+                new Date(registration.checkedInAt).toLocaleString("fr-FR", {
+                  day: "numeric",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}
+            </p>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <!-- QR Code -->
+            <div class="flex justify-center">
+              <img
+                :src="`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${registration.id}`"
+                :alt="`QR code - ${registration.id}`"
+                class="rounded-lg border bg-white p-2"
+                width="160"
+                height="160"
+              />
+            </div>
+            <p class="text-xs text-center text-muted-foreground">
+              Scannez ce code depuis la page
+              <NuxtLink to="/admin/checkin" class="underline underline-offset-2">
+                Check-in
+              </NuxtLink>
+            </p>
+            <Button
+              :variant="registration.checkedIn ? 'outline' : 'default'"
+              size="sm"
+              class="w-full rounded-full"
+              :disabled="isCheckingIn"
+              @click="toggleCheckin"
+            >
+              <Icon
+                v-if="isCheckingIn"
+                name="lucide:loader-2"
+                class="mr-2 h-4 w-4 animate-spin"
+              />
+              <Icon
+                v-else-if="registration.checkedIn"
+                name="lucide:rotate-ccw"
+                class="mr-2 h-4 w-4"
+              />
+              <Icon
+                v-else
+                name="lucide:check-circle"
+                class="mr-2 h-4 w-4"
+              />
+              {{
+                isCheckingIn
+                  ? "Enregistrement..."
+                  : registration.checkedIn
+                    ? "Annuler la présence"
+                    : "Marquer comme présent"
               }}
             </Button>
           </CardContent>
