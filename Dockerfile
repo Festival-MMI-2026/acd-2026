@@ -4,19 +4,22 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY prisma.config.ts ./
 
-# --ignore-scripts évite que postinstall plante (nuxt prepare nécessite
-# les sources, prisma generate tourne juste après)
-RUN npm install --ignore-scripts
-
-# Génération du client Prisma (DATABASE_URL factice — generate ne se connecte pas)
-RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+# On remplace postinstall pour ne lancer que prisma generate
+# (nuxt prepare nécessite les sources, pas disponibles ici)
+# Sans --ignore-scripts, le postinstall de prisma s'exécute → engines téléchargés
+RUN npm pkg set scripts.postinstall="prisma generate"
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+RUN npm install
 
 # ── Stage 2 : Build ───────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
+# Client Prisma généré (au cas où il n'existe pas sur le host)
+COPY --from=deps /app/server/generated ./server/generated
 COPY . .
 
 # nuxt build inclut nuxt prepare en interne
@@ -32,12 +35,13 @@ ENV NUXT_PORT=3000
 
 COPY --from=builder /app/.output ./.output
 
-# Prisma CLI + schema + config pour le db push au démarrage
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+# Prisma CLI + engines + schema pour db push au démarrage
+COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
+COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=deps /app/node_modules/dotenv ./node_modules/dotenv
+COPY --from=deps /app/prisma ./prisma
+COPY prisma.config.ts ./
 
 EXPOSE 3000
 
