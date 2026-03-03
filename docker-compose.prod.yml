@@ -19,6 +19,9 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       MAIL_FROM: ${MAIL_FROM}
+    networks:
+      - default
+      - dokploy-network
     depends_on:
       postgresql:
         condition: service_healthy
@@ -48,3 +51,7 @@ services:
 
 volumes:
   postgresql_data:
+
+networks:
+  dokploy-network:
+    external: true
