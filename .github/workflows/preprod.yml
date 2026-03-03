@@ -34,7 +34,8 @@ jobs:
             prisma \
             package.json \
             package-lock.json \
-            docker-compose.yml
+            docker-compose.yml \
+            ecosystem.config.cjs
 
       - uses: actions/upload-artifact@v4
         with:
@@ -59,7 +60,7 @@ jobs:
           source: "app.tar.gz"
           target: "/var/www/acd-preprod/"
 
-      - name: Deploy and start services
+      - name: Deploy and restart PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -67,10 +68,18 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+
+            PM2="/home/festival-deployer/.nvm/versions/node/v20.20.0/bin/pm2"
+
             cd /var/www/acd-preprod
 
-            rm -rf .output prisma package.json package-lock.json docker-compose.yml
+            rm -rf .output prisma package.json package-lock.json ecosystem.config.cjs
+
             tar -xzf app.tar.gz
             rm app.tar.gz
 
-            docker compose up -d --build
+            $PM2 delete acd-preprod || true
+            $PM2 start ecosystem.config.cjs --force
+            $PM2 save
+
+            docker compose up -d
