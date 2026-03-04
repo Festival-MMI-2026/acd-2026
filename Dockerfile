@@ -38,7 +38,7 @@ COPY --from=builder /app/.output ./.output
 # Prisma CLI + engines + schema pour db push au démarrage
 COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
 COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=deps /app/node_modules/.bin/prisma* ./node_modules/.bin/
 COPY --from=deps /app/node_modules/dotenv ./node_modules/dotenv
 COPY --from=deps /app/prisma ./prisma
 COPY prisma.config.ts ./
