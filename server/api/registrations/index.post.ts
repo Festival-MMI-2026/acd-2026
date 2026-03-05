@@ -131,6 +131,7 @@ export default defineEventHandler(async (event) => {
         firstName: registration.firstName,
         lastName: registration.lastName,
         orderNumber: registration.order?.orderNumber || orderNumber,
+        registrationId: registration.id,
         totalPrice: Number(registration.totalPrice),
         meals: emailMeals,
         activities: emailActivities,

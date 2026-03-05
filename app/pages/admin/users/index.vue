@@ -139,22 +139,34 @@ const handleSuccess = () => {
                 class="cursor-pointer hover:bg-muted/50 transition-colors"
               >
                 <TableCell>
-                  <div class="flex flex-col">
-                    <span class="font-medium">
-                      {{
-                        user.name ||
-                        (user.firstName || user.lastName
-                          ? `${user.firstName} ${user.lastName}`
-                          : "Sans nom")
-                      }}
-                    </span>
-                    <span class="text-xs text-muted-foreground">{{
-                      user.email
-                    }}</span>
+                  <div class="flex items-center gap-2">
+                    <Avatar>
+                      <AvatarImage
+                        :src="user.image"
+                        :fallback-src="avatarUrl(user.name || '')"
+                        :alt="user.name"
+                      />
+                      <AvatarFallback class="text-2xl">{{
+                        user.name?.charAt(0).toUpperCase()
+                      }}</AvatarFallback>
+                    </Avatar>
+                    <div class="flex flex-col">
+                      <span class="font-medium">
+                        {{
+                          user.name ||
+                          (user.firstName || user.lastName
+                            ? `${user.firstName} ${user.lastName}`
+                            : "Sans nom")
+                        }}
+                      </span>
+                      <span class="text-xs text-muted-foreground">{{
+                        user.email
+                      }}</span>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span class="text-sm">{{ user.iut || "-" }}</span>
+                  <span class="text-xs">{{ user.iut || "-" }}</span>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">

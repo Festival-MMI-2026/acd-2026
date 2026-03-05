@@ -11,6 +11,8 @@ interface Registration {
   phone: string;
   totalPrice: number | string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  checkedIn: boolean;
+  checkedInAt: string | null;
   createdAt: string;
   meals?: any[];
   activities?: any[];
@@ -25,14 +27,32 @@ const { data: registrations, status } =
 // Search and filters
 const searchQuery = ref("");
 const statusFilter = ref<string | null>(null);
+const checkinFilter = ref<string | null>(null);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+
+const confirmedCount = computed(
+  () =>
+    (registrations.value || []).filter((r) => r.status === "CONFIRMED").length,
+);
+const presentCount = computed(
+  () =>
+    (registrations.value || []).filter(
+      (r) => r.status === "CONFIRMED" && r.checkedIn,
+    ).length,
+);
 
 const filteredRegistrations = computed(() => {
   let result = registrations.value || [];
 
   if (statusFilter.value) {
     result = result.filter((r) => r.status === statusFilter.value);
+  }
+
+  if (checkinFilter.value === "present") {
+    result = result.filter((r) => r.checkedIn);
+  } else if (checkinFilter.value === "absent") {
+    result = result.filter((r) => !r.checkedIn);
   }
 
   if (searchQuery.value) {
@@ -49,7 +69,7 @@ const filteredRegistrations = computed(() => {
 });
 
 // Reset to page 1 when filters change
-watch([searchQuery, statusFilter], () => {
+watch([searchQuery, statusFilter, checkinFilter], () => {
   currentPage.value = 1;
 });
 
@@ -90,7 +110,11 @@ function formatDate(date: string) {
       <div>
         <h1 class="text-2xl font-bold tracking-tight">Inscriptions</h1>
         <p class="text-muted-foreground">
-          Gestion des inscriptions à l'événement
+          Gestion des inscriptions à l'événement ·
+          <span class="text-foreground font-medium"
+            >{{ presentCount }}/{{ confirmedCount }}</span
+          >
+          présents
         </p>
       </div>
       <Button variant="outline" class="rounded-full">
@@ -112,6 +136,16 @@ function formatDate(date: string) {
           <SelectItem value="CANCELLED">Annulé</SelectItem>
         </SelectContent>
       </Select>
+      <Select v-model="checkinFilter">
+        <SelectTrigger class="w-44 rounded-full bg-card">
+          <SelectValue placeholder="Tous" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem :value="null">Tous</SelectItem>
+          <SelectItem value="present">Présents</SelectItem>
+          <SelectItem value="absent">Absents</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- Loading State -->
@@ -128,10 +162,11 @@ function formatDate(date: string) {
       <div
         class="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-muted-foreground"
       >
-        <div class="col-span-5">Participant</div>
+        <div class="col-span-4">Participant</div>
         <div class="col-span-2">Date</div>
         <div class="col-span-2">Statut</div>
-        <div class="col-span-3 text-right">Montant</div>
+        <div class="col-span-2">Présence</div>
+        <div class="col-span-2 text-right">Montant</div>
       </div>
 
       <!-- Empty State -->
@@ -150,8 +185,9 @@ function formatDate(date: string) {
         class="grid grid-cols-12 gap-4 px-4 py-4 items-center cursor-pointer transition-colors hover:bg-muted/50 border-t border-border/50"
         @click="goToDetail(reg.id)"
       >
-        <div class="col-span-5 flex items-center gap-3">
+        <div class="col-span-4 flex items-center gap-3">
           <Avatar class="h-9 w-9">
+            <AvatarImage :src="avatarUrl(`${reg.firstName} ${reg.lastName}`)" />
             <AvatarFallback class="bg-muted text-foreground text-xs">
               {{ reg.firstName?.charAt(0) }}{{ reg.lastName?.charAt(0) }}
             </AvatarFallback>
@@ -166,7 +202,17 @@ function formatDate(date: string) {
             {{ statusLabels[reg.status] }}
           </Badge>
         </div>
-        <div class="col-span-3 text-right text-sm font-medium">
+        <div class="col-span-2">
+          <Badge
+            v-if="reg.checkedIn"
+            class="rounded-full text-xs bg-green-500/10 text-green-600 dark:text-green-400"
+          >
+            <Icon name="lucide:check-circle" class="h-3 w-3 mr-1" />
+            Présent
+          </Badge>
+          <span v-else class="text-xs text-muted-foreground">—</span>
+        </div>
+        <div class="col-span-2 text-right text-sm font-medium">
           {{ Number(reg.totalPrice).toFixed(2) }} €
         </div>
       </div>

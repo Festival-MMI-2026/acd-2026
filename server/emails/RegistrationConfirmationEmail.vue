@@ -25,6 +25,7 @@ defineProps({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   orderNumber: { type: String, required: true },
+  registrationId: { type: String, required: true },
   totalPrice: { type: Number, required: true },
   meals: { type: Array as () => MealSelection[], default: () => [] },
   activities: { type: Array as () => string[], default: () => [] },
@@ -142,6 +143,29 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                 <Text style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">{{ totalPrice.toFixed(2) }} €</Text>
               </Column>
             </Row>
+          </Section>
+
+          <!-- QR CODE -->
+          <Section style="background: #ffffff; padding: 20px 48px 28px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+            <Hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 20px 0;" />
+            <Text style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; font-weight: 600; margin: 0 0 16px 0;">
+              QR code de présence
+            </Text>
+            <Row>
+              <Column align="center">
+                <Img
+                  :src="`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${registrationId}&bgcolor=ffffff&color=111827&margin=8`"
+                  alt="QR code de présence"
+                  width="160"
+                  height="160"
+                  style="display: block; margin: 0 auto; border-radius: 8px;"
+                />
+              </Column>
+            </Row>
+            <Text style="font-size: 12px; color: #6b7280; text-align: center; margin: 12px 0 0 0; line-height: 1.6;">
+              Présentez ce QR code à l'entrée de l'événement.<br />
+              Il sera scanné pour valider votre présence.
+            </Text>
           </Section>
 
           <!-- FOOTER -->

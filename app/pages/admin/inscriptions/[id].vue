@@ -302,6 +302,7 @@ const invoiceDetails = computed(() => {
           <CardContent class="space-y-4">
             <div class="flex items-center gap-3">
               <Avatar class="h-14 w-14">
+                <AvatarImage :src="avatarUrl(`${registration.firstName} ${registration.lastName}`)" />
                 <AvatarFallback class="bg-muted text-foreground text-lg">
                   {{ registration.firstName?.charAt(0)
                   }}{{ registration.lastName?.charAt(0) }}

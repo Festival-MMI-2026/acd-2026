@@ -3,8 +3,10 @@
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { defineNuxtConfig } from "nuxt/config";
+import { version } from "./package.json";
 
 export default defineNuxtConfig({
+  appConfig: { version },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 

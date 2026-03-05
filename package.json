@@ -1,5 +1,6 @@
 {
   "name": "acd-nuxt",
+  "version": "1.0.1",
   "type": "module",
   "private": true,
   "scripts": {
@@ -8,6 +9,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "prisma generate && nuxt prepare",
+    "release": "npm version patch --no-git-tag-version && git -C .. add acd-nuxt/package.json && git -C .. commit -m \"chore: bump version to $(node -p \\\"require('./package.json').version\\\")\" && git -C .. push",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:unit": "vitest --project unit",
@@ -37,7 +39,7 @@
     "@vue-email/render": "^0.0.9",
     "@vue-email/tailwind": "^0.2.0",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
-    "@vueuse/core": "^14.2.0",
+    "@vueuse/core": "^14.2.1",
     "better-auth": "^1.4.17",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
@@ -50,10 +52,11 @@
     "nodemailer": "^7.0.13",
     "nuxt": "^4.1.3",
     "pg": "^8.17.2",
-    "reka-ui": "^2.8.0",
+    "reka-ui": "^2.9.0",
     "shadcn-nuxt": "^2.4.3",
     "tailwind-merge": "^3.4.0",
     "vue": "^3.5.27",
+    "vue-qrcode-reader": "^5.7.3",
     "vue-router": "^4.6.4",
     "vue-sonner": "^2.0.9"
   },

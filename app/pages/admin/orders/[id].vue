@@ -268,6 +268,7 @@ const invoiceItems = computed(() => {
           <CardContent class="space-y-4">
             <div class="flex items-center gap-3">
               <Avatar class="h-14 w-14">
+                <AvatarImage :src="avatarUrl(`${order.registration.firstName} ${order.registration.lastName}`)" />
                 <AvatarFallback class="bg-muted text-foreground text-lg">
                   {{ order.registration.firstName?.charAt(0)
                   }}{{ order.registration.lastName?.charAt(0) }}

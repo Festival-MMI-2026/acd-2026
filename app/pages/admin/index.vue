@@ -499,6 +499,7 @@ const quickActions = [
               <TableCell>
                 <div class="flex items-center gap-3">
                   <Avatar class="h-9 w-9">
+                    <AvatarImage :src="avatarUrl(`${registration.firstName} ${registration.lastName}`)" />
                     <AvatarFallback
                       class="bg-foreground text-background text-sm"
                     >

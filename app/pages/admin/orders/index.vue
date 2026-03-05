@@ -168,6 +168,7 @@ function formatDate(date: string) {
         </div>
         <div class="col-span-4 flex items-center gap-3">
           <Avatar class="h-8 w-8">
+            <AvatarImage :src="avatarUrl(`${order.registration.firstName} ${order.registration.lastName}`)" />
             <AvatarFallback class="bg-muted text-foreground text-xs">
               {{ order.registration.firstName?.charAt(0)
               }}{{ order.registration.lastName?.charAt(0) }}

@@ -29,7 +29,7 @@ const emit = defineEmits(["update:open"]);
         <!-- Header Profile -->
         <div class="flex flex-col items-center gap-4 py-4 border-b">
           <Avatar class="h-24 w-24">
-            <AvatarImage :src="user.image" :alt="user.name" />
+            <AvatarImage :src="user.image" :fallback-src="avatarUrl(user.name || '')" :alt="user.name" />
             <AvatarFallback class="text-2xl">{{
               user.name?.charAt(0).toUpperCase()
             }}</AvatarFallback>

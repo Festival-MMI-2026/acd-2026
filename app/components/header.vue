@@ -95,7 +95,10 @@ const isProfileIncomplete = computed(() => {
               />
             </div>
             <ClientOnly>
-              <Badge variant="outline" class="rounded-full text-xs">
+              <Badge
+                variant="outline"
+                class="hidden md:flex rounded-full text-xs"
+              >
                 <div class="relative flex h-2 w-2">
                   <span
                     class="relative inline-flex rounded-full h-2 w-2 bg-primary"
@@ -224,7 +227,8 @@ const isProfileIncomplete = computed(() => {
                   <Button variant="ghost" size="icon" class="rounded-full">
                     <Avatar class="h-8 w-8">
                       <AvatarImage
-                        :src="session.data.user?.image || ''"
+                        :src="session.data.user?.image"
+                        :fallback-src="avatarUrl(session.data.user?.name || '')"
                         :alt="session.data.user?.name || 'User'"
                       />
                       <AvatarFallback
@@ -289,17 +293,17 @@ const isProfileIncomplete = computed(() => {
             </SheetTrigger>
             <SheetContent side="left" class="flex flex-col justify-between">
               <div class="space-y-8">
-                <SheetHeader>
-                  <SheetTitle class="text-left flex items-center gap-2">
+                <SheetHeader class="m-0">
+                  <SheetTitle class="text-left flex items-center">
                     <img
                       src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                       alt="ACD Logo"
-                      class="h-20 dark:hidden"
+                      class="h-14 dark:hidden"
                     />
                     <img
                       src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                       alt="ACD Logo"
-                      class="h-20 hidden dark:block dark:grayscale dark:contrast-1"
+                      class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
                     />
                   </SheetTitle>
                   <SheetDescription class="text-left sr-only">
@@ -307,7 +311,7 @@ const isProfileIncomplete = computed(() => {
                   </SheetDescription>
                 </SheetHeader>
                 <Separator />
-                <div class="flex flex-col gap-4 px-4">
+                <div class="flex flex-col gap-4 px-4 text-sm">
                   <SheetClose as-child>
                     <NuxtLink to="/programme">Programme</NuxtLink>
                   </SheetClose>
@@ -379,9 +383,11 @@ const isProfileIncomplete = computed(() => {
         </div>
       </div>
     </header>
-    <div v-if="isProfileIncomplete" class="w-full border-b bg-background">
+    <div v-if="isProfileIncomplete" class="w-full border-y bg-background">
       <div class="container mx-auto px-6 py-3">
-        <div class="flex items-center justify-between">
+        <div
+          class="flex flex-col sm:flex-row items-start sm:items-center justify-between"
+        >
           <div class="flex items-center gap-2 text-red-700 dark:text-red-400">
             <TriangleAlertIcon class="h-4 w-4" />
             <span class="text-xs font-medium">
@@ -391,10 +397,16 @@ const isProfileIncomplete = computed(() => {
           <Button
             variant="link"
             size="sm"
-            class="text-xs text-red-700 dark:text-red-400"
+            class="text-xs text-red-700 dark:text-red-400 group"
             as-child
           >
-            <NuxtLink to="/profil"> Compléter mon profil </NuxtLink>
+            <NuxtLink to="/profil">
+              Compléter mon profil
+              <Icon
+                name="lucide:chevron-right"
+                class="h-3 w-3 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
+              />
+            </NuxtLink>
           </Button>
         </div>
       </div>

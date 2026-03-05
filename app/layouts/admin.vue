@@ -16,9 +16,15 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {
+  CollapsibleRoot as Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "reka-ui";
 
 const session = useSession();
 const route = useRoute();
+const { version } = useAppConfig();
 
 const navItems = [
   { title: "Dashboard", icon: "lucide:home", href: "/admin" },
@@ -26,9 +32,17 @@ const navItems = [
   { title: "Repas", icon: "lucide:utensils", href: "/admin/repas" },
   { title: "Activités", icon: "lucide:activity", href: "/admin/activites" },
   { title: "Inscriptions", icon: "lucide:ticket", href: "/admin/inscriptions" },
-  { title: "Check-in", icon: "lucide:scan-qr-code", href: "/admin/checkin" },
   { title: "Paiements", icon: "lucide:receipt", href: "/admin/orders" },
   { title: "Hôtels", icon: "lucide:hotel", href: "/admin/hotels" },
+];
+
+const checkinContent = [
+  { title: "Check-in", icon: "lucide:scan-qr-code", href: "/admin/checkin" },
+  {
+    title: "Liste des participants",
+    icon: "lucide:users",
+    href: "/admin/checkin/list",
+  },
 ];
 
 const navItemsContent = [
@@ -69,15 +83,28 @@ const bottomNavItems = [
   { title: "Paramètres", icon: "lucide:settings", href: "/admin/parametres" },
 ];
 
+const allNavHrefs = [
+  ...navItems,
+  ...checkinContent,
+  ...navItemsContent,
+  ...navItemsAdmin,
+  ...bottomNavItems,
+].map((i) => i.href);
+
 function isActive(href: string) {
   if (href === "/admin") return route.path === "/admin";
-  return route.path === href || route.path.startsWith(href + "/");
+  if (route.path === href) return true;
+  if (!route.path.startsWith(href + "/")) return false;
+  // Don't activate a parent item if a more specific child nav item matches
+  return !allNavHrefs.some(
+    (h) => h !== href && h.startsWith(href + "/") && route.path.startsWith(h),
+  );
 }
 </script>
 
 <template>
   <SidebarProvider>
-    <Sidebar collapsible="icon">
+    <Sidebar variant="floating" collapsible="icon">
       <!-- Header -->
       <SidebarHeader>
         <SidebarMenu>
@@ -104,63 +131,155 @@ function isActive(href: string) {
 
       <!-- Content -->
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem v-for="item in navItems" :key="item.href">
-                <SidebarMenuButton
-                  as-child
-                  :tooltip="item.title"
-                  :data-active="isActive(item.href)"
+        <!-- Navigation -->
+        <Collapsible default-open class="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel as-child>
+              <CollapsibleTrigger class="flex w-full items-center">
+                Navigation
+                <Icon
+                  name="lucide:chevron-down"
+                  class="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem v-for="item in navItems" :key="item.href">
+                    <SidebarMenuButton
+                      as-child
+                      :tooltip="item.title"
+                      :data-active="isActive(item.href)"
+                    >
+                      <NuxtLink :to="item.href">
+                        <Icon :name="item.icon" class="h-4 w-4" />
+                        <span>{{ item.title }}</span>
+                      </NuxtLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <!-- Check-in -->
+        <Collapsible default-open class="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel as-child>
+              <CollapsibleTrigger class="flex w-full items-center">
+                Check-in
+                <Icon
+                  name="lucide:chevron-down"
+                  class="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem
+                    v-for="item in checkinContent"
+                    :key="item.href"
+                  >
+                    <SidebarMenuButton
+                      as-child
+                      :tooltip="item.title"
+                      :data-active="isActive(item.href)"
+                    >
+                      <NuxtLink :to="item.href">
+                        <Icon :name="item.icon" class="h-4 w-4" />
+                        <span>{{ item.title }}</span>
+                      </NuxtLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <!-- Contenu -->
+        <Collapsible default-open class="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel as-child>
+              <CollapsibleTrigger class="flex w-full items-center">
+                Contenu
+                <Icon
+                  name="lucide:chevron-down"
+                  class="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem
+                    v-for="item in navItemsContent"
+                    :key="item.href"
+                  >
+                    <SidebarMenuButton
+                      as-child
+                      :tooltip="item.title"
+                      :data-active="isActive(item.href)"
+                    >
+                      <NuxtLink :to="item.href">
+                        <Icon :name="item.icon" class="h-4 w-4" />
+                        <span>{{ item.title }}</span>
+                      </NuxtLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <!-- Administration -->
+        <Collapsible default-open class="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel as-child>
+              <CollapsibleTrigger class="flex w-full items-center">
+                Administration
+                <Icon
+                  name="lucide:chevron-down"
+                  class="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem
+                    v-for="item in navItemsAdmin"
+                    :key="item.href"
+                  >
+                    <SidebarMenuButton
+                      as-child
+                      :tooltip="item.title"
+                      :data-active="isActive(item.href)"
+                    >
+                      <NuxtLink :to="item.href">
+                        <Icon :name="item.icon" class="h-4 w-4" />
+                        <span>{{ item.title }}</span>
+                      </NuxtLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <div class="px-3 py-1">
+                <span class="text-[10px] text-muted-foreground"
+                  >Version {{ version }}</span
                 >
-                  <NuxtLink :to="item.href">
-                    <Icon :name="item.icon" class="h-4 w-4" />
-                    <span>{{ item.title }}</span>
-                  </NuxtLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Contenu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem v-for="item in navItemsContent" :key="item.href">
-                <SidebarMenuButton
-                  as-child
-                  :tooltip="item.title"
-                  :data-active="isActive(item.href)"
-                >
-                  <NuxtLink :to="item.href">
-                    <Icon :name="item.icon" class="h-4 w-4" />
-                    <span>{{ item.title }}</span>
-                  </NuxtLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Administration</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem v-for="item in navItemsAdmin" :key="item.href">
-                <SidebarMenuButton
-                  as-child
-                  :tooltip="item.title"
-                  :data-active="isActive(item.href)"
-                >
-                  <NuxtLink :to="item.href">
-                    <Icon :name="item.icon" class="h-4 w-4" />
-                    <span>{{ item.title }}</span>
-                  </NuxtLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+              </div>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </Collapsible>
       </SidebarContent>
 
       <!-- Footer -->
@@ -186,7 +305,10 @@ function isActive(href: string) {
               <DropdownMenuTrigger as-child>
                 <SidebarMenuButton size="lg" tooltip="Mon compte">
                   <Avatar class="h-6 w-6 shrink-0">
-                    <AvatarImage :src="session.data?.user?.image || ''" />
+                    <AvatarImage
+                      :src="session.data?.user?.image"
+                      :fallback-src="avatarUrl(session.data?.user?.name || '')"
+                    />
                     <AvatarFallback
                       class="bg-foreground text-background text-xs"
                     >
@@ -240,7 +362,6 @@ function isActive(href: string) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-
     <!-- Main content -->
     <SidebarInset>
       <!-- Header -->

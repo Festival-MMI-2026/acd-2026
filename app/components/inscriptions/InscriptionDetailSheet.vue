@@ -82,6 +82,7 @@ function copyToClipboard(text: string) {
       <SheetHeader>
         <SheetTitle class="flex items-center gap-3">
           <Avatar class="h-10 w-10">
+            <AvatarImage :src="avatarUrl(`${registration?.firstName} ${registration?.lastName}`)" />
             <AvatarFallback class="bg-foreground text-background">
               {{ registration?.firstName?.charAt(0)
               }}{{ registration?.lastName?.charAt(0) }}
