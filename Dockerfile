@@ -13,11 +13,11 @@ COPY prisma.config.ts ./
 COPY package.json ./
 COPY package-lock.json ./
 
-# On installe UNIQUEMENT les dépendances de prod pour Prisma
+# On installe les dépendances de prod + prisma (nécessaire pour prisma.config.ts)
 # --ignore-scripts: le postinstall (prisma generate + nuxt prepare) n'est pas nécessaire
 # car .output est déjà buildé par le CI avec le client Prisma généré
-RUN npm install -g prisma \
-    && npm ci --omit=dev --ignore-scripts --legacy-peer-deps \
+RUN npm ci --omit=dev --ignore-scripts --legacy-peer-deps \
+    && npm install prisma --no-save \
     && npm cache clean --force
 
 EXPOSE 3000
