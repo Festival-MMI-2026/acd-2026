@@ -32,6 +32,7 @@ jobs:
           tar -czf app.tar.gz \
             .output \
             prisma \
+            prisma.config.ts \
             package.json \
             package-lock.json \
             docker-compose.yml \

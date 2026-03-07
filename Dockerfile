@@ -9,6 +9,7 @@ ENV NUXT_PORT=3000
 # On récupère les dossiers extraits du .tar.gz (transférés par SCP)
 COPY .output ./.output
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 COPY package.json ./
 COPY package-lock.json ./
 

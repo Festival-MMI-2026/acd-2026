@@ -1,3 +1,3 @@
 acd.mmi-troyes.fr {
-    reverse_proxy app:3000
+    reverse_proxy acd-app:3000
 }

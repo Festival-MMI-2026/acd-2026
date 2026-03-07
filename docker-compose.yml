@@ -25,11 +25,13 @@ services:
       dockerfile: Dockerfile
     container_name: acd-app
     restart: unless-stopped
+    env_file:
+      - .env
     # Plus besoin d'exposer le port 3001 au public, Caddy s'en occupe en interne
     expose:
       - "3000"
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
+      DATABASE_URL: ${DATABASE_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
