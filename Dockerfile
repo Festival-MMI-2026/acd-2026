@@ -14,8 +14,9 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # On installe UNIQUEMENT les dépendances de prod pour Prisma
-RUN npm install -g prisma
-RUN npm ci --omit=dev --legacy-peer-deps
+RUN npm install -g prisma \
+    && npm ci --omit=dev --legacy-peer-deps \
+    && npm cache clean --force
 
 EXPOSE 3000
 
