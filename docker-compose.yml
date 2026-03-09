@@ -95,6 +95,7 @@ services:
       - POSTFIX_HOSTNAME=acd.mmi-troyes.fr
       # On autorise l'app Nuxt (réseau interne) à envoyer sans auth complexe
       - ALLOWED_NETWORKS=172.16.0.0/12 192.168.0.0/16 172.17.0.0/16
+      - ALLOWED_SENDER_DOMAINS=acd.mmi-troyes.fr
     deploy:
       resources:
         limits:
