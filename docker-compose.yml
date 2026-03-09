@@ -87,12 +87,14 @@ services:
           memory: 350M
 
   postfix:
-    image: catatnight/postfix
+    image: boky/postfix
     container_name: acd-postfix
     restart: unless-stopped
     environment:
-      - maildomain=acd.mmi-troyes.fr
-      - smtp_user=acd:Festival2026
+      # On définit le nom d'hôte pour l'envoi
+      - POSTFIX_HOSTNAME=acd.mmi-troyes.fr
+      # On autorise l'app Nuxt (réseau interne) à envoyer sans auth complexe
+      - ALLOWED_NETWORKS=172.16.0.0/12 192.168.0.0/16 172.17.0.0/16
     deploy:
       resources:
         limits:
