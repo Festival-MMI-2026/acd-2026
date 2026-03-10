@@ -12,5 +12,7 @@ export default defineEventHandler(async (event) => {
     where: { id },
   });
 
+  logAudit("hotel.deleted", "Hotel", id);
+
   return { success: true };
 });

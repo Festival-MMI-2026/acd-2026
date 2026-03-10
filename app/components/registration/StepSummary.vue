@@ -62,24 +62,19 @@ const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
 const totalPrice = computed(() => {
   let total = 0;
 
+  // Meal prices
   for (const selectedMeal of props.selectedMeals) {
     const meal = props.meals.find((m) => m.id === selectedMeal.mealId);
     if (meal) {
       total += Number(meal.price) || 0;
+    }
+  }
 
-      // Add option prices
-      for (const optionId of [
-        selectedMeal.starterOptionId,
-        selectedMeal.mainOptionId,
-        selectedMeal.dessertOptionId,
-      ]) {
-        if (optionId) {
-          const option = meal.options?.find((o) => o.id === optionId);
-          if (option?.additionalPrice) {
-            total += Number(option.additionalPrice);
-          }
-        }
-      }
+  // Activity prices
+  for (const activityId of props.selectedActivities) {
+    const activity = props.activities.find((a) => a.id === activityId);
+    if (activity) {
+      total += Number(activity.price) || 0;
     }
   }
 
@@ -318,16 +313,21 @@ function formatDate(dateStr: string) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="flex flex-wrap gap-2">
-          <Badge
+        <div class="space-y-0 divide-y">
+          <div
             v-for="activityId in selectedActivities"
             :key="activityId"
-            variant="outline"
-            class="py-1.5 px-3"
+            class="flex items-center justify-between py-3 first:pt-0 last:pb-0"
           >
-            <Icon name="lucide:check" class="h-3 w-3 mr-1 text-primary" />
-            {{ getActivityById(activityId)?.name }}
-          </Badge>
+            <div class="flex items-center gap-2">
+              <Icon name="lucide:check" class="h-3 w-3 text-primary shrink-0" />
+              <span class="text-sm font-medium">{{ getActivityById(activityId)?.name }}</span>
+            </div>
+            <Badge v-if="Number(getActivityById(activityId)?.price || 0) > 0" variant="secondary" class="tabular-nums shrink-0">
+              {{ Number(getActivityById(activityId)?.price || 0).toFixed(2) }} €
+            </Badge>
+            <span v-else class="text-xs text-muted-foreground">Gratuit</span>
+          </div>
         </div>
       </CardContent>
     </Card>

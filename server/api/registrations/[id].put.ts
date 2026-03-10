@@ -32,5 +32,9 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("registration.updated", "Registration", id, null, {
+    name: `${updatedRegistration.firstName} ${updatedRegistration.lastName}`,
+  });
+
   return updatedRegistration;
 });

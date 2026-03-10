@@ -18,11 +18,19 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const oldRegistration = await prisma.registration.findUnique({ where: { id }, select: { status: true } });
+
   const updatedRegistration = await prisma.registration.update({
     where: { id },
     data: {
       status: body.status,
     },
+  });
+
+  logAudit("registration.status_changed", "Registration", id, null, {
+    name: `${updatedRegistration.firstName} ${updatedRegistration.lastName}`,
+    oldStatus: oldRegistration?.status,
+    newStatus: body.status,
   });
 
   return updatedRegistration;

@@ -251,7 +251,7 @@ const invoiceItems = computed(() => {
               <Separator />
               <div class="flex justify-between text-lg font-bold pt-2">
                 <span>Total</span>
-                <span>{{ Number(order.amount).toFixed(2) }} €</span>
+                <span>{{ invoiceItems.reduce((acc, i) => acc + i.price, 0).toFixed(2) }} €</span>
               </div>
             </div>
           </div>

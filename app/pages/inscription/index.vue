@@ -140,22 +140,18 @@ function getOptionName(meal: any, optionId?: string) {
 // Calculate total price (computed for reactivity)
 const totalPrice = computed(() => {
   let total = 0;
+  // Meal prices
   for (const selectedMeal of selectedMeals.value) {
     const meal = meals.value?.find((m) => m.id === selectedMeal.mealId);
     if (meal) {
       total += Number(meal.price) || 0;
-      for (const optionId of [
-        selectedMeal.starterOptionId,
-        selectedMeal.mainOptionId,
-        selectedMeal.dessertOptionId,
-      ]) {
-        if (optionId) {
-          const option = meal.options?.find((o: any) => o.id === optionId);
-          if (option?.additionalPrice) {
-            total += Number(option.additionalPrice);
-          }
-        }
-      }
+    }
+  }
+  // Activity prices
+  for (const activityId of selectedActivities.value) {
+    const activity = activities.value?.find((a) => a.id === activityId);
+    if (activity) {
+      total += Number(activity.price) || 0;
     }
   }
   return total;
@@ -612,19 +608,33 @@ async function submitRegistration() {
                         {{ selectedActivities.length }}
                       </Badge>
                     </p>
-                    <div class="flex flex-wrap gap-1.5">
-                      <Badge
+                    <div class="space-y-2">
+                      <div
                         v-for="id in selectedActivities"
                         :key="id"
-                        variant="outline"
-                        class="text-xs font-normal gap-1"
+                        class="flex items-start justify-between gap-2"
                       >
-                        <Icon
-                          name="lucide:check"
-                          class="h-2.5 w-2.5 text-primary"
-                        />
-                        {{ getActivityById(id)?.name }}
-                      </Badge>
+                        <div class="min-w-0">
+                          <p class="text-xs font-medium leading-tight truncate">
+                            {{ getActivityById(id)?.name }}
+                          </p>
+                        </div>
+                        <span
+                          v-if="Number(getActivityById(id)?.price || 0) > 0"
+                          class="text-xs font-semibold tabular-nums shrink-0 text-foreground"
+                        >
+                          {{
+                            Number(getActivityById(id)?.price || 0).toFixed(2)
+                          }}
+                          €
+                        </span>
+                        <span
+                          v-else
+                          class="text-xs text-muted-foreground shrink-0"
+                        >
+                          Gratuit
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -640,7 +650,7 @@ async function submitRegistration() {
                       v-if="totalPrice === 0"
                       class="text-xs text-muted-foreground mt-1"
                     >
-                      Aucun repas sélectionné
+                      Aucun repas ou activité payante sélectionné
                     </p>
                   </div>
                 </div>

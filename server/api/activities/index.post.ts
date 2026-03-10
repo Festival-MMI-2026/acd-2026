@@ -22,5 +22,7 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("activity.created", "Activity", activity.id, null, { name: activity.name });
+
   return activity;
 });

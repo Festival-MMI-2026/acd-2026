@@ -36,9 +36,18 @@ export default defineEventHandler(async (event) => {
     updateData.notes = body.notes;
   }
 
+  const oldOrder = await prisma.order.findUnique({ where: { id }, select: { paymentStatus: true } });
+
   const order = await prisma.order.update({
     where: { id },
     data: updateData,
+  });
+
+  logAudit("order.status_changed", "Order", id, null, {
+    orderNumber: order.orderNumber,
+    oldStatus: oldOrder?.paymentStatus,
+    newStatus: body.paymentStatus,
+    paymentMethod: body.paymentMethod || null,
   });
 
   // Also update registration status based on payment

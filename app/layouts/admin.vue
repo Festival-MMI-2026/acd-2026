@@ -76,6 +76,11 @@ const navItemsContent = [
 const navItemsAdmin = [
   { title: "Utilisateurs", icon: "lucide:users", href: "/admin/users" },
   { title: "Liste IUT", icon: "lucide:building-2", href: "/admin/iuts" },
+  {
+    title: "Journal d'activité",
+    icon: "lucide:scroll-text",
+    href: "/admin/journal",
+  },
   { title: "Export", icon: "lucide:download", href: "/admin/export" },
 ];
 
@@ -100,6 +105,8 @@ function isActive(href: string) {
     (h) => h !== href && h.startsWith(href + "/") && route.path.startsWith(h),
   );
 }
+
+const searchOpen = ref(false);
 </script>
 
 <template>
@@ -368,7 +375,7 @@ function isActive(href: string) {
       <header
         class="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
       >
-        <div class="flex items-center gap-2 px-4">
+        <div class="flex items-center gap-2 px-4 flex-1">
           <SidebarTrigger class="-ml-1" />
           <Separator
             orientation="vertical"
@@ -416,7 +423,35 @@ function isActive(href: string) {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
+
+        <!-- Right side: Search -->
+        <div class="flex items-center gap-2 px-4">
+          <Button
+            variant="outline"
+            size="sm"
+            class="hidden md:flex items-center gap-2 text-muted-foreground h-8 w-56 justify-start rounded-lg px-3"
+            @click="searchOpen = true"
+          >
+            <Icon name="lucide:search" class="h-3.5 w-3.5" />
+            <span class="text-xs">Rechercher…</span>
+            <KbdGroup class="ml-auto">
+              <Kbd>⌘</Kbd>
+              <Kbd>K</Kbd>
+            </KbdGroup>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="md:hidden h-8 w-8"
+            @click="searchOpen = true"
+          >
+            <Icon name="lucide:search" class="h-4 w-4" />
+          </Button>
+        </div>
       </header>
+
+      <!-- Search Dialog -->
+      <AdminSearch v-model:open="searchOpen" />
 
       <!-- Content -->
       <div class="flex flex-1 flex-col gap-4 p-8 overflow-auto">

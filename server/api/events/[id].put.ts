@@ -29,5 +29,7 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("event.updated", "Event", id, null, { name: updatedEvent.title });
+
   return updatedEvent;
 });

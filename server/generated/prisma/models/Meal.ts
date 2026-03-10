@@ -37,6 +37,7 @@ export type MealSumAggregateOutputType = {
 export type MealMinAggregateOutputType = {
   id: string | null
   name: string | null
+  description: string | null
   date: Date | null
   mealType: $Enums.MealType | null
   price: runtime.Decimal | null
@@ -47,6 +48,7 @@ export type MealMinAggregateOutputType = {
 export type MealMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  description: string | null
   date: Date | null
   mealType: $Enums.MealType | null
   price: runtime.Decimal | null
@@ -57,6 +59,7 @@ export type MealMaxAggregateOutputType = {
 export type MealCountAggregateOutputType = {
   id: number
   name: number
+  description: number
   date: number
   mealType: number
   price: number
@@ -77,6 +80,7 @@ export type MealSumAggregateInputType = {
 export type MealMinAggregateInputType = {
   id?: true
   name?: true
+  description?: true
   date?: true
   mealType?: true
   price?: true
@@ -87,6 +91,7 @@ export type MealMinAggregateInputType = {
 export type MealMaxAggregateInputType = {
   id?: true
   name?: true
+  description?: true
   date?: true
   mealType?: true
   price?: true
@@ -97,6 +102,7 @@ export type MealMaxAggregateInputType = {
 export type MealCountAggregateInputType = {
   id?: true
   name?: true
+  description?: true
   date?: true
   mealType?: true
   price?: true
@@ -194,6 +200,7 @@ export type MealGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type MealGroupByOutputType = {
   id: string
   name: string
+  description: string | null
   date: Date
   mealType: $Enums.MealType
   price: runtime.Decimal
@@ -227,6 +234,7 @@ export type MealWhereInput = {
   NOT?: Prisma.MealWhereInput | Prisma.MealWhereInput[]
   id?: Prisma.StringFilter<"Meal"> | string
   name?: Prisma.StringFilter<"Meal"> | string
+  description?: Prisma.StringNullableFilter<"Meal"> | string | null
   date?: Prisma.DateTimeFilter<"Meal"> | Date | string
   mealType?: Prisma.EnumMealTypeFilter<"Meal"> | $Enums.MealType
   price?: Prisma.DecimalFilter<"Meal"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -239,6 +247,7 @@ export type MealWhereInput = {
 export type MealOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   mealType?: Prisma.SortOrder
   price?: Prisma.SortOrder
@@ -254,6 +263,7 @@ export type MealWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MealWhereInput[]
   NOT?: Prisma.MealWhereInput | Prisma.MealWhereInput[]
   name?: Prisma.StringFilter<"Meal"> | string
+  description?: Prisma.StringNullableFilter<"Meal"> | string | null
   date?: Prisma.DateTimeFilter<"Meal"> | Date | string
   mealType?: Prisma.EnumMealTypeFilter<"Meal"> | $Enums.MealType
   price?: Prisma.DecimalFilter<"Meal"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -266,6 +276,7 @@ export type MealWhereUniqueInput = Prisma.AtLeast<{
 export type MealOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   mealType?: Prisma.SortOrder
   price?: Prisma.SortOrder
@@ -284,6 +295,7 @@ export type MealScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MealScalarWhereWithAggregatesInput | Prisma.MealScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Meal"> | string
   name?: Prisma.StringWithAggregatesFilter<"Meal"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"Meal"> | string | null
   date?: Prisma.DateTimeWithAggregatesFilter<"Meal"> | Date | string
   mealType?: Prisma.EnumMealTypeWithAggregatesFilter<"Meal"> | $Enums.MealType
   price?: Prisma.DecimalWithAggregatesFilter<"Meal"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -294,6 +306,7 @@ export type MealScalarWhereWithAggregatesInput = {
 export type MealCreateInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -306,6 +319,7 @@ export type MealCreateInput = {
 export type MealUncheckedCreateInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -318,6 +332,7 @@ export type MealUncheckedCreateInput = {
 export type MealUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -330,6 +345,7 @@ export type MealUpdateInput = {
 export type MealUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -342,6 +358,7 @@ export type MealUncheckedUpdateInput = {
 export type MealCreateManyInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -352,6 +369,7 @@ export type MealCreateManyInput = {
 export type MealUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -362,6 +380,7 @@ export type MealUpdateManyMutationInput = {
 export type MealUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -372,6 +391,7 @@ export type MealUncheckedUpdateManyInput = {
 export type MealCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   mealType?: Prisma.SortOrder
   price?: Prisma.SortOrder
@@ -386,6 +406,7 @@ export type MealAvgOrderByAggregateInput = {
 export type MealMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   mealType?: Prisma.SortOrder
   price?: Prisma.SortOrder
@@ -396,6 +417,7 @@ export type MealMaxOrderByAggregateInput = {
 export type MealMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   date?: Prisma.SortOrder
   mealType?: Prisma.SortOrder
   price?: Prisma.SortOrder
@@ -455,6 +477,7 @@ export type MealUpdateOneRequiredWithoutRegistrationMealsNestedInput = {
 export type MealCreateWithoutOptionsInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -466,6 +489,7 @@ export type MealCreateWithoutOptionsInput = {
 export type MealUncheckedCreateWithoutOptionsInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -493,6 +517,7 @@ export type MealUpdateToOneWithWhereWithoutOptionsInput = {
 export type MealUpdateWithoutOptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -504,6 +529,7 @@ export type MealUpdateWithoutOptionsInput = {
 export type MealUncheckedUpdateWithoutOptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -515,6 +541,7 @@ export type MealUncheckedUpdateWithoutOptionsInput = {
 export type MealCreateWithoutRegistrationMealsInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -526,6 +553,7 @@ export type MealCreateWithoutRegistrationMealsInput = {
 export type MealUncheckedCreateWithoutRegistrationMealsInput = {
   id?: string
   name: string
+  description?: string | null
   date: Date | string
   mealType: $Enums.MealType
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -553,6 +581,7 @@ export type MealUpdateToOneWithWhereWithoutRegistrationMealsInput = {
 export type MealUpdateWithoutRegistrationMealsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -564,6 +593,7 @@ export type MealUpdateWithoutRegistrationMealsInput = {
 export type MealUncheckedUpdateWithoutRegistrationMealsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealType?: Prisma.EnumMealTypeFieldUpdateOperationsInput | $Enums.MealType
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -615,6 +645,7 @@ export type MealCountOutputTypeCountRegistrationMealsArgs<ExtArgs extends runtim
 export type MealSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  description?: boolean
   date?: boolean
   mealType?: boolean
   price?: boolean
@@ -628,6 +659,7 @@ export type MealSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type MealSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  description?: boolean
   date?: boolean
   mealType?: boolean
   price?: boolean
@@ -638,6 +670,7 @@ export type MealSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type MealSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  description?: boolean
   date?: boolean
   mealType?: boolean
   price?: boolean
@@ -648,6 +681,7 @@ export type MealSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type MealSelectScalar = {
   id?: boolean
   name?: boolean
+  description?: boolean
   date?: boolean
   mealType?: boolean
   price?: boolean
@@ -655,7 +689,7 @@ export type MealSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MealOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "date" | "mealType" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["meal"]>
+export type MealOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "date" | "mealType" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["meal"]>
 export type MealInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   options?: boolean | Prisma.Meal$optionsArgs<ExtArgs>
   registrationMeals?: boolean | Prisma.Meal$registrationMealsArgs<ExtArgs>
@@ -673,6 +707,7 @@ export type $MealPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    description: string | null
     date: Date
     mealType: $Enums.MealType
     price: runtime.Decimal
@@ -1105,6 +1140,7 @@ export interface Prisma__MealClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface MealFieldRefs {
   readonly id: Prisma.FieldRef<"Meal", 'String'>
   readonly name: Prisma.FieldRef<"Meal", 'String'>
+  readonly description: Prisma.FieldRef<"Meal", 'String'>
   readonly date: Prisma.FieldRef<"Meal", 'DateTime'>
   readonly mealType: Prisma.FieldRef<"Meal", 'MealType'>
   readonly price: Prisma.FieldRef<"Meal", 'Decimal'>

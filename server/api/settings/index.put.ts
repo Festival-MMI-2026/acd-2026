@@ -32,5 +32,7 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("settings.updated", "Setting", "site_settings");
+
   return settings;
 });

@@ -7,6 +7,7 @@ interface Activity {
   duration?: number;
   capacity?: number;
   location?: string;
+  price?: number;
 }
 
 const props = defineProps<{
@@ -114,9 +115,17 @@ function formatDate(dateStr: string) {
             @update:model-value="toggleActivity(activity.id)"
           />
           <div class="grid gap-2 font-normal flex-1">
-            <p class="text-sm leading-none font-medium">
-              {{ activity.name }}
-            </p>
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm leading-none font-medium">
+                {{ activity.name }}
+              </p>
+              <Badge v-if="Number(activity.price || 0) > 0" class="tabular-nums shrink-0">
+                {{ Number(activity.price).toFixed(2) }} €
+              </Badge>
+              <Badge v-else variant="outline" class="shrink-0 text-xs font-normal">
+                Gratuit
+              </Badge>
+            </div>
             <div class="flex flex-wrap items-center gap-2">
               <Badge variant="outline" class="text-xs font-normal gap-1">
                 <Icon name="lucide:calendar" class="h-3 w-3" />

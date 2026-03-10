@@ -23,5 +23,7 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("meal.updated", "Meal", id, null, { name: meal.name });
+
   return meal;
 });
