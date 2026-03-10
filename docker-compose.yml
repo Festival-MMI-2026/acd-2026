@@ -81,11 +81,10 @@ services:
     image: gotenberg/gotenberg:8
     container_name: acd-gotenberg
     restart: unless-stopped
-    # On ajoute ces commandes pour aider Chromium sur un petit serveur
     command:
       - "gotenberg"
       - "--api-timeout=60s"
-      - "--chromium-disable-sandbox"
+      - "--chromium-start-timeout=60s"
     deploy:
       resources:
         limits:
