@@ -71,6 +71,7 @@ async function updateStatus(newStatus: string) {
 
 const downloadingInvoice = ref(false);
 const previewOpen = ref(false);
+const iframeLoading = ref(false);
 
 async function downloadInvoice() {
   if (!registration.value) return;
@@ -285,7 +286,7 @@ const invoiceDetails = computed(() => {
               <Separator />
               <div class="flex justify-between text-lg font-bold pt-2">
                 <span>Total</span>
-                <span>{{ Number(registration.totalPrice).toFixed(2) }} €</span>
+                <span>{{ invoiceDetails.subtotal.toFixed(2) }} €</span>
               </div>
             </div>
           </div>
@@ -513,17 +514,27 @@ const invoiceDetails = computed(() => {
   </div>
 
   <!-- Invoice Preview Dialog -->
-  <Dialog v-model:open="previewOpen">
+  <Dialog v-model:open="previewOpen" @update:open="(v) => { if (v) iframeLoading = true }">
     <DialogContent class="max-w-5xl w-full h-[90vh] flex flex-col p-0 gap-0">
       <DialogHeader class="px-6 py-4 border-b shrink-0">
         <DialogTitle> Facture — {{ registration?.id }} </DialogTitle>
       </DialogHeader>
-      <iframe
-        v-if="registration && previewOpen"
-        :src="`/api/registrations/${registration.id}/invoice`"
-        class="flex-1 w-full rounded-b-lg"
-        type="application/pdf"
-      />
+      <div class="flex-1 relative">
+        <div
+          v-if="iframeLoading"
+          class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background z-10"
+        >
+          <Icon name="lucide:loader-2" class="h-8 w-8 animate-spin text-muted-foreground" />
+          <p class="text-sm text-muted-foreground">Génération de la facture…</p>
+        </div>
+        <iframe
+          v-if="registration && previewOpen"
+          :src="`/api/registrations/${registration.id}/invoice`"
+          class="w-full h-full rounded-b-lg"
+          type="application/pdf"
+          @load="iframeLoading = false"
+        />
+      </div>
     </DialogContent>
   </Dialog>
 </template>

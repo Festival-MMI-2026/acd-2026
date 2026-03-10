@@ -25,5 +25,7 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("hotel.updated", "Hotel", id, null, { name: hotel.name });
+
   return hotel;
 });

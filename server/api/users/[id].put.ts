@@ -56,6 +56,9 @@ export default defineEventHandler(async (event) => {
         iut,
       },
     });
+
+    logAudit("user.updated", "User", id, null, { name: user.name, email: user.email });
+
     return user;
   } catch (error) {
     console.error("Error updating user:", error);

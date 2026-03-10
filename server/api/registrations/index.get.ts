@@ -17,5 +17,16 @@ export default defineEventHandler(async () => {
     },
     orderBy: { createdAt: "desc" },
   });
-  return registrations;
+
+  // Recalculate totalPrice for each registration from actual meal + activity prices
+  return registrations.map((reg) => {
+    let computedTotal = 0;
+    for (const m of reg.meals as any[]) {
+      computedTotal += Number(m.meal?.price) || 0;
+    }
+    for (const a of reg.activities as any[]) {
+      computedTotal += Number(a.activity?.price) || 0;
+    }
+    return { ...reg, totalPrice: computedTotal };
+  });
 });

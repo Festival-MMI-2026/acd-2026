@@ -35,7 +35,32 @@ const settings = ref({
   showInscription: true,
   showAcces: true,
   showHotels: true,
+  notificationEmails: [] as string[],
 });
+
+const newEmail = ref("");
+const emailError = ref("");
+
+function addEmail() {
+  const email = newEmail.value.trim().toLowerCase();
+  if (!email) return;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    emailError.value = "Adresse email invalide";
+    return;
+  }
+  if (settings.value.notificationEmails.includes(email)) {
+    emailError.value = "Cette adresse est déjà ajoutée";
+    return;
+  }
+  settings.value.notificationEmails.push(email);
+  newEmail.value = "";
+  emailError.value = "";
+}
+
+function removeEmail(index: number) {
+  settings.value.notificationEmails.splice(index, 1);
+}
 
 const saving = ref(false);
 
@@ -56,6 +81,8 @@ watchEffect(() => {
     settings.value.showInscription = dbSettings.value.showInscription;
     settings.value.showAcces = dbSettings.value.showAcces;
     settings.value.showHotels = dbSettings.value.showHotels;
+    settings.value.notificationEmails =
+      dbSettings.value.notificationEmails ?? [];
   }
 });
 
@@ -75,6 +102,7 @@ async function save() {
         showInscription: settings.value.showInscription,
         showAcces: settings.value.showAcces,
         showHotels: settings.value.showHotels,
+        notificationEmails: settings.value.notificationEmails,
       },
     });
     await refresh();
@@ -301,6 +329,80 @@ async function executeClear() {
             <Switch v-model="settings.showHotels" />
           </ItemActions>
         </Item>
+      </CardContent>
+    </Card>
+
+    <!-- Notification Emails -->
+    <Card class="rounded-2xl">
+      <CardHeader>
+        <div class="flex items-center gap-3">
+          <div
+            class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center"
+          >
+            <Icon name="lucide:mail" class="h-5 w-5 text-blue-500" />
+          </div>
+          <div>
+            <CardTitle>Notifications d'inscription</CardTitle>
+            <CardDescription
+              >Adresses email qui recevront une notification à chaque nouvelle
+              inscription</CardDescription
+            >
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div class="flex gap-2">
+          <div class="flex-1 space-y-1">
+            <Input
+              v-model="newEmail"
+              class="rounded-xl"
+              type="email"
+              placeholder="exemple@email.com"
+              @keydown.enter.prevent="addEmail"
+            />
+            <p v-if="emailError" class="text-xs text-destructive">
+              {{ emailError }}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            class="rounded-xl shrink-0"
+            @click="addEmail"
+          >
+            <Icon name="lucide:plus" class="mr-2 h-4 w-4" />
+            Ajouter
+          </Button>
+        </div>
+
+        <div
+          v-if="settings.notificationEmails.length === 0"
+          class="text-sm text-muted-foreground text-center py-6 border border-dashed rounded-xl"
+        >
+          Aucune adresse configurée. Les notifications d'inscription ne seront
+          pas envoyées.
+        </div>
+
+        <div v-else class="space-y-2">
+          <Item
+            v-for="(email, index) in settings.notificationEmails"
+            :key="email"
+            variant="outline"
+          >
+            <ItemContent>
+              <ItemTitle class="font-mono text-sm">{{ email }}</ItemTitle>
+            </ItemContent>
+            <ItemActions>
+              <Button
+                variant="ghost"
+                size="icon"
+                class="h-8 w-8 text-muted-foreground hover:text-destructive"
+                @click="removeEmail(index)"
+              >
+                <Icon name="lucide:x" class="h-4 w-4" />
+              </Button>
+            </ItemActions>
+          </Item>
+        </div>
       </CardContent>
     </Card>
 

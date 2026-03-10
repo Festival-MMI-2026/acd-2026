@@ -117,3 +117,8 @@ export type InscriptionContent = Prisma.InscriptionContentModel
  * 
  */
 export type HotelsContent = Prisma.HotelsContentModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

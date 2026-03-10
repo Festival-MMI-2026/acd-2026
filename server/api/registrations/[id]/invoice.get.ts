@@ -45,12 +45,25 @@ export default defineEventHandler(async (event) => {
       : null,
   ]);
 
+  // Recalculate total price from actual meal + activity prices
+  let computedTotal = 0;
+  if (registration.meals) {
+    for (const m of registration.meals as any[]) {
+      computedTotal += Number(m.meal?.price) || 0;
+    }
+  }
+  if (registration.activities) {
+    for (const a of registration.activities as any[]) {
+      computedTotal += Number(a.activity?.price) || 0;
+    }
+  }
+
   // Prepare data for template
   const data = {
     registration,
     settings,
     iutName: iut?.name ?? null,
-    totalPrice: registration.totalPrice,
+    totalPrice: computedTotal,
     paymentStatus: registration.order?.paymentStatus || registration.status,
     paymentMethod: registration.order?.paymentMethod || null,
     paidAt: registration.order?.paidAt || null,

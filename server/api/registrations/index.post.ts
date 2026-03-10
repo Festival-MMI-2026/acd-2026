@@ -1,5 +1,6 @@
 import { render } from "@vue-email/render";
 import RegistrationConfirmationEmail from "../../emails/RegistrationConfirmationEmail.vue";
+import NewRegistrationNotifEmail from "../../emails/NewRegistrationNotifEmail.vue";
 import { sendMail } from "../../utils/mail";
 import { generateInvoicePdf } from "../../utils/generateInvoicePdf";
 
@@ -43,6 +44,27 @@ export default defineEventHandler(async (event) => {
     ).join("");
     const registrationId = `IACD-${regRandom}`;
 
+    // Server-side price recalculation from actual DB prices
+    const mealIds = meals.map((m: any) => m.mealId).filter(Boolean);
+    const activityIds = activities.filter(Boolean);
+
+    const [dbMeals, dbActivities] = await Promise.all([
+      mealIds.length > 0
+        ? prisma.meal.findMany({ where: { id: { in: mealIds } }, select: { id: true, price: true } })
+        : Promise.resolve([]),
+      activityIds.length > 0
+        ? prisma.activity.findMany({ where: { id: { in: activityIds } }, select: { id: true, price: true } })
+        : Promise.resolve([]),
+    ]);
+
+    let computedTotal = 0;
+    for (const meal of dbMeals) {
+      computedTotal += Number(meal.price) || 0;
+    }
+    for (const activity of dbActivities) {
+      computedTotal += Number(activity.price) || 0;
+    }
+
     // Create registration with related meals, activities, and order
     const registration = await prisma.registration.create({
       data: {
@@ -54,7 +76,7 @@ export default defineEventHandler(async (event) => {
         iutId: iutId || null,
         allergens: allergens || null,
         isMotorized: isMotorized || false,
-        totalPrice: totalPrice || 0,
+        totalPrice: computedTotal,
         status: "PENDING",
         meals: {
           create: meals.map((meal: any) => ({
@@ -73,7 +95,7 @@ export default defineEventHandler(async (event) => {
         order: {
           create: {
             orderNumber,
-            amount: totalPrice || 0,
+            amount: computedTotal,
             paymentStatus: "PENDING",
             notes: allergens ? `Allergies: ${allergens}` : null,
           },
@@ -95,6 +117,13 @@ export default defineEventHandler(async (event) => {
         },
         order: true,
       },
+    });
+
+    // Log audit event
+    logAudit("registration.created", "Registration", registrationId, null, {
+      name: `${firstName} ${lastName}`,
+      email,
+      totalPrice: computedTotal,
     });
 
     // Send confirmation email with invoice PDF attachment (fire-and-forget)
@@ -120,17 +149,20 @@ export default defineEventHandler(async (event) => {
       registration,
       settings,
       iutName: iut?.name ?? null,
-      totalPrice: registration.totalPrice,
+      totalPrice: computedTotal,
       paymentStatus: registration.order?.paymentStatus || registration.status,
       paymentMethod: registration.order?.paymentMethod || null,
       paidAt: registration.order?.paidAt || null,
     };
 
+    const finalOrderNumber = registration.order?.orderNumber || orderNumber;
+
+    // Send confirmation email to the registrant
     Promise.all([
       render(RegistrationConfirmationEmail, {
         firstName: registration.firstName,
         lastName: registration.lastName,
-        orderNumber: registration.order?.orderNumber || orderNumber,
+        orderNumber: finalOrderNumber,
         registrationId: registration.id,
         totalPrice: Number(registration.totalPrice),
         meals: emailMeals,
@@ -142,11 +174,11 @@ export default defineEventHandler(async (event) => {
       .then(([html, pdfBuffer]) =>
         sendMail(
           registration.email,
-          `Confirmation d'inscription ACD - ${registration.order?.orderNumber || orderNumber}`,
+          `Confirmation d'inscription ACD - ${finalOrderNumber}`,
           html,
           [
             {
-              filename: `Facture_${registration.order?.orderNumber || registration.id}.pdf`,
+              filename: `Facture_${finalOrderNumber}.pdf`,
               content: pdfBuffer,
               contentType: "application/pdf",
             },
@@ -154,6 +186,28 @@ export default defineEventHandler(async (event) => {
         ),
       )
       .catch(console.error);
+
+    // Send notification email to configured admin recipients
+    const notificationEmails = settings?.notificationEmails ?? [];
+    if (notificationEmails.length > 0) {
+      render(NewRegistrationNotifEmail, {
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        email: registration.email,
+        registrationId: registration.id,
+        orderNumber: finalOrderNumber,
+        totalPrice: Number(registration.totalPrice),
+        appUrl,
+      })
+        .then((html) =>
+          sendMail(
+            notificationEmails.join(", "),
+            `Nouvelle inscription ACD - ${registration.firstName} ${registration.lastName}`,
+            html,
+          ),
+        )
+        .catch(console.error);
+    }
 
     return registration;
   } catch (error: any) {

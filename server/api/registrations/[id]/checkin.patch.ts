@@ -15,5 +15,10 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  logAudit("registration.checkin", "Registration", id, null, {
+    name: `${registration.firstName} ${registration.lastName}`,
+    checkedIn,
+  });
+
   return registration;
 });

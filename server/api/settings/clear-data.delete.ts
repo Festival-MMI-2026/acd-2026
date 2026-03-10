@@ -58,5 +58,7 @@ export default defineEventHandler(async (event) => {
     deleted.events = events.count;
   }
 
+  logAudit("data.cleared", "System", "clear-data", null, { tables, deleted });
+
   return { success: true, deleted };
 });

@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       showInscription: body.showInscription,
       showAcces: body.showAcces,
       showHotels: body.showHotels,
+      notificationEmails: body.notificationEmails ?? undefined,
     },
     create: {
       id: "site_settings",
@@ -27,8 +28,11 @@ export default defineEventHandler(async (event) => {
       showInscription: body.showInscription,
       showAcces: body.showAcces,
       showHotels: body.showHotels,
+      notificationEmails: body.notificationEmails ?? [],
     },
   });
+
+  logAudit("settings.updated", "Setting", "site_settings");
 
   return settings;
 });

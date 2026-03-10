@@ -106,15 +106,16 @@ model Event {
 
 // Repas disponibles
 model Meal {
-  id        String       @id @default(uuid())
-  name      String       // "Déjeuner Jour 1", "Dîner Jour 2"
-  date      DateTime
-  mealType  MealType
-  price     Decimal      @db.Decimal(10, 2)
-  options   MealOption[]
+  id          String       @id @default(uuid())
+  name        String       // "Déjeuner Jour 1", "Dîner Jour 2"
+  description String?
+  date        DateTime
+  mealType    MealType
+  price       Decimal      @db.Decimal(10, 2)
+  options     MealOption[]
   registrationMeals RegistrationMeal[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 enum MealType {
@@ -262,6 +263,7 @@ model Setting {
   eventEndDate     DateTime @default("2026-06-19T00:00:00.000Z")
   location         String   @default("IUT de Troyes")
   locationAddress  String   @default("9 Rue de Québec, 10000 Troyes")
+  notificationEmails String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -393,4 +395,18 @@ model HotelsContent {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Journal d'activité (Audit Log)
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String   // e.g. "registration.created", "order.paid", "registration.checkin"
+  entityType String   // e.g. "Registration", "Order"
+  entityId   String
+  userId     String?  // Admin who performed the action (nullable for system actions)
+  metadata   Json?    // Additional details
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
 }

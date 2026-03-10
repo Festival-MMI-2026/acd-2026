@@ -70,7 +70,8 @@ export const ModelName = {
   AccessContent: 'AccessContent',
   ProgrammeContent: 'ProgrammeContent',
   InscriptionContent: 'InscriptionContent',
-  HotelsContent: 'HotelsContent'
+  HotelsContent: 'HotelsContent',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -174,6 +175,7 @@ export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof Ev
 export const MealScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  description: 'description',
   date: 'date',
   mealType: 'mealType',
   price: 'price',
@@ -288,6 +290,7 @@ export const SettingScalarFieldEnum = {
   eventEndDate: 'eventEndDate',
   location: 'location',
   locationAddress: 'locationAddress',
+  notificationEmails: 'notificationEmails',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -408,6 +411,19 @@ export const HotelsContentScalarFieldEnum = {
 export type HotelsContentScalarFieldEnum = (typeof HotelsContentScalarFieldEnum)[keyof typeof HotelsContentScalarFieldEnum]
 
 
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  userId: 'userId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -421,6 +437,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
