@@ -71,6 +71,16 @@ const navItemsContent = [
     icon: "lucide:building-2",
     href: "/admin/contenu/hotels",
   },
+  {
+    title: "Mentions légales",
+    icon: "lucide:scale",
+    href: "/admin/contenu/mentions-legales",
+  },
+  {
+    title: "Confidentialité",
+    icon: "lucide:shield",
+    href: "/admin/contenu/confidentialite",
+  },
 ];
 
 const navItemsAdmin = [

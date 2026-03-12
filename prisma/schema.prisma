@@ -264,6 +264,9 @@ model Setting {
   location         String   @default("IUT de Troyes")
   locationAddress  String   @default("9 Rue de Québec, 10000 Troyes")
   notificationEmails String[] @default([])
+  maintenanceMode    Boolean  @default(false)
+  legalMentions      String   @default("")
+  privacyPolicy      String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

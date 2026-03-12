@@ -26,8 +26,8 @@ async function handleSubmit() {
       ...(props.mode === "signup"
         ? { name: `${firstName.value} ${lastName.value}`.trim(), firstName: firstName.value, lastName: lastName.value }
         : {}),
-      callbackURL: "/",
-      ...(props.mode === "signup" ? { newUserCallbackURL: "/" } : {}),
+      callbackURL: "/auth/callback",
+      ...(props.mode === "signup" ? { newUserCallbackURL: "/auth/callback" } : {}),
     },
     {
       onError: (ctx) => {

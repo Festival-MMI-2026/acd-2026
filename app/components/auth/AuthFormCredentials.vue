@@ -43,7 +43,7 @@ async function handleSubmit() {
         },
         onSuccess: () => {
           emit("success");
-          navigateTo("/");
+          navigateTo("/auth/callback");
         },
       },
     );

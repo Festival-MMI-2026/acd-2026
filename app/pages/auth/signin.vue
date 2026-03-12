@@ -9,6 +9,7 @@ definePageMeta({
 async function handleGithubSignIn() {
   await signIn.social({
     provider: "github",
+    callbackURL: "/auth/callback",
   });
 }
 </script>

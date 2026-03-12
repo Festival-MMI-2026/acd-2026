@@ -31,6 +31,7 @@ const settings = ref({
   regularPrice: 180,
   latePrice: 200,
   headerBadgeText: "",
+  maintenanceMode: false,
   showProgramme: true,
   showInscription: true,
   showAcces: true,
@@ -77,6 +78,7 @@ watchEffect(() => {
     if (dbSettings.value.locationAddress)
       settings.value.locationAddress = dbSettings.value.locationAddress;
     settings.value.headerBadgeText = dbSettings.value.headerBadgeText ?? "";
+    settings.value.maintenanceMode = dbSettings.value.maintenanceMode;
     settings.value.showProgramme = dbSettings.value.showProgramme;
     settings.value.showInscription = dbSettings.value.showInscription;
     settings.value.showAcces = dbSettings.value.showAcces;
@@ -98,6 +100,7 @@ async function save() {
         location: settings.value.location,
         locationAddress: settings.value.locationAddress,
         headerBadgeText: settings.value.headerBadgeText,
+        maintenanceMode: settings.value.maintenanceMode,
         showProgramme: settings.value.showProgramme,
         showInscription: settings.value.showInscription,
         showAcces: settings.value.showAcces,
@@ -266,6 +269,53 @@ async function executeClear() {
           <p class="text-xs text-muted-foreground">
             Texte affiché dans le badge à côté du logo dans le header
           </p>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Maintenance Mode -->
+    <Card
+      :class="[
+        'rounded-2xl transition-colors',
+        settings.maintenanceMode ? 'border-orange-500/40 bg-orange-500/5' : '',
+      ]"
+    >
+      <CardHeader>
+        <div class="flex items-center gap-3">
+          <div
+            :class="[
+              'h-10 w-10 rounded-xl flex items-center justify-center transition-colors',
+              settings.maintenanceMode
+                ? 'bg-orange-500/20'
+                : 'bg-muted/50',
+            ]"
+          >
+            <Icon
+              name="lucide:wrench"
+              :class="[
+                'h-5 w-5 transition-colors',
+                settings.maintenanceMode
+                  ? 'text-orange-500'
+                  : 'text-muted-foreground',
+              ]"
+            />
+          </div>
+          <div class="flex-1">
+            <CardTitle>Mode maintenance</CardTitle>
+            <CardDescription>
+              Le site public est inaccessible, seul l'admin reste disponible
+            </CardDescription>
+          </div>
+          <Switch v-model="settings.maintenanceMode" @update:model-value="save" />
+        </div>
+      </CardHeader>
+      <CardContent v-if="settings.maintenanceMode">
+        <div
+          class="flex items-center gap-2 text-sm text-orange-600 dark:text-orange-400 bg-orange-500/10 rounded-xl px-4 py-3"
+        >
+          <Icon name="lucide:triangle-alert" class="h-4 w-4 shrink-0" />
+          Le site est actuellement en maintenance. Les visiteurs voient la page
+          de maintenance.
         </div>
       </CardContent>
     </Card>

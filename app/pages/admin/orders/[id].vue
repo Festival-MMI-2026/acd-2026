@@ -35,6 +35,34 @@ const { data: order, refresh } = await useFetch<Order>(
 );
 
 const isLoading = ref(false);
+const downloadingInvoice = ref(false);
+const previewOpen = ref(false);
+const iframeLoading = ref(false);
+
+async function downloadInvoice() {
+  if (!order.value?.registration) return;
+  downloadingInvoice.value = true;
+  try {
+    const response = await $fetch(
+      `/api/registrations/${order.value.registration.id}/invoice`,
+      { responseType: "blob" },
+    );
+    const url = window.URL.createObjectURL(response as unknown as Blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Facture_${order.value.orderNumber}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    toast.success("Facture téléchargée");
+  } catch (error) {
+    console.error(error);
+    toast.error("Impossible de générer la facture");
+  } finally {
+    downloadingInvoice.value = false;
+  }
+}
 
 async function updatePaymentStatus(status: string, method?: string) {
   if (!order.value) return;
@@ -388,9 +416,25 @@ const invoiceItems = computed(() => {
               variant="outline"
               size="sm"
               class="w-full rounded-full justify-start"
+              @click="previewOpen = true"
             >
-              <Icon name="lucide:printer" class="h-4 w-4" />
-              Imprimer la facture
+              <Icon name="lucide:eye" class="h-4 w-4" />
+              Prévisualiser la facture
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              class="w-full rounded-full justify-start"
+              :disabled="downloadingInvoice"
+              @click="downloadInvoice"
+            >
+              <Icon
+                v-if="downloadingInvoice"
+                name="lucide:loader-2"
+                class="h-4 w-4 animate-spin"
+              />
+              <Icon v-else name="lucide:download" class="h-4 w-4" />
+              {{ downloadingInvoice ? "Génération..." : "Télécharger la facture" }}
             </Button>
           </CardContent>
         </Card>
@@ -405,4 +449,29 @@ const invoiceItems = computed(() => {
       class="h-8 w-8 animate-spin text-muted-foreground"
     />
   </div>
+
+  <!-- Invoice Preview Dialog -->
+  <Dialog v-model:open="previewOpen" @update:open="(v) => { if (v) iframeLoading = true }">
+    <DialogContent class="max-w-5xl w-full h-[90vh] flex flex-col p-0 gap-0">
+      <DialogHeader class="px-6 py-4 border-b shrink-0">
+        <DialogTitle>Facture — {{ order?.orderNumber }}</DialogTitle>
+      </DialogHeader>
+      <div class="flex-1 relative">
+        <div
+          v-if="iframeLoading"
+          class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background z-10"
+        >
+          <Icon name="lucide:loader-2" class="h-8 w-8 animate-spin text-muted-foreground" />
+          <p class="text-sm text-muted-foreground">Génération de la facture…</p>
+        </div>
+        <iframe
+          v-if="order && previewOpen"
+          :src="`/api/registrations/${order.registration.id}/invoice`"
+          class="w-full h-full rounded-b-lg"
+          type="application/pdf"
+          @load="iframeLoading = false"
+        />
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>

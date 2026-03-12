@@ -2218,6 +2218,9 @@ export const SettingScalarFieldEnum = {
   location: 'location',
   locationAddress: 'locationAddress',
   notificationEmails: 'notificationEmails',
+  maintenanceMode: 'maintenanceMode',
+  legalMentions: 'legalMentions',
+  privacyPolicy: 'privacyPolicy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

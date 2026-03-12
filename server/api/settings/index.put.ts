@@ -15,6 +15,9 @@ export default defineEventHandler(async (event) => {
       showAcces: body.showAcces,
       showHotels: body.showHotels,
       notificationEmails: body.notificationEmails ?? undefined,
+      maintenanceMode: body.maintenanceMode ?? undefined,
+      legalMentions: body.legalMentions ?? undefined,
+      privacyPolicy: body.privacyPolicy ?? undefined,
     },
     create: {
       id: "site_settings",
@@ -29,6 +32,9 @@ export default defineEventHandler(async (event) => {
       showAcces: body.showAcces,
       showHotels: body.showHotels,
       notificationEmails: body.notificationEmails ?? [],
+      maintenanceMode: body.maintenanceMode ?? false,
+      legalMentions: body.legalMentions ?? "",
+      privacyPolicy: body.privacyPolicy ?? "",
     },
   });
 

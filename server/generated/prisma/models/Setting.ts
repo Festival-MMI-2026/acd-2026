@@ -38,6 +38,9 @@ export type SettingMinAggregateOutputType = {
   eventEndDate: Date | null
   location: string | null
   locationAddress: string | null
+  maintenanceMode: boolean | null
+  legalMentions: string | null
+  privacyPolicy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +59,9 @@ export type SettingMaxAggregateOutputType = {
   eventEndDate: Date | null
   location: string | null
   locationAddress: string | null
+  maintenanceMode: boolean | null
+  legalMentions: string | null
+  privacyPolicy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +81,9 @@ export type SettingCountAggregateOutputType = {
   location: number
   locationAddress: number
   notificationEmails: number
+  maintenanceMode: number
+  legalMentions: number
+  privacyPolicy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -95,6 +104,9 @@ export type SettingMinAggregateInputType = {
   eventEndDate?: true
   location?: true
   locationAddress?: true
+  maintenanceMode?: true
+  legalMentions?: true
+  privacyPolicy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -113,6 +125,9 @@ export type SettingMaxAggregateInputType = {
   eventEndDate?: true
   location?: true
   locationAddress?: true
+  maintenanceMode?: true
+  legalMentions?: true
+  privacyPolicy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -132,6 +147,9 @@ export type SettingCountAggregateInputType = {
   location?: true
   locationAddress?: true
   notificationEmails?: true
+  maintenanceMode?: true
+  legalMentions?: true
+  privacyPolicy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -224,6 +242,9 @@ export type SettingGroupByOutputType = {
   location: string
   locationAddress: string
   notificationEmails: string[]
+  maintenanceMode: boolean
+  legalMentions: string
+  privacyPolicy: string
   createdAt: Date
   updatedAt: Date
   _count: SettingCountAggregateOutputType | null
@@ -264,6 +285,9 @@ export type SettingWhereInput = {
   location?: Prisma.StringFilter<"Setting"> | string
   locationAddress?: Prisma.StringFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  maintenanceMode?: Prisma.BoolFilter<"Setting"> | boolean
+  legalMentions?: Prisma.StringFilter<"Setting"> | string
+  privacyPolicy?: Prisma.StringFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
 }
@@ -283,6 +307,9 @@ export type SettingOrderByWithRelationInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  maintenanceMode?: Prisma.SortOrder
+  legalMentions?: Prisma.SortOrder
+  privacyPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -305,6 +332,9 @@ export type SettingWhereUniqueInput = Prisma.AtLeast<{
   location?: Prisma.StringFilter<"Setting"> | string
   locationAddress?: Prisma.StringFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  maintenanceMode?: Prisma.BoolFilter<"Setting"> | boolean
+  legalMentions?: Prisma.StringFilter<"Setting"> | string
+  privacyPolicy?: Prisma.StringFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
 }, "id">
@@ -324,6 +354,9 @@ export type SettingOrderByWithAggregationInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  maintenanceMode?: Prisma.SortOrder
+  legalMentions?: Prisma.SortOrder
+  privacyPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SettingCountOrderByAggregateInput
@@ -349,6 +382,9 @@ export type SettingScalarWhereWithAggregatesInput = {
   location?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   locationAddress?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  maintenanceMode?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
+  legalMentions?: Prisma.StringWithAggregatesFilter<"Setting"> | string
+  privacyPolicy?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Setting"> | Date | string
 }
@@ -368,6 +404,9 @@ export type SettingCreateInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  maintenanceMode?: boolean
+  legalMentions?: string
+  privacyPolicy?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -387,6 +426,9 @@ export type SettingUncheckedCreateInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  maintenanceMode?: boolean
+  legalMentions?: string
+  privacyPolicy?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -406,6 +448,9 @@ export type SettingUpdateInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
+  privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -425,6 +470,9 @@ export type SettingUncheckedUpdateInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
+  privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -444,6 +492,9 @@ export type SettingCreateManyInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  maintenanceMode?: boolean
+  legalMentions?: string
+  privacyPolicy?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -463,6 +514,9 @@ export type SettingUpdateManyMutationInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
+  privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -482,6 +536,9 @@ export type SettingUncheckedUpdateManyInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
+  privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -501,6 +558,9 @@ export type SettingCountOrderByAggregateInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  maintenanceMode?: Prisma.SortOrder
+  legalMentions?: Prisma.SortOrder
+  privacyPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -519,6 +579,9 @@ export type SettingMaxOrderByAggregateInput = {
   eventEndDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
+  maintenanceMode?: Prisma.SortOrder
+  legalMentions?: Prisma.SortOrder
+  privacyPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -537,6 +600,9 @@ export type SettingMinOrderByAggregateInput = {
   eventEndDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
+  maintenanceMode?: Prisma.SortOrder
+  legalMentions?: Prisma.SortOrder
+  privacyPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -567,6 +633,9 @@ export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  maintenanceMode?: boolean
+  legalMentions?: boolean
+  privacyPolicy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -586,6 +655,9 @@ export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  maintenanceMode?: boolean
+  legalMentions?: boolean
+  privacyPolicy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -605,6 +677,9 @@ export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  maintenanceMode?: boolean
+  legalMentions?: boolean
+  privacyPolicy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["setting"]>
@@ -624,11 +699,14 @@ export type SettingSelectScalar = {
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  maintenanceMode?: boolean
+  legalMentions?: boolean
+  privacyPolicy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "showAcces" | "showHotels" | "headerBadgeText" | "siteName" | "eventDate" | "eventEndDate" | "location" | "locationAddress" | "notificationEmails" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "showAcces" | "showHotels" | "headerBadgeText" | "siteName" | "eventDate" | "eventEndDate" | "location" | "locationAddress" | "notificationEmails" | "maintenanceMode" | "legalMentions" | "privacyPolicy" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
 
 export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Setting"
@@ -648,6 +726,9 @@ export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     location: string
     locationAddress: string
     notificationEmails: string[]
+    maintenanceMode: boolean
+    legalMentions: string
+    privacyPolicy: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["setting"]>
@@ -1087,6 +1168,9 @@ export interface SettingFieldRefs {
   readonly location: Prisma.FieldRef<"Setting", 'String'>
   readonly locationAddress: Prisma.FieldRef<"Setting", 'String'>
   readonly notificationEmails: Prisma.FieldRef<"Setting", 'String[]'>
+  readonly maintenanceMode: Prisma.FieldRef<"Setting", 'Boolean'>
+  readonly legalMentions: Prisma.FieldRef<"Setting", 'String'>
+  readonly privacyPolicy: Prisma.FieldRef<"Setting", 'String'>
   readonly createdAt: Prisma.FieldRef<"Setting", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Setting", 'DateTime'>
 }

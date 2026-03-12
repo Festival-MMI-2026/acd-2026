@@ -6,9 +6,17 @@ definePageMeta({
   layout: "auth",
 });
 
+const { data: settings } = await useFetch("/api/settings");
+const isMaintenance = computed(() => settings.value?.maintenanceMode ?? false);
+
+if (isMaintenance.value) {
+  await navigateTo("/maintenance");
+}
+
 async function handleGithubSignIn() {
   await signIn.social({
     provider: "github",
+    callbackURL: "/auth/callback",
   });
 }
 </script>
