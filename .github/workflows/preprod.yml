@@ -82,4 +82,5 @@ jobs:
             $PM2 start ecosystem.config.cjs --force
             $PM2 save
 
+            docker compose down
             docker compose up -d postgresql adminer mailpit gotenberg

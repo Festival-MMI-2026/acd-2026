@@ -53,7 +53,6 @@ jobs:
         with:
           name: prod-build
 
-      # 1. NOUVELLE ÉTAPE : Nettoyage avant le transfert SCP
       - name: Clean server disk space before upload
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -61,7 +60,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Puge du cache de build Docker et des images inutilisées..."
+            echo "Purge du cache de build Docker et des images inutilisées..."
             docker builder prune -a -f
             docker image prune -a -f
 
@@ -85,7 +84,8 @@ jobs:
             set -e
             cd /var/www/acd-prod
 
-            # 2. OPTIMISATION : Supprimer l'ancien build pour éviter l'accumulation
+            docker compose down
+
             rm -rf .output
 
             tar -xzf app.tar.gz
@@ -93,5 +93,4 @@ jobs:
 
             docker compose up -d --build
 
-            # Nettoyage final léger après le build
             docker image prune -f
