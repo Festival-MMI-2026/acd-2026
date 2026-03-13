@@ -33,7 +33,8 @@ defineProps({
   <Html lang="fr">
     <Preview>Vérifiez votre adresse email - ACD</Preview>
     <Tailwind :config="tailwindConfig">
-      <Body class="bg-background py-10 font-sans">
+      <Body style="margin: 0; padding: 0; background-color: #f6f9fc; font-family: 'Inter', system-ui, sans-serif;">
+        <Section style="padding: 40px 20px; background-color: #f6f9fc;">
         <Container class="max-w-xl mx-auto">
           <!-- Header with Logo -->
           <Section class="px-10 py-6">
@@ -138,6 +139,7 @@ defineProps({
             </Row>
           </Section>
         </Container>
+        </Section>
       </Body>
     </Tailwind>
   </Html>

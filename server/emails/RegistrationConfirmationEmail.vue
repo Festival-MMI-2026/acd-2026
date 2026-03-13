@@ -44,7 +44,8 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
   <Html lang="fr">
     <Preview>Confirmation d'inscription ACD — {{ orderNumber }}</Preview>
     <Tailwind :config="tailwindConfig">
-      <Body class="bg-background py-10 font-sans">
+      <Body style="margin: 0; padding: 0; background-color: #f6f9fc; font-family: 'Inter', system-ui, sans-serif;">
+        <Section style="padding: 40px 20px; background-color: #f6f9fc;">
         <Container class="max-w-xl mx-auto">
           <!-- HEADER -->
           <Section
@@ -242,6 +243,7 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
             </Row>
           </Section>
         </Container>
+        </Section>
       </Body>
     </Tailwind>
   </Html>
