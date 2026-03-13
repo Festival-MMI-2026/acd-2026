@@ -47,6 +47,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      MAIL_FROM: ${{ secrets.MAIL_FROM }}
 
     steps:
       - uses: actions/download-artifact@v4
@@ -80,18 +86,14 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command_timeout: 30m
-          env:
-            SMTP_HOST: ${{ secrets.SMTP_HOST }}
-            SMTP_PORT: ${{ secrets.SMTP_PORT }}
-            SMTP_USER: ${{ secrets.SMTP_USER }}
-            SMTP_PASS: ${{ secrets.SMTP_PASS }}
-            MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          envs: SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,MAIL_FROM
           script: |
             set -e
             cd /var/www/acd-prod
 
             # Injecter les variables SMTP dans le .env
             sed -i '/^SMTP_/d' .env
+            sed -i '/^MAIL_FROM/d' .env
             echo "SMTP_HOST=${SMTP_HOST}" >> .env
             echo "SMTP_PORT=${SMTP_PORT}" >> .env
             echo "SMTP_USER=${SMTP_USER}" >> .env
