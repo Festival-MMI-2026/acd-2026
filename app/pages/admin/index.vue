@@ -27,8 +27,15 @@ definePageMeta({
 
 const session = useSession();
 
-// Fetch stats
-const { data: registrations } = await useFetch("/api/registrations");
+// Fetch stats (paginate, pageSize large enough for dashboard recent list)
+const { data: registrationsResponse } = await useFetch<{
+  items: any[];
+  total: number;
+}>("/api/registrations", { query: { pageSize: 20 } });
+const registrations = computed(() => registrationsResponse.value?.items ?? []);
+const registrationsTotal = computed(
+  () => registrationsResponse.value?.total ?? 0,
+);
 const { data: events } = await useFetch("/api/events");
 const { data: meals } = await useFetch("/api/meals");
 const { data: activities } = await useFetch("/api/activities");
@@ -36,7 +43,7 @@ const { data: activities } = await useFetch("/api/activities");
 const stats = computed(() => [
   {
     title: "Inscriptions",
-    value: registrations.value?.length || 0,
+    value: registrationsTotal.value,
     icon: "lucide:users",
     href: "/admin/inscriptions",
     description: "participants inscrits",

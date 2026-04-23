@@ -6,6 +6,12 @@ definePageMeta({
   layout: "auth",
 });
 
+useSeoMeta({
+  title: "Inscription — ACD MMI 2026",
+  description: "Créez votre compte pour accéder à l'ACD MMI 2026.",
+  robots: "noindex, nofollow",
+});
+
 const { data: settings } = await useFetch("/api/settings");
 const isMaintenance = computed(() => settings.value?.maintenanceMode ?? false);
 
@@ -29,15 +35,19 @@ async function handleGithubSignIn() {
       <!-- Header -->
       <div class="text-center space-y-2">
         <div class="flex items-center justify-center">
-          <img
+          <NuxtImg
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
             class="h-16 dark:hidden"
+            loading="eager"
+            height="64"
           />
-          <img
+          <NuxtImg
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
             class="h-16 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
+            loading="eager"
+            height="64"
           />
         </div>
         <h1 class="text-3xl font-bold tracking-tight">Créer un compte</h1>

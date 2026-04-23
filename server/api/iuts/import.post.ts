@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const formData = await readMultipartFormData(event);
   if (!formData || formData.length === 0) {
     throw createError({

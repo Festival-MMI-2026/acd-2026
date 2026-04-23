@@ -5,26 +5,28 @@ import { sendMail } from "../../utils/mail";
 import { generateInvoicePdf } from "../../utils/generateInvoicePdf";
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-
+  const sessionUser = await requireUser(event);
   const {
     firstName,
     lastName,
-    email,
     phone,
     iutId,
     allergens,
     isMotorized,
-    totalPrice,
-    meals = [],
-    activities = [],
-  } = body;
+    meals,
+    activities,
+  } = await readValidated(event, registrationCreateSchema);
 
-  // Validation
-  if (!firstName || !lastName || !email || !phone) {
+  const email = sessionUser.email;
+
+  const existingRegistration = await prisma.registration.findFirst({
+    where: { email },
+    select: { id: true },
+  });
+  if (existingRegistration) {
     throw createError({
-      statusCode: 400,
-      statusMessage: "Tous les champs personnels sont requis",
+      statusCode: 409,
+      statusMessage: "Vous avez déjà une inscription",
     });
   }
 

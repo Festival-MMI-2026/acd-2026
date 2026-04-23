@@ -11,15 +11,19 @@ const { data: settings } = await useFetch("/api/settings");
             to="/"
             class="inline-block transition-opacity hover:opacity-80"
           >
-            <img
+            <NuxtImg
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
               class="h-20 dark:hidden"
+              loading="lazy"
+              height="80"
             />
-            <img
+            <NuxtImg
               src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
               alt="ACD Logo"
               class="h-20 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
+              loading="lazy"
+              height="80"
             />
           </NuxtLink>
 

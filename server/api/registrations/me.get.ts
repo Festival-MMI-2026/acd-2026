@@ -1,16 +1,8 @@
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const email = query.email as string;
-
-  if (!email) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Email is required",
-    });
-  }
+  const user = await requireUser(event);
 
   const registration = await prisma.registration.findFirst({
-    where: { email },
+    where: { email: user.email },
     include: {
       meals: {
         include: {

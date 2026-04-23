@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const { q } = getQuery(event);
   if (!q || typeof q !== "string" || q.trim().length < 2) {
     return { registrations: [], orders: [], activities: [], meals: [] };

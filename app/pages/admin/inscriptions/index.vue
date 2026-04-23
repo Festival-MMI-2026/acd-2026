@@ -20,9 +20,12 @@ interface Registration {
 
 const router = useRouter();
 
-// Fetch registrations
-const { data: registrations, status } =
-  await useFetch<Registration[]>("/api/registrations");
+// Fetch registrations (paginated server-side, fetch all for client-side filtering)
+const { data: registrationsResponse, status } = await useFetch<{
+  items: Registration[];
+  total: number;
+}>("/api/registrations", { query: { pageSize: 200 } });
+const registrations = computed(() => registrationsResponse.value?.items ?? []);
 
 // Search and filters
 const searchQuery = ref("");

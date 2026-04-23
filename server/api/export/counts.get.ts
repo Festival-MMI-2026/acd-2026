@@ -1,4 +1,5 @@
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   try {
     const [registrations, events, meals, activities] = await Promise.all([
       prisma.registration.count(),

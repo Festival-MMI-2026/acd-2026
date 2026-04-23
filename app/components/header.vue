@@ -83,15 +83,19 @@ const isProfileIncomplete = computed(() => {
             class="flex items-center flex-row gap-2 font-semibold text-lg"
           >
             <div class="flex items-center gap-2">
-              <img
+              <NuxtImg
                 src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                 alt="ACD Logo"
                 class="h-14 dark:hidden"
+                loading="eager"
+                height="56"
               />
-              <img
+              <NuxtImg
                 src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                 alt="ACD Logo"
                 class="h-14 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
+                loading="eager"
+                height="56"
               />
             </div>
             <ClientOnly>
@@ -295,15 +299,19 @@ const isProfileIncomplete = computed(() => {
               <div class="space-y-8">
                 <SheetHeader class="m-0">
                   <SheetTitle class="text-left flex items-center">
-                    <img
+                    <NuxtImg
                       src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                       alt="ACD Logo"
                       class="h-14 dark:hidden"
+                      loading="lazy"
+                      height="56"
                     />
-                    <img
+                    <NuxtImg
                       src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
                       alt="ACD Logo"
                       class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
+                      loading="lazy"
+                      height="56"
                     />
                   </SheetTitle>
                   <SheetDescription class="text-left sr-only">

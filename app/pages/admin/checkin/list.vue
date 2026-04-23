@@ -16,8 +16,10 @@ interface Registration {
   iutId: string | null;
 }
 
-const { data: registrations, refresh } =
-  await useFetch<Registration[]>("/api/registrations");
+const { data: registrationsResponse, refresh } = await useFetch<{
+  items: Registration[];
+  total: number;
+}>("/api/registrations", { query: { pageSize: 200 } });
 
 // ── Filters ────────────────────────────────────────────────────────
 const searchQuery = ref("");
@@ -27,7 +29,9 @@ const itemsPerPage = 20;
 
 // Only CONFIRMED registrations are relevant for check-in
 const confirmed = computed(() =>
-  (registrations.value || []).filter((r) => r.status === "CONFIRMED"),
+  (registrationsResponse.value?.items || []).filter(
+    (r) => r.status === "CONFIRMED",
+  ),
 );
 
 const stats = computed(() => {

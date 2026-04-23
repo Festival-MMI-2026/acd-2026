@@ -6,6 +6,12 @@ definePageMeta({
   layout: "auth",
 });
 
+useSeoMeta({
+  title: "Connexion — ACD MMI 2026",
+  description: "Connectez-vous à votre compte ACD MMI 2026.",
+  robots: "noindex, nofollow",
+});
+
 async function handleGithubSignIn() {
   await signIn.social({
     provider: "github",
@@ -20,15 +26,19 @@ async function handleGithubSignIn() {
       <!-- Header -->
       <div class="text-center space-y-2">
         <div class="flex items-center justify-center gap-2">
-          <img
+          <NuxtImg
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
             class="h-16 dark:hidden"
+            loading="eager"
+            height="64"
           />
-          <img
+          <NuxtImg
             src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
             alt="ACD Logo"
             class="h-16 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
+            loading="eager"
+            height="64"
           />
         </div>
         <h1 class="text-3xl font-bold tracking-tight">Connexion</h1>

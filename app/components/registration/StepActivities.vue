@@ -1,14 +1,5 @@
 <script setup lang="ts">
-interface Activity {
-  id: string;
-  name: string;
-  date: string;
-  description?: string;
-  duration?: number;
-  capacity?: number;
-  location?: string;
-  price?: number;
-}
+import type { Activity } from "~/types/registration";
 
 const props = defineProps<{
   modelValue: string[];
@@ -29,20 +20,13 @@ function isActivitySelected(activityId: string): boolean {
 }
 
 function toggleActivity(activityId: string) {
-  console.log(
-    "Toggling activity:",
-    activityId,
-    "Current selection:",
-    props.modelValue,
-  );
   if (isActivitySelected(activityId)) {
-    const newValue = props.modelValue.filter((id) => id !== activityId);
-    console.log("Removing activity, new value:", newValue);
-    emit("update:modelValue", newValue);
+    emit(
+      "update:modelValue",
+      props.modelValue.filter((id) => id !== activityId),
+    );
   } else {
-    const newValue = [...props.modelValue, activityId];
-    console.log("Adding activity, new value:", newValue);
-    emit("update:modelValue", newValue);
+    emit("update:modelValue", [...props.modelValue, activityId]);
   }
 }
 

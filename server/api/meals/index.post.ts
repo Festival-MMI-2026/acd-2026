@@ -1,12 +1,6 @@
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-
-  if (!body.name || !body.date || !body.mealType || !body.price) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Name, date and mealType and price are required",
-    });
-  }
+  await requireAdmin(event);
+  const body = await readValidated(event, mealSchema);
 
   const meal = await prisma.meal.create({
     data: {

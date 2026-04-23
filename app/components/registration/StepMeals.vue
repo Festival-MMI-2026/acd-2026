@@ -1,27 +1,5 @@
 <script setup lang="ts">
-interface Meal {
-  id: string;
-  name: string;
-  date: string;
-  mealType: "LUNCH" | "DINNER";
-  price: number;
-  options: MealOption[];
-}
-
-interface MealOption {
-  id: string;
-  name: string;
-  optionType: "STARTER" | "MAIN" | "DESSERT";
-  hasAllergens: boolean;
-  allergens: string[];
-}
-
-interface SelectedMeal {
-  mealId: string;
-  starterOptionId?: string;
-  mainOptionId?: string;
-  dessertOptionId?: string;
-}
+import type { Meal, MealOption, SelectedMeal } from "~/types/registration";
 
 const props = defineProps<{
   modelValue: SelectedMeal[];
@@ -57,15 +35,13 @@ function getSelectedMeal(mealId: string): SelectedMeal | undefined {
 }
 
 function toggleMeal(mealId: string) {
-  console.log("Toggling meal:", mealId, "Current selection:", props.modelValue);
   if (isMealSelected(mealId)) {
-    const newValue = props.modelValue.filter((m) => m.mealId !== mealId);
-    console.log("Removing meal, new value:", newValue);
-    emit("update:modelValue", newValue);
+    emit(
+      "update:modelValue",
+      props.modelValue.filter((m) => m.mealId !== mealId),
+    );
   } else {
-    const newValue = [...props.modelValue, { mealId }];
-    console.log("Adding meal, new value:", newValue);
-    emit("update:modelValue", newValue);
+    emit("update:modelValue", [...props.modelValue, { mealId }]);
   }
 }
 

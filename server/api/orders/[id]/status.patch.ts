@@ -1,6 +1,12 @@
 export default defineEventHandler(async (event) => {
+  const admin = await requireAdmin(event);
   const id = getRouterParam(event, "id");
-  const body = await readBody(event);
+  const body = await readValidated(
+    event,
+    orderStatusSchema.extend({
+      notes: z.string().max(2000).optional(),
+    }),
+  );
 
   if (!id) {
     throw createError({
@@ -9,11 +15,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const validStatuses = ["PENDING", "PAID", "FAILED", "REFUNDED"];
-  if (!body.paymentStatus || !validStatuses.includes(body.paymentStatus)) {
+  if (!body.paymentStatus) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid payment status",
+      statusMessage: "paymentStatus is required",
     });
   }
 
@@ -43,7 +48,7 @@ export default defineEventHandler(async (event) => {
     data: updateData,
   });
 
-  logAudit("order.status_changed", "Order", id, null, {
+  logAudit("order.status_changed", "Order", id, admin.id, {
     orderNumber: order.orderNumber,
     oldStatus: oldOrder?.paymentStatus,
     newStatus: body.paymentStatus,

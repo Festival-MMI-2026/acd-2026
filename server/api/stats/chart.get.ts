@@ -1,4 +1,5 @@
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   try {
     // Get all registrations with their creation dates and prices
     const registrations = await prisma.registration.findMany({

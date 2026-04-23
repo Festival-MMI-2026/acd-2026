@@ -11,6 +11,17 @@ definePageMeta({
 const { data: homeContent } = await useFetch("/api/home-content");
 const { data: settings } = await useFetch("/api/settings");
 
+useSeoMeta({
+  title: () => settings.value?.siteName || "ACD MMI 2026",
+  description:
+    "Assises Commerciales et Digitales des BUT MMI 2026 — participez à l'événement étudiant rassemblant les IUT de France.",
+  ogTitle: () => settings.value?.siteName || "ACD MMI 2026",
+  ogDescription:
+    "Assises Commerciales et Digitales des BUT MMI 2026 — participez à l'événement étudiant rassemblant les IUT de France.",
+  ogType: "website",
+  twitterCard: "summary_large_image",
+});
+
 type TabKey = string;
 const activeTab = ref<TabKey>("partage");
 
@@ -114,10 +125,13 @@ const viewportOnce = { once: true, amount: 0.3 };
       <div
         class="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none overflow-hidden"
       >
-        <img
-          :src="homeContent?.heroImage"
-          alt="Image de fond"
+        <NuxtImg
+          v-if="homeContent?.heroImage"
+          :src="homeContent.heroImage"
+          alt=""
           class="w-full h-full object-cover opacity-[0.1]"
+          loading="eager"
+          preload
         />
       </div>
 
@@ -231,10 +245,11 @@ const viewportOnce = { once: true, amount: 0.3 };
               }"
               class="w-36 flex items-center justify-center p-2 shadow-sm grayscale hover:grayscale-0 transition-all duration-300"
             >
-              <img
+              <NuxtImg
                 :src="logo.src"
                 :alt="logo.alt"
                 class="w-full h-full object-contain invert dark:invert-0"
+                loading="lazy"
               />
             </motion.div>
           </div>
@@ -296,10 +311,12 @@ const viewportOnce = { once: true, amount: 0.3 };
             <Card
               class="relative overflow-hidden rounded-4xl border-0 shadow-2xl aspect-4/3 lg:aspect-square"
             >
-              <img
-                :src="tabs[activeTab]?.image"
+              <NuxtImg
+                v-if="tabs[activeTab]?.image"
+                :src="tabs[activeTab]!.image"
+                :alt="tabs[activeTab]?.title || ''"
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform scale-100 group-hover:scale-105"
-                alt="Tab Image"
+                loading="lazy"
               />
               <div
                 class="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent"

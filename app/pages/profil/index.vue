@@ -8,6 +8,11 @@ definePageMeta({
   layout: "default",
 });
 
+useSeoMeta({
+  title: "Mon profil — ACD MMI 2026",
+  robots: "noindex, nofollow",
+});
+
 const session = useSession();
 const router = useRouter();
 
@@ -20,22 +25,29 @@ if (import.meta.client) {
   });
 }
 
-// Fetch IUTs
-const { data: iuts } =
-  await useFetch<{ id: string; name: string; city?: string | null }[]>(
-    "/api/iuts",
-  );
+import type {
+  Activity,
+  Iut,
+  Meal,
+  Registration,
+} from "~/types/registration";
 
-// Fetch user's registration by email
+// Fetch IUTs
+const { data: iuts } = await useFetch<Iut[]>("/api/iuts");
+
+// Fetch user's registration (server reads session, no query needed)
 const userEmail = computed(() => session.value.data?.user?.email || "");
 const {
   data: registration,
   refresh: refreshRegistration,
   status: regStatus,
-} = await useFetch<any>("/api/registrations/me", {
-  query: { email: userEmail },
+} = await useFetch<Registration | null>("/api/registrations/me", {
   watch: [userEmail],
 });
+
+// Fetch meals and activities catalogs (for editing registration)
+const { data: mealsCatalog } = await useFetch<Meal[]>("/api/meals");
+const { data: activitiesCatalog } = await useFetch<Activity[]>("/api/activities");
 
 // Profile form state
 const profileForm = reactive({
@@ -74,6 +86,7 @@ const sidebarItems = [
 
 // Registration edit state
 const editingRegistration = ref(false);
+const editTab = ref("info");
 const registrationForm = reactive({
   firstName: "",
   lastName: "",
@@ -82,6 +95,15 @@ const registrationForm = reactive({
   isMotorized: false,
   isLoading: false,
 });
+const editShowErrors = ref(false);
+const {
+  selectedMeals,
+  selectedActivities,
+  totalPrice: editTotal,
+  mealsValid: isEditMealsValid,
+  activitiesValid: isEditActivitiesValid,
+  hydrate: hydrateRegistrationSelection,
+} = useRegistrationForm(mealsCatalog, activitiesCatalog);
 
 // Initialize profile form with session data
 watchEffect(() => {
@@ -94,16 +116,37 @@ watchEffect(() => {
   }
 });
 
-// Initialize registration form
+// Initialize registration form from fetched registration
 watchEffect(() => {
   if (registration.value) {
-    registrationForm.firstName = registration.value.firstName || "";
-    registrationForm.lastName = registration.value.lastName || "";
-    registrationForm.phone = registration.value.phone || "";
-    registrationForm.allergens = registration.value.allergens || "";
-    registrationForm.isMotorized = registration.value.isMotorized || false;
+    resetEditForm();
   }
 });
+
+function openEditRegistration() {
+  resetEditForm();
+  editTab.value = "info";
+  editShowErrors.value = false;
+  editingRegistration.value = true;
+}
+
+function resetEditForm() {
+  if (!registration.value) return;
+  registrationForm.firstName = registration.value.firstName;
+  registrationForm.lastName = registration.value.lastName;
+  registrationForm.phone = registration.value.phone;
+  registrationForm.allergens = registration.value.allergens || "";
+  registrationForm.isMotorized = registration.value.isMotorized;
+  hydrateRegistrationSelection(
+    registration.value.meals?.map((rm) => ({
+      mealId: rm.mealId,
+      starterOptionId: rm.starterOptionId || undefined,
+      mainOptionId: rm.mainOptionId || undefined,
+      dessertOptionId: rm.dessertOptionId || undefined,
+    })),
+    registration.value.activities?.map((ra) => ra.activityId),
+  );
+}
 
 // Check if profile is incomplete
 const isProfileIncomplete = computed(() => {
@@ -239,6 +282,21 @@ async function handleDeleteAccount() {
 
 // Update registration
 async function handleUpdateRegistration() {
+  if (!isEditMealsValid.value) {
+    editShowErrors.value = true;
+    editTab.value = "meals";
+    toast.error("Veuillez vérifier vos choix de repas");
+    return;
+  }
+  if (!isEditActivitiesValid.value) {
+    editShowErrors.value = true;
+    editTab.value = "activities";
+    toast.error("Veuillez sélectionner au moins une activité");
+    return;
+  }
+
+  if (!registration.value) return;
+
   registrationForm.isLoading = true;
   try {
     await $fetch(`/api/registrations/${registration.value.id}`, {
@@ -249,6 +307,8 @@ async function handleUpdateRegistration() {
         phone: registrationForm.phone,
         allergens: registrationForm.allergens || null,
         isMotorized: registrationForm.isMotorized,
+        meals: selectedMeals.value,
+        activities: selectedActivities.value,
       },
     });
     await refreshRegistration();
@@ -263,13 +323,7 @@ async function handleUpdateRegistration() {
 
 function cancelEditRegistration() {
   editingRegistration.value = false;
-  if (registration.value) {
-    registrationForm.firstName = registration.value.firstName;
-    registrationForm.lastName = registration.value.lastName;
-    registrationForm.phone = registration.value.phone;
-    registrationForm.allergens = registration.value.allergens || "";
-    registrationForm.isMotorized = registration.value.isMotorized;
-  }
+  resetEditForm();
 }
 
 function formatDate(dateStr: string) {
@@ -621,8 +675,9 @@ async function downloadInvoice() {
                       @click="downloadInvoice"
                       :disabled="downloadingInvoice"
                       v-if="
+                        registration.order?.paymentStatus &&
                         ['PAID', 'PENDING'].includes(
-                          registration.order?.paymentStatus,
+                          registration.order.paymentStatus,
                         )
                       "
                     >
@@ -641,7 +696,7 @@ async function downloadInvoice() {
                     <Button
                       variant="outline"
                       size="sm"
-                      @click="editingRegistration = true"
+                      @click="openEditRegistration"
                     >
                       <Icon name="lucide:pencil" class="mr-2 h-3.5 w-3.5" />
                       Modifier
@@ -796,69 +851,130 @@ async function downloadInvoice() {
               </Card>
 
               <!-- Edit dialog -->
-              <AlertDialog v-model:open="editingRegistration">
-                <AlertDialogContent class="max-w-lg">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle
-                      >Modifier mon inscription</AlertDialogTitle
-                    >
-                    <AlertDialogDescription>
-                      Modifiez vos informations personnelles liées à
-                      l'inscription.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
+              <Dialog
+                :open="editingRegistration"
+                @update:open="
+                  (v) => (v ? openEditRegistration() : cancelEditRegistration())
+                "
+              >
+                <DialogScrollContent
+                  class="max-w-3xl max-h-[90vh] overflow-y-auto"
+                >
+                  <DialogHeader>
+                    <DialogTitle>Modifier mon inscription</DialogTitle>
+                    <DialogDescription>
+                      Mettez à jour vos informations, vos repas et vos activités.
+                    </DialogDescription>
+                  </DialogHeader>
 
                   <form
                     @submit.prevent="handleUpdateRegistration"
-                    class="space-y-4"
+                    class="space-y-6"
                   >
-                    <div class="grid grid-cols-2 gap-4">
-                      <div class="space-y-2">
-                        <Label class="text-sm font-medium">Prénom</Label>
-                        <Input v-model="registrationForm.firstName" />
-                      </div>
-                      <div class="space-y-2">
-                        <Label class="text-sm font-medium">Nom</Label>
-                        <Input v-model="registrationForm.lastName" />
-                      </div>
-                    </div>
-                    <div class="space-y-2">
-                      <Label class="text-sm font-medium">Téléphone</Label>
-                      <Input v-model="registrationForm.phone" type="tel" />
-                    </div>
-                    <div class="space-y-2">
-                      <Label class="text-sm font-medium">Allergènes</Label>
-                      <Input
-                        v-model="registrationForm.allergens"
-                        placeholder="Ex: gluten, lactose..."
-                      />
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <Label class="text-sm font-medium"
-                        >Véhicule motorisé</Label
-                      >
-                      <Switch v-model:checked="registrationForm.isMotorized" />
-                    </div>
+                    <Tabs v-model="editTab" class="w-full">
+                      <TabsList class="grid w-full grid-cols-3">
+                        <TabsTrigger value="info">
+                          <Icon name="lucide:user" class="mr-2 h-3.5 w-3.5" />
+                          Infos
+                        </TabsTrigger>
+                        <TabsTrigger value="meals">
+                          <Icon
+                            name="lucide:utensils"
+                            class="mr-2 h-3.5 w-3.5"
+                          />
+                          Repas
+                        </TabsTrigger>
+                        <TabsTrigger value="activities">
+                          <Icon
+                            name="lucide:activity"
+                            class="mr-2 h-3.5 w-3.5"
+                          />
+                          Activités
+                        </TabsTrigger>
+                      </TabsList>
 
-                    <AlertDialogFooter>
-                      <AlertDialogCancel @click="cancelEditRegistration"
-                        >Annuler</AlertDialogCancel
-                      >
-                      <Button
-                        type="submit"
-                        :disabled="registrationForm.isLoading"
-                      >
-                        <Icon
-                          v-if="registrationForm.isLoading"
-                          name="lucide:loader-2"
-                          class="mr-2 h-4 w-4 animate-spin"
+                      <TabsContent value="info" class="space-y-4 pt-4">
+                        <div class="grid grid-cols-2 gap-4">
+                          <div class="space-y-2">
+                            <Label class="text-sm font-medium">Prénom</Label>
+                            <Input v-model="registrationForm.firstName" />
+                          </div>
+                          <div class="space-y-2">
+                            <Label class="text-sm font-medium">Nom</Label>
+                            <Input v-model="registrationForm.lastName" />
+                          </div>
+                        </div>
+                        <div class="space-y-2">
+                          <Label class="text-sm font-medium">Téléphone</Label>
+                          <Input v-model="registrationForm.phone" type="tel" />
+                        </div>
+                        <div class="space-y-2">
+                          <Label class="text-sm font-medium">Allergènes</Label>
+                          <Input
+                            v-model="registrationForm.allergens"
+                            placeholder="Ex: gluten, lactose..."
+                          />
+                        </div>
+                        <div class="flex items-center justify-between">
+                          <Label class="text-sm font-medium"
+                            >Véhicule motorisé</Label
+                          >
+                          <Switch
+                            v-model:checked="registrationForm.isMotorized"
+                          />
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="meals" class="pt-4">
+                        <RegistrationStepMeals
+                          v-model="selectedMeals"
+                          :meals-data="mealsCatalog"
+                          :show-errors="editShowErrors"
                         />
-                        Enregistrer
-                      </Button>
-                    </AlertDialogFooter>
+                      </TabsContent>
+
+                      <TabsContent value="activities" class="pt-4">
+                        <RegistrationStepActivities
+                          v-model="selectedActivities"
+                          :activities-data="activitiesCatalog"
+                          :show-errors="editShowErrors"
+                        />
+                      </TabsContent>
+                    </Tabs>
+
+                    <div
+                      class="flex items-center justify-between border-t pt-4"
+                    >
+                      <div class="text-sm">
+                        <span class="text-muted-foreground">Total : </span>
+                        <span class="font-semibold tabular-nums">
+                          {{ editTotal.toFixed(2) }} €
+                        </span>
+                      </div>
+                      <div class="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          @click="cancelEditRegistration"
+                        >
+                          Annuler
+                        </Button>
+                        <Button
+                          type="submit"
+                          :disabled="registrationForm.isLoading"
+                        >
+                          <Icon
+                            v-if="registrationForm.isLoading"
+                            name="lucide:loader-2"
+                            class="mr-2 h-4 w-4 animate-spin"
+                          />
+                          Enregistrer
+                        </Button>
+                      </div>
+                    </div>
                   </form>
-                </AlertDialogContent>
-              </AlertDialog>
+                </DialogScrollContent>
+              </Dialog>
             </div>
 
             <!-- ==================== SECURITY ==================== -->

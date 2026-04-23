@@ -6,12 +6,15 @@ import { toast } from "vue-sonner";
 definePageMeta({ layout: "admin" });
 
 // ── Registrations ──────────────────────────────────────────────────
-const { data: registrations, refresh: refreshList } = await useFetch<any[]>(
-  "/api/registrations",
-);
+const { data: registrationsResponse, refresh: refreshList } = await useFetch<{
+  items: any[];
+  total: number;
+}>("/api/registrations", { query: { pageSize: 200 } });
 
 const confirmedRegistrations = computed(() =>
-  (registrations.value || []).filter((r) => r.status === "CONFIRMED"),
+  (registrationsResponse.value?.items || []).filter(
+    (r) => r.status === "CONFIRMED",
+  ),
 );
 
 const stats = computed(() => {

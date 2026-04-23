@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const body = await readBody(event);
 
   // Validate required fields

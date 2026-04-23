@@ -19,8 +19,11 @@ const selectedUser = ref<any>(null);
 const fetchUsers = async () => {
   isLoading.value = true;
   try {
-    const data = await $fetch("/api/users");
-    users.value = data || [];
+    const data = await $fetch<{ items: unknown[]; total: number }>(
+      "/api/users",
+      { query: { pageSize: 200 } },
+    );
+    users.value = data?.items || [];
   } catch (err) {
     console.error(err);
     toast.error("Impossible de charger les utilisateurs");

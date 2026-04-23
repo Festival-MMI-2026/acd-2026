@@ -1,6 +1,10 @@
 export default defineEventHandler(async (event) => {
+  const sessionUser = await requireUser(event);
   const id = getRouterParam(event, "id");
-  const { firstName, lastName, email, tel, iut } = await readBody(event);
+  const { firstName, lastName, email, tel, iut } = await readValidated(
+    event,
+    userUpdateSchema,
+  );
 
   if (!id) {
     throw createError({
@@ -9,12 +13,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const admin = isAdmin(sessionUser);
+  if (!admin && sessionUser.id !== id) {
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+  }
+
   try {
-    // Check if unique email (if changed)
     if (email) {
-      const existing = await prisma.user.findUnique({
-        where: { email },
-      });
+      const existing = await prisma.user.findUnique({ where: { email } });
       if (existing && existing.id !== id) {
         throw createError({
           statusCode: 409,
@@ -23,15 +29,8 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Construct name from first/last if available
-    // If only one is provided, we might need to fetch the user first to construct the full name properly,
-    // but to keep it simple/efficient we'll assume both are usually provided or we just concat what we have
-    // However, for a partial update, this is risky.
-    // Best practice: Fetch current user if either name part is missing to ensure consistency.
-
-    let name = undefined;
+    let name: string | undefined;
     if (firstName || lastName) {
-      // If we don't have both in the payload, we need to fetch the existing user
       if (!firstName || !lastName) {
         const currentUser = await prisma.user.findUnique({
           where: { id },
@@ -51,16 +50,20 @@ export default defineEventHandler(async (event) => {
         firstName,
         lastName,
         name,
-        email,
+        email: admin ? email : undefined,
         tel,
         iut,
       },
     });
 
-    logAudit("user.updated", "User", id, null, { name: user.name, email: user.email });
+    logAudit("user.updated", "User", id, sessionUser.id, {
+      name: user.name,
+      email: user.email,
+    });
 
     return user;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.statusCode) throw error;
     console.error("Error updating user:", error);
     throw createError({
       statusCode: 500,

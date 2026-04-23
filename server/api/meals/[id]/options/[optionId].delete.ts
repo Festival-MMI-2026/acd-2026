@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const optionId = getRouterParam(event, "optionId");
 
   if (!optionId) {

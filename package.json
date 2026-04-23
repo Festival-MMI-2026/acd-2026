@@ -1,6 +1,6 @@
 {
   "name": "acd-nuxt",
-  "version": "2.4.4",
+  "version": "2.5.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -62,7 +62,8 @@
     "vue": "^3.5.27",
     "vue-qrcode-reader": "^5.7.3",
     "vue-router": "^4.6.4",
-    "vue-sonner": "^2.0.9"
+    "vue-sonner": "^2.0.9",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.89",

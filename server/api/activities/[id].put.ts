@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const id = getRouterParam(event, "id");
-  const body = await readBody(event);
+  const body = await readValidated(event, activitySchema.partial());
 
   if (!id) {
     throw createError({
@@ -17,10 +18,8 @@ export default defineEventHandler(async (event) => {
       date: body.date ? new Date(body.date) : undefined,
       startTime: body.startTime,
       endTime: body.endTime,
-      maxParticipants: body.maxParticipants
-        ? Number(body.maxParticipants)
-        : null,
-      price: body.price ? Number(body.price) : 0,
+      maxParticipants: body.maxParticipants ?? null,
+      price: body.price ?? 0,
     },
   });
 

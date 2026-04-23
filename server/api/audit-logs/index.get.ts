@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
   const query = getQuery(event);
   const take = Math.min(Number(query.limit) || 50, 100);
 

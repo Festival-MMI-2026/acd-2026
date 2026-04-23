@@ -1,6 +1,7 @@
 import { generateInvoicePdf } from "../../../utils/generateInvoicePdf";
 
 export default defineEventHandler(async (event) => {
+  const user = await requireUser(event);
   const id = getRouterParam(event, "id");
   if (!id) {
     throw createError({
@@ -9,7 +10,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Fetch registration with order, meals, and activities
   const registration = await prisma.registration.findUnique({
     where: { id },
     include: {
@@ -35,6 +35,10 @@ export default defineEventHandler(async (event) => {
       statusCode: 404,
       statusMessage: "Inscription non trouvée",
     });
+  }
+
+  if (!isAdmin(user) && registration.email !== user.email) {
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" });
   }
 
   // Fetch settings for header/location context

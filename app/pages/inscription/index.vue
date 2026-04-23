@@ -9,6 +9,7 @@ import {
   StepperTitle,
   StepperSeparator,
 } from "@/components/ui/stepper";
+import type { Activity, Iut, Meal } from "~/types/registration";
 
 definePageMeta({
   layout: "default",
@@ -17,6 +18,13 @@ definePageMeta({
 // Fetch editable content from DB
 const { data: pageContent } = await useFetch("/api/inscription-content");
 const { data: siteSettings } = await useFetch("/api/settings");
+
+useSeoMeta({
+  title: "Inscription — ACD MMI 2026",
+  description:
+    "Inscrivez-vous à l'ACD MMI 2026 : sélectionnez vos repas, vos activités et finalisez votre inscription.",
+  robots: "noindex, nofollow",
+});
 
 const session = useSession();
 const router = useRouter();
@@ -39,21 +47,18 @@ const personalInfo = ref({
   isMotorized: false,
 });
 
-interface SelectedMeal {
-  mealId: string;
-  starterOptionId?: string;
-  mainOptionId?: string;
-  dessertOptionId?: string;
-}
-
-const selectedMeals = ref<SelectedMeal[]>([]);
-const selectedActivities = ref<string[]>([]);
-
 // Fetch data - use regular useFetch to ensure data is available
-const { data: meals } = await useFetch<any[]>("/api/meals");
-const { data: activities } = await useFetch<any[]>("/api/activities");
-const { data: iuts } =
-  useLazyFetch<{ id: string; name: string; city?: string }[]>("/api/iuts");
+const { data: meals } = await useFetch<Meal[]>("/api/meals");
+const { data: activities } = await useFetch<Activity[]>("/api/activities");
+const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
+
+const {
+  selectedMeals,
+  selectedActivities,
+  totalPrice,
+  mealsValid,
+  activitiesValid,
+} = useRegistrationForm(meals, activities);
 
 // Submission state
 const isSubmitting = ref(false);
@@ -75,23 +80,8 @@ const isCurrentStepValid = computed(() => {
       personalInfo.value.iutId
     );
   }
-  if (currentStep.value === 2) {
-    if (selectedMeals.value.length === 0) return false;
-    for (const sm of selectedMeals.value) {
-      const meal = meals.value?.find((m) => m.id === sm.mealId);
-      if (!meal) continue;
-      const hasStarters = meal.options?.some((o: any) => o.optionType === "STARTER");
-      const hasMains = meal.options?.some((o: any) => o.optionType === "MAIN");
-      const hasDesserts = meal.options?.some((o: any) => o.optionType === "DESSERT");
-      if (hasStarters && !sm.starterOptionId) return false;
-      if (hasMains && !sm.mainOptionId) return false;
-      if (hasDesserts && !sm.dessertOptionId) return false;
-    }
-    return true;
-  }
-  if (currentStep.value === 3) {
-    return selectedActivities.value.length > 0;
-  }
+  if (currentStep.value === 2) return mealsValid.value;
+  if (currentStep.value === 3) return activitiesValid.value;
   return true;
 });
 
@@ -132,30 +122,10 @@ function getIutName(id: string) {
   return iuts.value?.find((i) => i.id === id)?.name;
 }
 
-function getOptionName(meal: any, optionId?: string) {
-  if (!optionId) return null;
-  return meal.options?.find((o: any) => o.id === optionId)?.name;
+function getOptionName(meal: Meal | undefined, optionId?: string) {
+  if (!optionId || !meal) return null;
+  return meal.options?.find((o) => o.id === optionId)?.name;
 }
-
-// Calculate total price (computed for reactivity)
-const totalPrice = computed(() => {
-  let total = 0;
-  // Meal prices
-  for (const selectedMeal of selectedMeals.value) {
-    const meal = meals.value?.find((m) => m.id === selectedMeal.mealId);
-    if (meal) {
-      total += Number(meal.price) || 0;
-    }
-  }
-  // Activity prices
-  for (const activityId of selectedActivities.value) {
-    const activity = activities.value?.find((a) => a.id === activityId);
-    if (activity) {
-      total += Number(activity.price) || 0;
-    }
-  }
-  return total;
-});
 
 // Summary completeness helpers
 const hasPersonalInfo = computed(
