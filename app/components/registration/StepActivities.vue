@@ -35,9 +35,13 @@ function formatDate(dateStr: string) {
     weekday: "long",
     day: "numeric",
     month: "long",
-    hour: "2-digit",
-    minute: "2-digit",
   });
+}
+
+function formatTimeRange(startTime?: string, endTime?: string) {
+  if (!startTime && !endTime) return null;
+  if (startTime && endTime) return `${startTime} – ${endTime}`;
+  return startTime || endTime || null;
 }
 </script>
 
@@ -59,7 +63,7 @@ function formatDate(dateStr: string) {
     </p>
 
     <!-- Loading -->
-    <div v-if="isLoading" class="grid gap-3 sm:grid-cols-2">
+    <div v-if="isLoading" class="space-y-3">
       <Skeleton v-for="i in 4" :key="i" class="h-32 w-full rounded-xl" />
     </div>
 
@@ -86,7 +90,7 @@ function formatDate(dateStr: string) {
       </Card>
 
       <!-- Activities list -->
-      <div v-else class="grid gap-3 sm:grid-cols-2">
+      <div v-else class="space-y-3">
         <Label
           v-for="activity in activities"
           :key="activity.id"
@@ -114,6 +118,14 @@ function formatDate(dateStr: string) {
               <Badge variant="outline" class="text-xs font-normal gap-1">
                 <Icon name="lucide:calendar" class="h-3 w-3" />
                 {{ formatDate(activity.date) }}
+              </Badge>
+              <Badge
+                v-if="!activity.allDay && formatTimeRange(activity.startTime, activity.endTime)"
+                variant="outline"
+                class="text-xs font-normal gap-1 tabular-nums"
+              >
+                <Icon name="lucide:clock" class="h-3 w-3" />
+                {{ formatTimeRange(activity.startTime, activity.endTime) }}
               </Badge>
               <Badge
                 v-if="activity.location"

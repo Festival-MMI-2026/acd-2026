@@ -10,10 +10,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (!body.name || !body.optionType) {
+  const VALID_TYPES = ["STARTER", "MAIN", "CHEESE", "DESSERT"];
+  if (!body.name || !body.optionType || !VALID_TYPES.includes(body.optionType)) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Name and optionType are required",
+      statusMessage: "Name and valid optionType are required",
     });
   }
 

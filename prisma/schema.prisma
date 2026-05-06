@@ -137,12 +137,14 @@ model MealOption {
 
   starterChoices RegistrationMeal[] @relation("StarterOption")
   mainChoices    RegistrationMeal[] @relation("MainOption")
+  cheeseChoices  RegistrationMeal[] @relation("CheeseOption")
   dessertChoices RegistrationMeal[] @relation("DessertOption")
 }
 
 enum OptionType {
   STARTER
   MAIN
+  CHEESE
   DESSERT
 }
 
@@ -154,6 +156,7 @@ model Activity {
   date            DateTime
   startTime       String
   endTime         String
+  allDay          Boolean  @default(false)
   maxParticipants Int?
   price           Decimal  @default(0) @db.Decimal(10, 2)
   registrationActivities RegistrationActivity[]
@@ -171,6 +174,10 @@ model Registration {
   iutId       String?
   allergens   String?
   isMotorized Boolean @default(false)
+  isVegetarian Boolean @default(false)
+  isVegan      Boolean @default(false)
+  noPork       Boolean @default(false)
+  noAlcohol    Boolean @default(false)
   totalPrice  Decimal  @db.Decimal(10, 2)
   status      RegistrationStatus @default(PENDING)
   checkedIn   Boolean  @default(false)
@@ -231,7 +238,10 @@ model RegistrationMeal {
   
   mainOptionId    String?
   mainOption      MealOption? @relation("MainOption", fields: [mainOptionId], references: [id])
-  
+
+  cheeseOptionId  String?
+  cheeseOption    MealOption? @relation("CheeseOption", fields: [cheeseOptionId], references: [id])
+
   dessertOptionId String?
   dessertOption   MealOption? @relation("DessertOption", fields: [dessertOptionId], references: [id])
   
@@ -264,6 +274,7 @@ model Setting {
   location         String   @default("IUT de Troyes")
   locationAddress  String   @default("9 Rue de Québec, 10000 Troyes")
   notificationEmails String[] @default([])
+  sendInvoicePdf     Boolean  @default(true)
   maintenanceMode    Boolean  @default(false)
   legalMentions      String   @default("")
   privacyPolicy      String   @default("")

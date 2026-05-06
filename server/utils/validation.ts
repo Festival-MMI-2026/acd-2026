@@ -20,6 +20,7 @@ export const selectedMealSchema = z.object({
   mealId: z.string().min(1),
   starterOptionId: z.string().optional().nullable(),
   mainOptionId: z.string().optional().nullable(),
+  cheeseOptionId: z.string().optional().nullable(),
   dessertOptionId: z.string().optional().nullable(),
 });
 
@@ -30,6 +31,10 @@ export const registrationCreateSchema = z.object({
   iutId: z.string().optional().nullable(),
   allergens: z.string().max(500).optional().nullable(),
   isMotorized: z.boolean().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  noPork: z.boolean().optional(),
+  noAlcohol: z.boolean().optional(),
   meals: z.array(selectedMealSchema).default([]),
   activities: z.array(z.string().min(1)).default([]),
 });
@@ -41,20 +46,30 @@ export const registrationUpdateSchema = z.object({
   phone: phoneSchema.optional(),
   allergens: z.string().max(500).optional().nullable(),
   isMotorized: z.boolean().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  noPork: z.boolean().optional(),
+  noAlcohol: z.boolean().optional(),
   status: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]).optional(),
   meals: z.array(selectedMealSchema).optional(),
   activities: z.array(z.string().min(1)).optional(),
 });
 
-export const activitySchema = z.object({
-  name: z.string().trim().min(1).max(255),
-  description: z.string().max(2000).optional().nullable(),
-  date: z.string().or(z.date()),
-  startTime: z.string().min(1),
-  endTime: z.string().min(1),
-  maxParticipants: z.coerce.number().int().positive().optional().nullable(),
-  price: z.coerce.number().nonnegative().max(10_000).optional().default(0),
-});
+export const activitySchema = z
+  .object({
+    name: z.string().trim().min(1).max(255),
+    description: z.string().max(2000).optional().nullable(),
+    date: z.string().or(z.date()),
+    startTime: z.string().optional().default(""),
+    endTime: z.string().optional().default(""),
+    allDay: z.boolean().optional().default(false),
+    maxParticipants: z.coerce.number().int().positive().optional().nullable(),
+    price: z.coerce.number().nonnegative().max(10_000).optional().default(0),
+  })
+  .refine((d) => d.allDay || (d.startTime && d.endTime), {
+    message: "Heure de début et de fin obligatoires (sauf si Toute la journée)",
+    path: ["startTime"],
+  });
 
 export const mealSchema = z.object({
   name: z.string().trim().min(1).max(255),

@@ -94,6 +94,10 @@ export default defineEventHandler(async (event) => {
     phone: body.phone,
     allergens: body.allergens,
     isMotorized: body.isMotorized,
+    isVegetarian: body.isVegetarian,
+    isVegan: body.isVegan,
+    noPork: body.noPork,
+    noAlcohol: body.noAlcohol,
   };
   if (admin) {
     if (body.email !== undefined) data.email = body.email;
@@ -113,6 +117,7 @@ export default defineEventHandler(async (event) => {
             mealId: meal.mealId,
             starterOptionId: meal.starterOptionId || null,
             mainOptionId: meal.mainOptionId || null,
+            cheeseOptionId: meal.cheeseOptionId || null,
             dessertOptionId: meal.dessertOptionId || null,
           })),
         });

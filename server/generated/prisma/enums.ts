@@ -20,6 +20,7 @@ export type MealType = (typeof MealType)[keyof typeof MealType]
 export const OptionType = {
   STARTER: 'STARTER',
   MAIN: 'MAIN',
+  CHEESE: 'CHEESE',
   DESSERT: 'DESSERT'
 } as const
 

@@ -205,6 +205,7 @@ export type MealOptionWhereInput = {
   meal?: Prisma.XOR<Prisma.MealScalarRelationFilter, Prisma.MealWhereInput>
   starterChoices?: Prisma.RegistrationMealListRelationFilter
   mainChoices?: Prisma.RegistrationMealListRelationFilter
+  cheeseChoices?: Prisma.RegistrationMealListRelationFilter
   dessertChoices?: Prisma.RegistrationMealListRelationFilter
 }
 
@@ -220,6 +221,7 @@ export type MealOptionOrderByWithRelationInput = {
   meal?: Prisma.MealOrderByWithRelationInput
   starterChoices?: Prisma.RegistrationMealOrderByRelationAggregateInput
   mainChoices?: Prisma.RegistrationMealOrderByRelationAggregateInput
+  cheeseChoices?: Prisma.RegistrationMealOrderByRelationAggregateInput
   dessertChoices?: Prisma.RegistrationMealOrderByRelationAggregateInput
 }
 
@@ -238,6 +240,7 @@ export type MealOptionWhereUniqueInput = Prisma.AtLeast<{
   meal?: Prisma.XOR<Prisma.MealScalarRelationFilter, Prisma.MealWhereInput>
   starterChoices?: Prisma.RegistrationMealListRelationFilter
   mainChoices?: Prisma.RegistrationMealListRelationFilter
+  cheeseChoices?: Prisma.RegistrationMealListRelationFilter
   dessertChoices?: Prisma.RegistrationMealListRelationFilter
 }, "id">
 
@@ -280,6 +283,7 @@ export type MealOptionCreateInput = {
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
   starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -294,6 +298,7 @@ export type MealOptionUncheckedCreateInput = {
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -308,6 +313,7 @@ export type MealOptionUpdateInput = {
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
   starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -322,6 +328,7 @@ export type MealOptionUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -478,6 +485,12 @@ export type MealOptionCreateNestedOneWithoutMainChoicesInput = {
   connect?: Prisma.MealOptionWhereUniqueInput
 }
 
+export type MealOptionCreateNestedOneWithoutCheeseChoicesInput = {
+  create?: Prisma.XOR<Prisma.MealOptionCreateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedCreateWithoutCheeseChoicesInput>
+  connectOrCreate?: Prisma.MealOptionCreateOrConnectWithoutCheeseChoicesInput
+  connect?: Prisma.MealOptionWhereUniqueInput
+}
+
 export type MealOptionCreateNestedOneWithoutDessertChoicesInput = {
   create?: Prisma.XOR<Prisma.MealOptionCreateWithoutDessertChoicesInput, Prisma.MealOptionUncheckedCreateWithoutDessertChoicesInput>
   connectOrCreate?: Prisma.MealOptionCreateOrConnectWithoutDessertChoicesInput
@@ -504,6 +517,16 @@ export type MealOptionUpdateOneWithoutMainChoicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MealOptionUpdateToOneWithWhereWithoutMainChoicesInput, Prisma.MealOptionUpdateWithoutMainChoicesInput>, Prisma.MealOptionUncheckedUpdateWithoutMainChoicesInput>
 }
 
+export type MealOptionUpdateOneWithoutCheeseChoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.MealOptionCreateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedCreateWithoutCheeseChoicesInput>
+  connectOrCreate?: Prisma.MealOptionCreateOrConnectWithoutCheeseChoicesInput
+  upsert?: Prisma.MealOptionUpsertWithoutCheeseChoicesInput
+  disconnect?: Prisma.MealOptionWhereInput | boolean
+  delete?: Prisma.MealOptionWhereInput | boolean
+  connect?: Prisma.MealOptionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MealOptionUpdateToOneWithWhereWithoutCheeseChoicesInput, Prisma.MealOptionUpdateWithoutCheeseChoicesInput>, Prisma.MealOptionUncheckedUpdateWithoutCheeseChoicesInput>
+}
+
 export type MealOptionUpdateOneWithoutDessertChoicesNestedInput = {
   create?: Prisma.XOR<Prisma.MealOptionCreateWithoutDessertChoicesInput, Prisma.MealOptionUncheckedCreateWithoutDessertChoicesInput>
   connectOrCreate?: Prisma.MealOptionCreateOrConnectWithoutDessertChoicesInput
@@ -524,6 +547,7 @@ export type MealOptionCreateWithoutMealInput = {
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -537,6 +561,7 @@ export type MealOptionUncheckedCreateWithoutMealInput = {
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -590,6 +615,7 @@ export type MealOptionCreateWithoutStarterChoicesInput = {
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
   mainChoices?: Prisma.RegistrationMealCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -603,6 +629,7 @@ export type MealOptionUncheckedCreateWithoutStarterChoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -621,6 +648,7 @@ export type MealOptionCreateWithoutMainChoicesInput = {
   updatedAt?: Date | string
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
   starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
+  cheeseChoices?: Prisma.RegistrationMealCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealCreateNestedManyWithoutDessertOptionInput
 }
 
@@ -634,12 +662,46 @@ export type MealOptionUncheckedCreateWithoutMainChoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutCheeseOptionInput
   dessertChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutDessertOptionInput
 }
 
 export type MealOptionCreateOrConnectWithoutMainChoicesInput = {
   where: Prisma.MealOptionWhereUniqueInput
   create: Prisma.XOR<Prisma.MealOptionCreateWithoutMainChoicesInput, Prisma.MealOptionUncheckedCreateWithoutMainChoicesInput>
+}
+
+export type MealOptionCreateWithoutCheeseChoicesInput = {
+  id?: string
+  name: string
+  optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  meal: Prisma.MealCreateNestedOneWithoutOptionsInput
+  starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
+  mainChoices?: Prisma.RegistrationMealCreateNestedManyWithoutMainOptionInput
+  dessertChoices?: Prisma.RegistrationMealCreateNestedManyWithoutDessertOptionInput
+}
+
+export type MealOptionUncheckedCreateWithoutCheeseChoicesInput = {
+  id?: string
+  mealId: string
+  name: string
+  optionType: $Enums.OptionType
+  hasAllergens?: boolean
+  allergens?: Prisma.MealOptionCreateallergensInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
+  mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
+  dessertChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutDessertOptionInput
+}
+
+export type MealOptionCreateOrConnectWithoutCheeseChoicesInput = {
+  where: Prisma.MealOptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MealOptionCreateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedCreateWithoutCheeseChoicesInput>
 }
 
 export type MealOptionCreateWithoutDessertChoicesInput = {
@@ -653,6 +715,7 @@ export type MealOptionCreateWithoutDessertChoicesInput = {
   meal: Prisma.MealCreateNestedOneWithoutOptionsInput
   starterChoices?: Prisma.RegistrationMealCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealCreateNestedManyWithoutCheeseOptionInput
 }
 
 export type MealOptionUncheckedCreateWithoutDessertChoicesInput = {
@@ -666,6 +729,7 @@ export type MealOptionUncheckedCreateWithoutDessertChoicesInput = {
   updatedAt?: Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutStarterOptionInput
   mainChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutMainOptionInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedCreateNestedManyWithoutCheeseOptionInput
 }
 
 export type MealOptionCreateOrConnectWithoutDessertChoicesInput = {
@@ -694,6 +758,7 @@ export type MealOptionUpdateWithoutStarterChoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
   mainChoices?: Prisma.RegistrationMealUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -707,6 +772,7 @@ export type MealOptionUncheckedUpdateWithoutStarterChoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -731,6 +797,7 @@ export type MealOptionUpdateWithoutMainChoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
   starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -744,6 +811,46 @@ export type MealOptionUncheckedUpdateWithoutMainChoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutCheeseOptionNestedInput
+  dessertChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutDessertOptionNestedInput
+}
+
+export type MealOptionUpsertWithoutCheeseChoicesInput = {
+  update: Prisma.XOR<Prisma.MealOptionUpdateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedUpdateWithoutCheeseChoicesInput>
+  create: Prisma.XOR<Prisma.MealOptionCreateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedCreateWithoutCheeseChoicesInput>
+  where?: Prisma.MealOptionWhereInput
+}
+
+export type MealOptionUpdateToOneWithWhereWithoutCheeseChoicesInput = {
+  where?: Prisma.MealOptionWhereInput
+  data: Prisma.XOR<Prisma.MealOptionUpdateWithoutCheeseChoicesInput, Prisma.MealOptionUncheckedUpdateWithoutCheeseChoicesInput>
+}
+
+export type MealOptionUpdateWithoutCheeseChoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
+  starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
+  mainChoices?: Prisma.RegistrationMealUpdateManyWithoutMainOptionNestedInput
+  dessertChoices?: Prisma.RegistrationMealUpdateManyWithoutDessertOptionNestedInput
+}
+
+export type MealOptionUncheckedUpdateWithoutCheeseChoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mealId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  optionType?: Prisma.EnumOptionTypeFieldUpdateOperationsInput | $Enums.OptionType
+  hasAllergens?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allergens?: Prisma.MealOptionUpdateallergensInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
+  mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -769,6 +876,7 @@ export type MealOptionUpdateWithoutDessertChoicesInput = {
   meal?: Prisma.MealUpdateOneRequiredWithoutOptionsNestedInput
   starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUpdateManyWithoutCheeseOptionNestedInput
 }
 
 export type MealOptionUncheckedUpdateWithoutDessertChoicesInput = {
@@ -782,6 +890,7 @@ export type MealOptionUncheckedUpdateWithoutDessertChoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutCheeseOptionNestedInput
 }
 
 export type MealOptionCreateManyMealInput = {
@@ -804,6 +913,7 @@ export type MealOptionUpdateWithoutMealInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -817,6 +927,7 @@ export type MealOptionUncheckedUpdateWithoutMealInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   starterChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutStarterOptionNestedInput
   mainChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutMainOptionNestedInput
+  cheeseChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutCheeseOptionNestedInput
   dessertChoices?: Prisma.RegistrationMealUncheckedUpdateManyWithoutDessertOptionNestedInput
 }
 
@@ -838,12 +949,14 @@ export type MealOptionUncheckedUpdateManyWithoutMealInput = {
 export type MealOptionCountOutputType = {
   starterChoices: number
   mainChoices: number
+  cheeseChoices: number
   dessertChoices: number
 }
 
 export type MealOptionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   starterChoices?: boolean | MealOptionCountOutputTypeCountStarterChoicesArgs
   mainChoices?: boolean | MealOptionCountOutputTypeCountMainChoicesArgs
+  cheeseChoices?: boolean | MealOptionCountOutputTypeCountCheeseChoicesArgs
   dessertChoices?: boolean | MealOptionCountOutputTypeCountDessertChoicesArgs
 }
 
@@ -874,6 +987,13 @@ export type MealOptionCountOutputTypeCountMainChoicesArgs<ExtArgs extends runtim
 /**
  * MealOptionCountOutputType without action
  */
+export type MealOptionCountOutputTypeCountCheeseChoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RegistrationMealWhereInput
+}
+
+/**
+ * MealOptionCountOutputType without action
+ */
 export type MealOptionCountOutputTypeCountDessertChoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RegistrationMealWhereInput
 }
@@ -891,6 +1011,7 @@ export type MealOptionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
   starterChoices?: boolean | Prisma.MealOption$starterChoicesArgs<ExtArgs>
   mainChoices?: boolean | Prisma.MealOption$mainChoicesArgs<ExtArgs>
+  cheeseChoices?: boolean | Prisma.MealOption$cheeseChoicesArgs<ExtArgs>
   dessertChoices?: boolean | Prisma.MealOption$dessertChoicesArgs<ExtArgs>
   _count?: boolean | Prisma.MealOptionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mealOption"]>
@@ -935,6 +1056,7 @@ export type MealOptionInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   meal?: boolean | Prisma.MealDefaultArgs<ExtArgs>
   starterChoices?: boolean | Prisma.MealOption$starterChoicesArgs<ExtArgs>
   mainChoices?: boolean | Prisma.MealOption$mainChoicesArgs<ExtArgs>
+  cheeseChoices?: boolean | Prisma.MealOption$cheeseChoicesArgs<ExtArgs>
   dessertChoices?: boolean | Prisma.MealOption$dessertChoicesArgs<ExtArgs>
   _count?: boolean | Prisma.MealOptionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -951,6 +1073,7 @@ export type $MealOptionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     meal: Prisma.$MealPayload<ExtArgs>
     starterChoices: Prisma.$RegistrationMealPayload<ExtArgs>[]
     mainChoices: Prisma.$RegistrationMealPayload<ExtArgs>[]
+    cheeseChoices: Prisma.$RegistrationMealPayload<ExtArgs>[]
     dessertChoices: Prisma.$RegistrationMealPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1359,6 +1482,7 @@ export interface Prisma__MealOptionClient<T, Null = never, ExtArgs extends runti
   meal<T extends Prisma.MealDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MealDefaultArgs<ExtArgs>>): Prisma.Prisma__MealClient<runtime.Types.Result.GetResult<Prisma.$MealPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   starterChoices<T extends Prisma.MealOption$starterChoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MealOption$starterChoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mainChoices<T extends Prisma.MealOption$mainChoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MealOption$mainChoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cheeseChoices<T extends Prisma.MealOption$cheeseChoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MealOption$cheeseChoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dessertChoices<T extends Prisma.MealOption$dessertChoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MealOption$dessertChoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationMealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1820,6 +1944,30 @@ export type MealOption$starterChoicesArgs<ExtArgs extends runtime.Types.Extensio
  * MealOption.mainChoices
  */
 export type MealOption$mainChoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RegistrationMeal
+   */
+  select?: Prisma.RegistrationMealSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RegistrationMeal
+   */
+  omit?: Prisma.RegistrationMealOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationMealInclude<ExtArgs> | null
+  where?: Prisma.RegistrationMealWhereInput
+  orderBy?: Prisma.RegistrationMealOrderByWithRelationInput | Prisma.RegistrationMealOrderByWithRelationInput[]
+  cursor?: Prisma.RegistrationMealWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RegistrationMealScalarFieldEnum | Prisma.RegistrationMealScalarFieldEnum[]
+}
+
+/**
+ * MealOption.cheeseChoices
+ */
+export type MealOption$cheeseChoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the RegistrationMeal
    */

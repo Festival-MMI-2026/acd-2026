@@ -175,6 +175,9 @@ function copyToClipboard(text: string) {
                 <p v-if="regMeal.mainOption">
                   Plat : {{ regMeal.mainOption.name }}
                 </p>
+                <p v-if="regMeal.cheeseOption">
+                  Fromage : {{ regMeal.cheeseOption.name }}
+                </p>
                 <p v-if="regMeal.dessertOption">
                   Dessert : {{ regMeal.dessertOption.name }}
                 </p>

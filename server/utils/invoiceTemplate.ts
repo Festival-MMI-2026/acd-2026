@@ -34,6 +34,7 @@ export function generateInvoiceHtml(data: any) {
         const options = [];
         if (m.starterOption) options.push(m.starterOption.name);
         if (m.mainOption) options.push(m.mainOption.name);
+        if (m.cheeseOption) options.push(m.cheeseOption.name);
         if (m.dessertOption) options.push(m.dessertOption.name);
         if (options.length > 0) {
           optionsHtml = options.join(" • ");

@@ -17,7 +17,7 @@ export function useRegistrationForm(
 
   function hasOptionType(
     meal: Meal,
-    type: "STARTER" | "MAIN" | "DESSERT",
+    type: "STARTER" | "MAIN" | "CHEESE" | "DESSERT",
   ): boolean {
     return !!meal.options?.some((o) => o.optionType === type);
   }
@@ -42,6 +42,7 @@ export function useRegistrationForm(
       if (!meal) continue;
       if (hasOptionType(meal, "STARTER") && !sm.starterOptionId) return false;
       if (hasOptionType(meal, "MAIN") && !sm.mainOptionId) return false;
+      if (hasOptionType(meal, "CHEESE") && !sm.cheeseOptionId) return false;
       if (hasOptionType(meal, "DESSERT") && !sm.dessertOptionId) return false;
     }
     return true;
