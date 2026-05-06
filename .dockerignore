@@ -1,5 +1,6 @@
 node_modules
-.output
+# .output is built by the CI before "docker build" and is COPYed into the
+# image — it must NOT be excluded from the build context.
 .nuxt
 .git
 .gitignore
