@@ -38,7 +38,7 @@ const dataCategories = ref([
   },
   {
     id: "events",
-    name: "Événements",
+    name: "Programme",
     count: 0,
     icon: "lucide:calendar",
     selected: false,
@@ -55,6 +55,20 @@ const dataCategories = ref([
     name: "Activités",
     count: 0,
     icon: "lucide:activity",
+    selected: false,
+  },
+  {
+    id: "hotels",
+    name: "Hôtels",
+    count: 0,
+    icon: "lucide:building-2",
+    selected: false,
+  },
+  {
+    id: "iuts",
+    name: "IUTs",
+    count: 0,
+    icon: "lucide:graduation-cap",
     selected: false,
   },
 ]);
@@ -166,7 +180,7 @@ onMounted(() => {
       <h2 class="text-sm font-medium text-muted-foreground mb-3">
         Données à exporter
       </h2>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div
           v-for="cat in dataCategories"
           :key="cat.id"

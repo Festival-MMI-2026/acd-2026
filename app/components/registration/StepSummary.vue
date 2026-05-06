@@ -7,12 +7,17 @@ interface PersonalInfo {
   iutId: string;
   allergens: string;
   isMotorized: boolean;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  noPork: boolean;
+  noAlcohol: boolean;
 }
 
 interface SelectedMeal {
   mealId: string;
   starterOptionId?: string;
   mainOptionId?: string;
+  cheeseOptionId?: string;
   dessertOptionId?: string;
 }
 
@@ -170,18 +175,44 @@ function formatDate(dateStr: string) {
               {{ getIutById(personalInfo.iutId)?.name || "Non spécifié" }}
             </p>
           </div>
+          <div
+            v-if="personalInfo.isVegetarian || personalInfo.isVegan || personalInfo.noPork || personalInfo.noAlcohol"
+            class="col-span-2 space-y-1"
+          >
+            <p class="text-xs text-muted-foreground uppercase tracking-wider">
+              Préférences alimentaires
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <Badge v-if="personalInfo.isVegan" variant="outline" class="gap-1 font-normal">
+                <Icon name="lucide:sprout" class="h-3 w-3" />
+                Vegan
+              </Badge>
+              <Badge v-else-if="personalInfo.isVegetarian" variant="outline" class="gap-1 font-normal">
+                <Icon name="lucide:leaf" class="h-3 w-3" />
+                Végétarien
+              </Badge>
+              <Badge v-if="personalInfo.noPork" variant="outline" class="gap-1 font-normal">
+                <Icon name="lucide:ban" class="h-3 w-3" />
+                Sans porc
+              </Badge>
+              <Badge v-if="personalInfo.noAlcohol" variant="outline" class="gap-1 font-normal">
+                <Icon name="lucide:wine-off" class="h-3 w-3" />
+                Sans alcool
+              </Badge>
+            </div>
+          </div>
           <div v-if="personalInfo.allergens" class="col-span-2 space-y-1">
             <p class="text-xs text-muted-foreground uppercase tracking-wider">
               Allergies alimentaires
             </p>
             <div
-              class="flex items-center gap-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1.5 w-fit"
+              class="flex items-center gap-1.5 rounded-lg bg-muted px-2.5 py-1.5 w-fit"
             >
               <Icon
                 name="lucide:alert-triangle"
-                class="h-3.5 w-3.5 text-amber-500"
+                class="h-3.5 w-3.5 text-muted-foreground"
               />
-              <span class="text-sm font-medium text-amber-700 dark:text-amber-400">
+              <span class="text-sm font-medium text-foreground">
                 {{ personalInfo.allergens }}
               </span>
             </div>
@@ -265,6 +296,23 @@ function formatDate(dateStr: string) {
                   getOptionName(
                     getMealById(selectedMeal.mealId)!,
                     selectedMeal.mainOptionId,
+                  )
+                }}
+              </Badge>
+              <Badge
+                v-if="
+                  getOptionName(
+                    getMealById(selectedMeal.mealId)!,
+                    selectedMeal.cheeseOptionId,
+                  )
+                "
+                variant="outline"
+                class="text-xs font-normal"
+              >
+                {{
+                  getOptionName(
+                    getMealById(selectedMeal.mealId)!,
+                    selectedMeal.cheeseOptionId,
                   )
                 }}
               </Badge>

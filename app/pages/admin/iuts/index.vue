@@ -6,14 +6,26 @@ definePageMeta({
   layout: "admin",
 });
 
-const iuts = ref<any[]>([]);
+interface Iut {
+  id: string;
+  name: string;
+  city?: string | null;
+  code?: string | null;
+  createdAt: string;
+}
+
+const iuts = ref<Iut[]>([]);
 const isLoading = ref(true);
 const showImportDialog = ref(false);
+
+const showDeleteDialog = ref(false);
+const iutToDelete = ref<Iut | null>(null);
+const isDeleting = ref(false);
 
 const fetchIuts = async () => {
   isLoading.value = true;
   try {
-    const data = await $fetch("/api/iuts");
+    const data = await $fetch<Iut[]>("/api/iuts");
     iuts.value = data || [];
   } catch (err) {
     console.error(err);
@@ -22,6 +34,28 @@ const fetchIuts = async () => {
     isLoading.value = false;
   }
 };
+
+function confirmDelete(iut: Iut) {
+  iutToDelete.value = iut;
+  showDeleteDialog.value = true;
+}
+
+async function executeDelete() {
+  if (!iutToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    await $fetch(`/api/iuts/${iutToDelete.value.id}`, { method: "DELETE" });
+    toast.success("IUT supprimé");
+    iuts.value = iuts.value.filter((i) => i.id !== iutToDelete.value!.id);
+  } catch (err: any) {
+    console.error(err);
+    toast.error(err.statusMessage || "Erreur lors de la suppression");
+  } finally {
+    isDeleting.value = false;
+    showDeleteDialog.value = false;
+    iutToDelete.value = null;
+  }
+}
 
 onMounted(() => {
   fetchIuts();
@@ -61,17 +95,17 @@ onMounted(() => {
                 <TableHead>Ville</TableHead>
                 <TableHead>Code</TableHead>
                 <TableHead>Ajouté le</TableHead>
-                <TableHead class="text-right">ID</TableHead>
+                <TableHead class="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow v-if="isLoading">
-                <TableCell colspan="4" class="h-24 text-center">
+                <TableCell colspan="5" class="h-24 text-center">
                   Chargement...
                 </TableCell>
               </TableRow>
               <TableRow v-else-if="iuts.length === 0">
-                <TableCell colspan="4" class="h-24 text-center">
+                <TableCell colspan="5" class="h-24 text-center">
                   Aucun IUT trouvé. Importez un fichier CSV.
                 </TableCell>
               </TableRow>
@@ -96,10 +130,15 @@ onMounted(() => {
                 <TableCell>
                   {{ new Date(iut.createdAt).toLocaleDateString("fr-FR") }}
                 </TableCell>
-                <TableCell
-                  class="text-right font-mono text-xs text-muted-foreground"
-                >
-                  {{ iut.id.substring(0, 8) }}...
+                <TableCell class="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    @click="confirmDelete(iut)"
+                  >
+                    <Icon name="lucide:trash-2" class="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -113,5 +152,37 @@ onMounted(() => {
       @update:open="showImportDialog = $event"
       @success="fetchIuts"
     />
+
+    <AlertDialog
+      :open="showDeleteDialog"
+      @update:open="showDeleteDialog = $event"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Supprimer cet IUT ?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Cette action est irréversible. L'IUT
+            <span class="font-medium">"{{ iutToDelete?.name }}"</span>
+            sera supprimé définitivement. Les inscriptions existantes qui y
+            sont rattachées resteront mais perdront le lien.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel :disabled="isDeleting">Annuler</AlertDialogCancel>
+          <AlertDialogAction
+            class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            :disabled="isDeleting"
+            @click="executeDelete"
+          >
+            <Icon
+              v-if="isDeleting"
+              name="lucide:loader-2"
+              class="mr-2 h-4 w-4 animate-spin"
+            />
+            Supprimer
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

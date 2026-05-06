@@ -37,6 +37,7 @@ const settings = ref({
   showAcces: true,
   showHotels: true,
   notificationEmails: [] as string[],
+  sendInvoicePdf: true,
 });
 
 const newEmail = ref("");
@@ -85,6 +86,8 @@ watchEffect(() => {
     settings.value.showHotels = dbSettings.value.showHotels;
     settings.value.notificationEmails =
       dbSettings.value.notificationEmails ?? [];
+    settings.value.sendInvoicePdf =
+      dbSettings.value.sendInvoicePdf ?? true;
   }
 });
 
@@ -106,6 +109,7 @@ async function save() {
         showAcces: settings.value.showAcces,
         showHotels: settings.value.showHotels,
         notificationEmails: settings.value.notificationEmails,
+        sendInvoicePdf: settings.value.sendInvoicePdf,
       },
     });
     await refresh();
@@ -159,6 +163,13 @@ const clearOptions = ref([
     label: "Hôtels",
     description: "Tous les hôtels partenaires",
     icon: "lucide:building-2",
+    checked: false,
+  },
+  {
+    key: "iuts",
+    label: "IUTs",
+    description: "Tous les IUTs répertoriés",
+    icon: "lucide:graduation-cap",
     checked: false,
   },
 ]);
@@ -401,6 +412,23 @@ async function executeClear() {
         </div>
       </CardHeader>
       <CardContent class="space-y-4">
+        <!-- Send invoice PDF toggle -->
+        <div class="flex items-start justify-between gap-4 rounded-xl border bg-muted/30 px-4 py-3">
+          <div class="space-y-0.5">
+            <Label for="sendInvoicePdf" class="text-sm font-medium cursor-pointer">
+              Envoyer la facture PDF par email
+            </Label>
+            <p class="text-xs text-muted-foreground">
+              Si activé, la facture PDF est jointe à l'email de confirmation envoyé à l'inscrit
+            </p>
+          </div>
+          <Switch
+            id="sendInvoicePdf"
+            v-model="settings.sendInvoicePdf"
+            @update:model-value="save"
+          />
+        </div>
+
         <div class="flex gap-2">
           <div class="flex-1 space-y-1">
             <Input

@@ -11,30 +11,29 @@ export default defineEventHandler(async (event) => {
   }
 
   const content = file.data.toString("utf-8");
-  const lines = content.split(/\r?\n/).filter((l) => l.trim() !== "");
-  if (lines.length === 0) {
+  const rows = parseCsv(content);
+  if (rows.length === 0) {
     throw createError({ statusCode: 400, statusMessage: "Fichier vide" });
   }
 
   // Skip header if present
-  const firstLine = lines[0]?.toLowerCase() ?? "";
-  const startIndex =
-    firstLine.includes("nom") || firstLine.includes("name") || firstLine.includes("titre")
-      ? 1
-      : 0;
+  const firstCells = (rows[0] ?? []).map((c) => c.toLowerCase());
+  const hasHeader =
+    firstCells.includes("nom") || firstCells.includes("name") || firstCells.includes("titre");
+  const startIndex = hasHeader ? 1 : 0;
 
   const rowErrors: string[] = [];
   let created = 0;
 
-  for (let i = startIndex; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line) continue;
+  for (let i = startIndex; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.every((c) => !c.trim())) continue;
 
-    const parts = line.split(/[;,]/).map((p) => p.trim());
+    const parts = row.map((p) => p.trim());
     const [rawName, rawDate, rawStart, rawEnd, rawPrice, rawMax, rawDesc] = parts;
 
-    if (!rawName || !rawDate || !rawStart || !rawEnd) {
-      rowErrors.push(`Ligne ${i + 1}: nom, date, heure_debut et heure_fin sont obligatoires`);
+    if (!rawName || !rawDate) {
+      rowErrors.push(`Ligne ${i + 1}: nom et date sont obligatoires`);
       continue;
     }
 
@@ -44,9 +43,11 @@ export default defineEventHandler(async (event) => {
       continue;
     }
 
+    // Heures vides → activité "toute la journée"
+    const allDay = !rawStart && !rawEnd;
     const timeRegex = /^\d{2}:\d{2}$/;
-    if (!timeRegex.test(rawStart) || !timeRegex.test(rawEnd)) {
-      rowErrors.push(`Ligne ${i + 1}: format d'heure invalide (attendu: HH:MM)`);
+    if (!allDay && (!timeRegex.test(rawStart ?? "") || !timeRegex.test(rawEnd ?? ""))) {
+      rowErrors.push(`Ligne ${i + 1}: format d'heure invalide (attendu: HH:MM, ou laissez vide pour "toute la journée")`);
       continue;
     }
 
@@ -58,8 +59,9 @@ export default defineEventHandler(async (event) => {
         data: {
           name: rawName,
           date: parsedDate,
-          startTime: rawStart,
-          endTime: rawEnd,
+          startTime: allDay ? "" : rawStart!,
+          endTime: allDay ? "" : rawEnd!,
+          allDay,
           price,
           maxParticipants,
           description: rawDesc || null,

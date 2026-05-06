@@ -43,6 +43,10 @@ export type RegistrationMinAggregateOutputType = {
   iutId: string | null
   allergens: string | null
   isMotorized: boolean | null
+  isVegetarian: boolean | null
+  isVegan: boolean | null
+  noPork: boolean | null
+  noAlcohol: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
   checkedIn: boolean | null
@@ -60,6 +64,10 @@ export type RegistrationMaxAggregateOutputType = {
   iutId: string | null
   allergens: string | null
   isMotorized: boolean | null
+  isVegetarian: boolean | null
+  isVegan: boolean | null
+  noPork: boolean | null
+  noAlcohol: boolean | null
   totalPrice: runtime.Decimal | null
   status: $Enums.RegistrationStatus | null
   checkedIn: boolean | null
@@ -77,6 +85,10 @@ export type RegistrationCountAggregateOutputType = {
   iutId: number
   allergens: number
   isMotorized: number
+  isVegetarian: number
+  isVegan: number
+  noPork: number
+  noAlcohol: number
   totalPrice: number
   status: number
   checkedIn: number
@@ -104,6 +116,10 @@ export type RegistrationMinAggregateInputType = {
   iutId?: true
   allergens?: true
   isMotorized?: true
+  isVegetarian?: true
+  isVegan?: true
+  noPork?: true
+  noAlcohol?: true
   totalPrice?: true
   status?: true
   checkedIn?: true
@@ -121,6 +137,10 @@ export type RegistrationMaxAggregateInputType = {
   iutId?: true
   allergens?: true
   isMotorized?: true
+  isVegetarian?: true
+  isVegan?: true
+  noPork?: true
+  noAlcohol?: true
   totalPrice?: true
   status?: true
   checkedIn?: true
@@ -138,6 +158,10 @@ export type RegistrationCountAggregateInputType = {
   iutId?: true
   allergens?: true
   isMotorized?: true
+  isVegetarian?: true
+  isVegan?: true
+  noPork?: true
+  noAlcohol?: true
   totalPrice?: true
   status?: true
   checkedIn?: true
@@ -242,6 +266,10 @@ export type RegistrationGroupByOutputType = {
   iutId: string | null
   allergens: string | null
   isMotorized: boolean
+  isVegetarian: boolean
+  isVegan: boolean
+  noPork: boolean
+  noAlcohol: boolean
   totalPrice: runtime.Decimal
   status: $Enums.RegistrationStatus
   checkedIn: boolean
@@ -282,6 +310,10 @@ export type RegistrationWhereInput = {
   iutId?: Prisma.StringNullableFilter<"Registration"> | string | null
   allergens?: Prisma.StringNullableFilter<"Registration"> | string | null
   isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
+  isVegetarian?: Prisma.BoolFilter<"Registration"> | boolean
+  isVegan?: Prisma.BoolFilter<"Registration"> | boolean
+  noPork?: Prisma.BoolFilter<"Registration"> | boolean
+  noAlcohol?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFilter<"Registration"> | boolean
@@ -302,6 +334,10 @@ export type RegistrationOrderByWithRelationInput = {
   iutId?: Prisma.SortOrderInput | Prisma.SortOrder
   allergens?: Prisma.SortOrderInput | Prisma.SortOrder
   isMotorized?: Prisma.SortOrder
+  isVegetarian?: Prisma.SortOrder
+  isVegan?: Prisma.SortOrder
+  noPork?: Prisma.SortOrder
+  noAlcohol?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   checkedIn?: Prisma.SortOrder
@@ -325,6 +361,10 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   iutId?: Prisma.StringNullableFilter<"Registration"> | string | null
   allergens?: Prisma.StringNullableFilter<"Registration"> | string | null
   isMotorized?: Prisma.BoolFilter<"Registration"> | boolean
+  isVegetarian?: Prisma.BoolFilter<"Registration"> | boolean
+  isVegan?: Prisma.BoolFilter<"Registration"> | boolean
+  noPork?: Prisma.BoolFilter<"Registration"> | boolean
+  noAlcohol?: Prisma.BoolFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFilter<"Registration"> | boolean
@@ -345,6 +385,10 @@ export type RegistrationOrderByWithAggregationInput = {
   iutId?: Prisma.SortOrderInput | Prisma.SortOrder
   allergens?: Prisma.SortOrderInput | Prisma.SortOrder
   isMotorized?: Prisma.SortOrder
+  isVegetarian?: Prisma.SortOrder
+  isVegan?: Prisma.SortOrder
+  noPork?: Prisma.SortOrder
+  noAlcohol?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   checkedIn?: Prisma.SortOrder
@@ -370,6 +414,10 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   iutId?: Prisma.StringNullableWithAggregatesFilter<"Registration"> | string | null
   allergens?: Prisma.StringNullableWithAggregatesFilter<"Registration"> | string | null
   isMotorized?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
+  isVegetarian?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
+  isVegan?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
+  noPork?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
+  noAlcohol?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
   totalPrice?: Prisma.DecimalWithAggregatesFilter<"Registration"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusWithAggregatesFilter<"Registration"> | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolWithAggregatesFilter<"Registration"> | boolean
@@ -387,6 +435,10 @@ export type RegistrationCreateInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -407,6 +459,10 @@ export type RegistrationUncheckedCreateInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -427,6 +483,10 @@ export type RegistrationUpdateInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -447,6 +507,10 @@ export type RegistrationUncheckedUpdateInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -467,6 +531,10 @@ export type RegistrationCreateManyInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -484,6 +552,10 @@ export type RegistrationUpdateManyMutationInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -501,6 +573,10 @@ export type RegistrationUncheckedUpdateManyInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -518,6 +594,10 @@ export type RegistrationCountOrderByAggregateInput = {
   iutId?: Prisma.SortOrder
   allergens?: Prisma.SortOrder
   isMotorized?: Prisma.SortOrder
+  isVegetarian?: Prisma.SortOrder
+  isVegan?: Prisma.SortOrder
+  noPork?: Prisma.SortOrder
+  noAlcohol?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   checkedIn?: Prisma.SortOrder
@@ -539,6 +619,10 @@ export type RegistrationMaxOrderByAggregateInput = {
   iutId?: Prisma.SortOrder
   allergens?: Prisma.SortOrder
   isMotorized?: Prisma.SortOrder
+  isVegetarian?: Prisma.SortOrder
+  isVegan?: Prisma.SortOrder
+  noPork?: Prisma.SortOrder
+  noAlcohol?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   checkedIn?: Prisma.SortOrder
@@ -556,6 +640,10 @@ export type RegistrationMinOrderByAggregateInput = {
   iutId?: Prisma.SortOrder
   allergens?: Prisma.SortOrder
   isMotorized?: Prisma.SortOrder
+  isVegetarian?: Prisma.SortOrder
+  isVegan?: Prisma.SortOrder
+  noPork?: Prisma.SortOrder
+  noAlcohol?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
   status?: Prisma.SortOrder
   checkedIn?: Prisma.SortOrder
@@ -628,6 +716,10 @@ export type RegistrationCreateWithoutOrderInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -647,6 +739,10 @@ export type RegistrationUncheckedCreateWithoutOrderInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -682,6 +778,10 @@ export type RegistrationUpdateWithoutOrderInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -701,6 +801,10 @@ export type RegistrationUncheckedUpdateWithoutOrderInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -720,6 +824,10 @@ export type RegistrationCreateWithoutMealsInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -739,6 +847,10 @@ export type RegistrationUncheckedCreateWithoutMealsInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -774,6 +886,10 @@ export type RegistrationUpdateWithoutMealsInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -793,6 +909,10 @@ export type RegistrationUncheckedUpdateWithoutMealsInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -812,6 +932,10 @@ export type RegistrationCreateWithoutActivitiesInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -831,6 +955,10 @@ export type RegistrationUncheckedCreateWithoutActivitiesInput = {
   iutId?: string | null
   allergens?: string | null
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.RegistrationStatus
   checkedIn?: boolean
@@ -866,6 +994,10 @@ export type RegistrationUpdateWithoutActivitiesInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -885,6 +1017,10 @@ export type RegistrationUncheckedUpdateWithoutActivitiesInput = {
   iutId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allergens?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isMotorized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegetarian?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVegan?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noPork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noAlcohol?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -944,6 +1080,10 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   iutId?: boolean
   allergens?: boolean
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice?: boolean
   status?: boolean
   checkedIn?: boolean
@@ -965,6 +1105,10 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   iutId?: boolean
   allergens?: boolean
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice?: boolean
   status?: boolean
   checkedIn?: boolean
@@ -982,6 +1126,10 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   iutId?: boolean
   allergens?: boolean
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice?: boolean
   status?: boolean
   checkedIn?: boolean
@@ -999,6 +1147,10 @@ export type RegistrationSelectScalar = {
   iutId?: boolean
   allergens?: boolean
   isMotorized?: boolean
+  isVegetarian?: boolean
+  isVegan?: boolean
+  noPork?: boolean
+  noAlcohol?: boolean
   totalPrice?: boolean
   status?: boolean
   checkedIn?: boolean
@@ -1007,7 +1159,7 @@ export type RegistrationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "iutId" | "allergens" | "isMotorized" | "totalPrice" | "status" | "checkedIn" | "checkedInAt" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "iutId" | "allergens" | "isMotorized" | "isVegetarian" | "isVegan" | "noPork" | "noAlcohol" | "totalPrice" | "status" | "checkedIn" | "checkedInAt" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   meals?: boolean | Prisma.Registration$mealsArgs<ExtArgs>
   activities?: boolean | Prisma.Registration$activitiesArgs<ExtArgs>
@@ -1033,6 +1185,10 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     iutId: string | null
     allergens: string | null
     isMotorized: boolean
+    isVegetarian: boolean
+    isVegan: boolean
+    noPork: boolean
+    noAlcohol: boolean
     totalPrice: runtime.Decimal
     status: $Enums.RegistrationStatus
     checkedIn: boolean
@@ -1473,6 +1629,10 @@ export interface RegistrationFieldRefs {
   readonly iutId: Prisma.FieldRef<"Registration", 'String'>
   readonly allergens: Prisma.FieldRef<"Registration", 'String'>
   readonly isMotorized: Prisma.FieldRef<"Registration", 'Boolean'>
+  readonly isVegetarian: Prisma.FieldRef<"Registration", 'Boolean'>
+  readonly isVegan: Prisma.FieldRef<"Registration", 'Boolean'>
+  readonly noPork: Prisma.FieldRef<"Registration", 'Boolean'>
+  readonly noAlcohol: Prisma.FieldRef<"Registration", 'Boolean'>
   readonly totalPrice: Prisma.FieldRef<"Registration", 'Decimal'>
   readonly status: Prisma.FieldRef<"Registration", 'RegistrationStatus'>
   readonly checkedIn: Prisma.FieldRef<"Registration", 'Boolean'>

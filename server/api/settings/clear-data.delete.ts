@@ -59,6 +59,11 @@ export default defineEventHandler(async (event) => {
     deleted.events = events.count;
   }
 
+  if (tables.includes("iuts")) {
+    const iuts = await prisma.iut.deleteMany({});
+    deleted.iuts = iuts.count;
+  }
+
   logAudit("data.cleared", "System", "clear-data", null, { tables, deleted });
 
   return { success: true, deleted };

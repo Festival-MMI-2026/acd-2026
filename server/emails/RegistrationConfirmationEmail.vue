@@ -19,6 +19,7 @@ interface MealSelection {
   mealName: string;
   starter: string | null;
   main: string | null;
+  cheese: string | null;
   dessert: string | null;
 }
 
@@ -128,10 +129,10 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                     {{ meal.mealName }}
                   </Text>
                   <Text
-                    v-if="meal.starter || meal.main || meal.dessert"
+                    v-if="meal.starter || meal.main || meal.cheese || meal.dessert"
                     class="text-xs text-muted-foreground m-0"
                   >
-                    {{ [meal.starter, meal.main, meal.dessert].filter(Boolean).join(" · ") }}
+                    {{ [meal.starter, meal.main, meal.cheese, meal.dessert].filter(Boolean).join(" · ") }}
                   </Text>
                 </Column>
               </Row>

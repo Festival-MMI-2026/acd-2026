@@ -11,17 +11,18 @@ export default defineEventHandler(async (event) => {
   }
 
   const content = file.data.toString("utf-8");
-  const lines = content.split(/\r?\n/).filter((l) => l.trim() !== "");
-  if (lines.length === 0) {
+  const rows = parseCsv(content);
+  if (rows.length === 0) {
     throw createError({ statusCode: 400, statusMessage: "Fichier vide" });
   }
 
   // Detect and skip header line
-  const firstLine = lines[0]?.toLowerCase() ?? "";
-  const startIndex =
-    firstLine.includes("nom") || firstLine.includes("name") || firstLine.includes("date")
-      ? 1
-      : 0;
+  const firstCells = (rows[0] ?? []).map((c) => c.toLowerCase());
+  const hasHeader =
+    firstCells.includes("nom") ||
+    firstCells.includes("name") ||
+    firstCells.includes("date");
+  const startIndex = hasHeader ? 1 : 0;
 
   // Group rows by (name + date + type) to build meals with their options
   const mealMap = new Map<
@@ -31,18 +32,19 @@ export default defineEventHandler(async (event) => {
       date: string;
       mealType: "LUNCH" | "DINNER";
       price: number;
-      options: { name: string; optionType: "STARTER" | "MAIN" | "DESSERT"; allergens: string[] }[];
+      description: string | null;
+      options: { name: string; optionType: "STARTER" | "MAIN" | "CHEESE" | "DESSERT"; allergens: string[] }[];
     }
   >();
 
   const rowErrors: string[] = [];
 
-  for (let i = startIndex; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line) continue;
+  for (let i = startIndex; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.every((c) => !c.trim())) continue;
 
-    const parts = line.split(/[;,]/).map((p) => p.trim());
-    const [rawName, rawDate, rawType, rawPrice, rawOptionType, rawOptionName, rawAllergens] = parts;
+    const parts = row.map((p) => p.trim());
+    const [rawName, rawDate, rawType, rawPrice, rawOptionType, rawOptionName, rawAllergens, rawDescription] = parts;
 
     if (!rawName || !rawDate || !rawType) {
       rowErrors.push(`Ligne ${i + 1}: colonnes nom, date et type obligatoires`);
@@ -72,15 +74,24 @@ export default defineEventHandler(async (event) => {
         date: rawDate,
         mealType: mealType as "LUNCH" | "DINNER",
         price,
+        description: rawDescription || null,
         options: [],
       });
+    } else if (rawDescription && !mealMap.get(key)!.description) {
+      // Description trouvée plus loin dans les lignes du même repas
+      mealMap.get(key)!.description = rawDescription;
     }
 
     // Parse option if present
     if (rawOptionType && rawOptionName) {
       const optionType = rawOptionType.toUpperCase();
-      if (optionType !== "STARTER" && optionType !== "MAIN" && optionType !== "DESSERT") {
-        rowErrors.push(`Ligne ${i + 1}: type d'option invalide "${rawOptionType}" (attendu: STARTER, MAIN ou DESSERT)`);
+      if (
+        optionType !== "STARTER" &&
+        optionType !== "MAIN" &&
+        optionType !== "CHEESE" &&
+        optionType !== "DESSERT"
+      ) {
+        rowErrors.push(`Ligne ${i + 1}: type d'option invalide "${rawOptionType}" (attendu: STARTER, MAIN, CHEESE ou DESSERT)`);
         continue;
       }
 
@@ -90,7 +101,7 @@ export default defineEventHandler(async (event) => {
 
       mealMap.get(key)!.options.push({
         name: rawOptionName,
-        optionType: optionType as "STARTER" | "MAIN" | "DESSERT",
+        optionType: optionType as "STARTER" | "MAIN" | "CHEESE" | "DESSERT",
         allergens,
       });
     }
@@ -113,6 +124,7 @@ export default defineEventHandler(async (event) => {
           date: new Date(meal.date),
           mealType: meal.mealType,
           price: meal.price,
+          description: meal.description,
           options: meal.options.length > 0
             ? {
                 create: meal.options.map((opt) => ({

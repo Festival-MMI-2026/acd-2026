@@ -17,6 +17,10 @@ const props = defineProps<{
     iutId: string;
     allergens: string;
     isMotorized: boolean;
+    isVegetarian: boolean;
+    isVegan: boolean;
+    noPork: boolean;
+    noAlcohol: boolean;
   };
   showErrors?: boolean;
 }>();
@@ -64,13 +68,30 @@ const isMotorizedProxy = computed({
     updateField("isMotorized", val);
   },
 });
+
+const dietaryToggles = [
+  { key: "isVegetarian", label: "Végétarien", icon: "lucide:leaf" },
+  { key: "isVegan", label: "Vegan", icon: "lucide:sprout" },
+  { key: "noPork", label: "Sans porc", icon: "lucide:ban" },
+  { key: "noAlcohol", label: "Sans alcool", icon: "lucide:wine-off" },
+] as const;
+
+function toggleDietary(
+  key: (typeof dietaryToggles)[number]["key"],
+  val: boolean,
+) {
+  // Vegan implies vegetarian: keep mutually consistent without surprising the user
+  updateField(key, val);
+}
 </script>
 
 <template>
   <div class="space-y-5">
     <!-- Identité -->
     <div class="space-y-3">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         Identité
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -81,7 +102,11 @@ const isMotorizedProxy = computed({
             :model-value="modelValue.firstName"
             @update:model-value="updateField('firstName', String($event))"
             placeholder="Jean"
-            :class="showErrors && !modelValue.firstName ? 'border-destructive focus-visible:ring-destructive' : ''"
+            :class="
+              showErrors && !modelValue.firstName
+                ? 'border-destructive focus-visible:ring-destructive'
+                : ''
+            "
           />
           <FieldError v-if="showErrors && !modelValue.firstName">
             Ce champ est obligatoire
@@ -94,7 +119,11 @@ const isMotorizedProxy = computed({
             :model-value="modelValue.lastName"
             @update:model-value="updateField('lastName', String($event))"
             placeholder="Dupont"
-            :class="showErrors && !modelValue.lastName ? 'border-destructive focus-visible:ring-destructive' : ''"
+            :class="
+              showErrors && !modelValue.lastName
+                ? 'border-destructive focus-visible:ring-destructive'
+                : ''
+            "
           />
           <FieldError v-if="showErrors && !modelValue.lastName">
             Ce champ est obligatoire
@@ -105,13 +134,21 @@ const isMotorizedProxy = computed({
 
     <!-- Coordonnées -->
     <div class="space-y-3">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         Coordonnées
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field>
           <FieldLabel for="email">Email *</FieldLabel>
-          <InputGroup :class="showErrors && !modelValue.email ? 'border-destructive ring-destructive' : ''">
+          <InputGroup
+            :class="
+              showErrors && !modelValue.email
+                ? 'border-destructive ring-destructive'
+                : ''
+            "
+          >
             <InputGroupAddon>
               <Icon name="lucide:mail" class="size-4 text-muted-foreground" />
             </InputGroupAddon>
@@ -130,7 +167,13 @@ const isMotorizedProxy = computed({
         </Field>
         <Field>
           <FieldLabel for="phone">Téléphone *</FieldLabel>
-          <InputGroup :class="showErrors && !modelValue.phone ? 'border-destructive ring-destructive' : ''">
+          <InputGroup
+            :class="
+              showErrors && !modelValue.phone
+                ? 'border-destructive ring-destructive'
+                : ''
+            "
+          >
             <InputGroupAddon>
               <Icon name="lucide:phone" class="size-4 text-muted-foreground" />
             </InputGroupAddon>
@@ -152,7 +195,9 @@ const isMotorizedProxy = computed({
 
     <!-- Établissement -->
     <div class="space-y-3">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         Établissement
       </h3>
       <Field>
@@ -164,7 +209,11 @@ const isMotorizedProxy = computed({
           >
             <SelectTrigger
               id="iut"
-              :class="showErrors && !modelValue.iutId ? 'border-destructive focus:ring-destructive' : ''"
+              :class="
+                showErrors && !modelValue.iutId
+                  ? 'border-destructive focus:ring-destructive'
+                  : ''
+              "
             >
               <SelectValue placeholder="Sélectionnez votre IUT" />
             </SelectTrigger>
@@ -189,14 +238,46 @@ const isMotorizedProxy = computed({
 
     <!-- Informations complémentaires -->
     <div class="space-y-3">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         Informations complémentaires
       </h3>
+
+      <!-- Préférences alimentaires -->
+      <Field>
+        <FieldLabel>Préférences alimentaires</FieldLabel>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <label
+            v-for="t in dietaryToggles"
+            :key="t.key"
+            :for="`diet-${t.key}`"
+            class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2.5 transition-colors hover:bg-muted/50 cursor-pointer"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium">
+              <Icon
+                :name="t.icon"
+                class="h-4 w-4 text-muted-foreground shrink-0"
+              />
+              {{ t.label }}
+            </span>
+            <Switch
+              :id="`diet-${t.key}`"
+              :model-value="modelValue[t.key]"
+              @update:model-value="toggleDietary(t.key, $event)"
+            />
+          </label>
+        </div>
+        <FieldDescription> Cochez ce qui vous concerne </FieldDescription>
+      </Field>
 
       <Field>
         <FieldLabel for="allergens">
           <span class="flex items-center gap-1.5">
-            <Icon name="lucide:wheat" class="h-3.5 w-3.5 text-amber-500" />
+            <Icon
+              name="lucide:wheat"
+              class="h-3.5 w-3.5 text-muted-foreground"
+            />
             Allergies alimentaires
           </span>
         </FieldLabel>
@@ -217,7 +298,10 @@ const isMotorizedProxy = computed({
         class="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3 transition-colors hover:bg-muted/50"
       >
         <div class="flex items-center gap-2.5">
-          <Icon name="lucide:car" class="h-4 w-4 text-muted-foreground shrink-0" />
+          <Icon
+            name="lucide:car"
+            class="h-4 w-4 text-muted-foreground shrink-0"
+          />
           <Label for="motorized" class="text-sm font-medium cursor-pointer">
             Êtes-vous motorisé ?
           </Label>

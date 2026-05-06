@@ -45,6 +45,10 @@ const personalInfo = ref({
   iutId: "",
   allergens: "",
   isMotorized: false,
+  isVegetarian: false,
+  isVegan: false,
+  noPork: false,
+  noAlcohol: false,
 });
 
 // Fetch data - use regular useFetch to ensure data is available
@@ -157,7 +161,15 @@ async function submitRegistration() {
     router.push("/inscription/confirmation");
   } catch (error: any) {
     console.error("Registration error:", error);
-    toast.error(error.data?.statusMessage || "Erreur lors de l'inscription");
+    const issues = error.data?.data?.errors;
+    if (Array.isArray(issues) && issues.length > 0) {
+      const detail = issues
+        .map((i: any) => `${i.path?.join(".") || "?"}: ${i.message}`)
+        .join(" • ");
+      toast.error(`Validation: ${detail}`);
+    } else {
+      toast.error(error.data?.statusMessage || "Erreur lors de l'inscription");
+    }
   } finally {
     isSubmitting.value = false;
   }
@@ -459,10 +471,42 @@ async function submitRegistration() {
                         <Badge
                           v-if="personalInfo.allergens"
                           variant="outline"
-                          class="text-xs gap-1 font-normal text-amber-600 border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400"
+                          class="text-xs gap-1 font-normal"
                         >
                           <Icon name="lucide:wheat" class="h-3 w-3" />
                           Allergies
+                        </Badge>
+                        <Badge
+                          v-if="personalInfo.isVegan"
+                          variant="outline"
+                          class="text-xs gap-1 font-normal"
+                        >
+                          <Icon name="lucide:leaf" class="h-3 w-3" />
+                          Vegan
+                        </Badge>
+                        <Badge
+                          v-else-if="personalInfo.isVegetarian"
+                          variant="outline"
+                          class="text-xs gap-1 font-normal"
+                        >
+                          <Icon name="lucide:leaf" class="h-3 w-3" />
+                          Végétarien
+                        </Badge>
+                        <Badge
+                          v-if="personalInfo.noPork"
+                          variant="outline"
+                          class="text-xs gap-1 font-normal"
+                        >
+                          <Icon name="lucide:ban" class="h-3 w-3" />
+                          Sans porc
+                        </Badge>
+                        <Badge
+                          v-if="personalInfo.noAlcohol"
+                          variant="outline"
+                          class="text-xs gap-1 font-normal"
+                        >
+                          <Icon name="lucide:wine-off" class="h-3 w-3" />
+                          Sans alcool
                         </Badge>
                       </div>
                     </div>
@@ -527,6 +571,22 @@ async function submitRegistration() {
                                 getOptionName(
                                   getMealById(sm.mealId),
                                   sm.mainOptionId,
+                                )
+                              }}
+                            </span>
+                            <span
+                              v-if="
+                                getOptionName(
+                                  getMealById(sm.mealId),
+                                  sm.cheeseOptionId,
+                                )
+                              "
+                              class="text-[10px] text-muted-foreground bg-muted rounded px-1 py-0.5"
+                            >
+                              {{
+                                getOptionName(
+                                  getMealById(sm.mealId),
+                                  sm.cheeseOptionId,
                                 )
                               }}
                             </span>

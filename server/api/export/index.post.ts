@@ -1,8 +1,190 @@
+// Format ISO date YYYY-MM-DD pour matcher les templates d'import
+function isoDate(d: Date | string): string {
+  const date = typeof d === "string" ? new Date(d) : d;
+  return date.toISOString().slice(0, 10);
+}
+
+// Échappe une valeur CSV : entoure de quotes si elle contient ; , " ou \n et échappe les " internes
+function csvCell(val: unknown): string {
+  if (val === null || val === undefined) return "";
+  const s = String(val);
+  if (/[;,"\n\r]/.test(s)) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+function rowsToCsv(headers: string[], rows: unknown[][]): string {
+  const lines: string[] = [];
+  lines.push(headers.join(";"));
+  for (const r of rows) {
+    lines.push(r.map(csvCell).join(";"));
+  }
+  return lines.join("\n");
+}
+
+interface CategoryFormatter {
+  filename: string;
+  headers: string[];
+  toRows: (data: any[]) => unknown[][];
+}
+
+// Mappers alignés sur les templates d'import (template_*.csv)
+const FORMATTERS: Record<string, CategoryFormatter> = {
+  events: {
+    filename: "programme",
+    headers: ["titre", "date", "heure_debut", "heure_fin", "lieu", "description"],
+    toRows: (data) =>
+      data.map((e) => [
+        e.title,
+        isoDate(e.date),
+        e.startTime,
+        e.endTime,
+        e.location ?? "",
+        e.description ?? "",
+      ]),
+  },
+  activities: {
+    filename: "activites",
+    headers: ["nom", "date", "heure_debut", "heure_fin", "prix", "max_participants", "description"],
+    toRows: (data) =>
+      data.map((a) => [
+        a.name,
+        isoDate(a.date),
+        a.allDay ? "" : a.startTime,
+        a.allDay ? "" : a.endTime,
+        Number(a.price ?? 0),
+        a.maxParticipants ?? "",
+        a.description ?? "",
+      ]),
+  },
+  meals: {
+    filename: "repas",
+    headers: ["nom", "date", "type", "prix", "type_option", "nom_option", "allergenes", "description"],
+    toRows: (data) => {
+      const out: unknown[][] = [];
+      for (const m of data) {
+        const date = isoDate(m.date);
+        const price = Number(m.price ?? 0);
+        const opts = (m.options ?? []) as any[];
+        // La description du repas est répétée sur chaque ligne d'option
+        // (l'import lit la description seulement sur la 1ʳᵉ ligne d'un repas)
+        const desc = m.description ?? "";
+        if (opts.length === 0) {
+          out.push([m.name, date, m.mealType, price, "", "", "", desc]);
+        } else {
+          for (const o of opts) {
+            out.push([
+              m.name,
+              date,
+              m.mealType,
+              price,
+              o.optionType,
+              o.name,
+              (o.allergens ?? []).join("|"),
+              desc,
+            ]);
+          }
+        }
+      }
+      return out;
+    },
+  },
+  hotels: {
+    filename: "hotels",
+    headers: [
+      "nom",
+      "adresse",
+      "code_postal",
+      "ville",
+      "telephone",
+      "email",
+      "site_web",
+      "google_maps",
+      "latitude",
+      "longitude",
+    ],
+    toRows: (data) =>
+      data.map((h) => [
+        h.name,
+        h.address ?? "",
+        h.postalCode ?? "",
+        h.city ?? "",
+        h.phone ?? "",
+        h.email ?? "",
+        h.websiteUrl ?? "",
+        h.googleMapsUrl ?? "",
+        h.latitude ?? "",
+        h.longitude ?? "",
+      ]),
+  },
+  iuts: {
+    filename: "iuts",
+    headers: ["Nom", "Ville", "Code"],
+    toRows: (data) => data.map((i) => [i.name, i.city ?? "", i.code ?? ""]),
+  },
+  // Pas de template d'import pour les inscriptions — format dédié, lisible et complet
+  registrations: {
+    filename: "inscriptions",
+    headers: [
+      "id",
+      "prenom",
+      "nom",
+      "email",
+      "telephone",
+      "iut_id",
+      "allergenes",
+      "motorise",
+      "vegetarien",
+      "vegan",
+      "sans_porc",
+      "sans_alcool",
+      "statut",
+      "checkin",
+      "total",
+      "repas",
+      "activites",
+      "cree_le",
+    ],
+    toRows: (data) =>
+      data.map((r) => {
+        const meals = (r.meals ?? [])
+          .map((rm: any) => rm.meal?.name ?? "")
+          .filter(Boolean)
+          .join(" | ");
+        const activities = (r.activities ?? [])
+          .map((ra: any) => ra.activity?.name ?? "")
+          .filter(Boolean)
+          .join(" | ");
+        return [
+          r.id,
+          r.firstName,
+          r.lastName,
+          r.email,
+          r.phone,
+          r.iutId ?? "",
+          r.allergens ?? "",
+          r.isMotorized ? "oui" : "non",
+          r.isVegetarian ? "oui" : "non",
+          r.isVegan ? "oui" : "non",
+          r.noPork ? "oui" : "non",
+          r.noAlcohol ? "oui" : "non",
+          r.status,
+          r.checkedIn ? "oui" : "non",
+          Number(r.totalPrice ?? 0),
+          meals,
+          activities,
+          isoDate(r.createdAt),
+        ];
+      }),
+  },
+};
+
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
   const body = await readBody(event);
   const {
-    categories = [],
+    categories = [] as string[],
     format = "csv",
     includeHeaders = true,
     anonymize = false,
@@ -17,9 +199,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const result: Record<string, any[]> = {};
-
-  // Date filter helper
   const dateFilter =
     startDate || endDate
       ? {
@@ -30,8 +209,9 @@ export default defineEventHandler(async (event) => {
         }
       : {};
 
+  const result: Record<string, any[]> = {};
+
   try {
-    // Fetch data for each selected category
     for (const category of categories) {
       switch (category) {
         case "registrations":
@@ -45,14 +225,12 @@ export default defineEventHandler(async (event) => {
             orderBy: { createdAt: "desc" },
           });
           break;
-
         case "events":
           result.events = await prisma.event.findMany({
             where: dateFilter,
             orderBy: { date: "asc" },
           });
           break;
-
         case "meals":
           result.meals = await prisma.meal.findMany({
             where: dateFilter,
@@ -60,30 +238,38 @@ export default defineEventHandler(async (event) => {
             orderBy: { date: "asc" },
           });
           break;
-
         case "activities":
           result.activities = await prisma.activity.findMany({
             where: dateFilter,
             orderBy: { date: "asc" },
           });
           break;
+        case "hotels":
+          result.hotels = await prisma.hotel.findMany({
+            where: dateFilter,
+            orderBy: { name: "asc" },
+          });
+          break;
+        case "iuts":
+          result.iuts = await prisma.iut.findMany({
+            where: dateFilter,
+            orderBy: { name: "asc" },
+          });
+          break;
       }
     }
 
-    // Anonymize data if requested
-    if (anonymize) {
-      if (result.registrations) {
-        result.registrations = result.registrations.map((r: any) => ({
-          ...r,
-          firstName: "***",
-          lastName: "***",
-          email: "***@***.***",
-          phone: "***",
-        }));
-      }
+    if (anonymize && result.registrations) {
+      result.registrations = result.registrations.map((r: any) => ({
+        ...r,
+        firstName: "***",
+        lastName: "***",
+        email: "***@***.***",
+        phone: "***",
+      }));
     }
 
-    // Format output
+    // JSON: structure brute (non re-importable, juste pour analyse)
     if (format === "json") {
       setResponseHeader(event, "Content-Type", "application/json");
       setResponseHeader(
@@ -94,46 +280,50 @@ export default defineEventHandler(async (event) => {
       return result;
     }
 
-    // CSV format
     if (format === "csv") {
-      const csvLines: string[] = [];
+      const presentCategories = Object.keys(result).filter(
+        (k) => (result[k]?.length ?? 0) >= 0 && FORMATTERS[k],
+      );
 
-      for (const [category, data] of Object.entries(result)) {
-        if (!data.length) continue;
+      // Cas mono-catégorie : sortie directement re-importable (en-têtes au format template)
+      if (presentCategories.length === 1) {
+        const cat = presentCategories[0]!;
+        const fmt = FORMATTERS[cat]!;
+        const data = result[cat] ?? [];
+        const headers = fmt.headers;
+        const rows = fmt.toRows(data);
+        const csv = includeHeaders
+          ? rowsToCsv(headers, rows)
+          : rows.map((r) => r.map(csvCell).join(";")).join("\n");
 
-        // Add category header
-        csvLines.push(`# ${category.toUpperCase()}`);
-
-        // Get headers from first item (excluding nested objects)
-        const firstItem = data[0];
-        const headers = Object.keys(firstItem).filter(
-          (key) =>
-            typeof firstItem[key] !== "object" || firstItem[key] === null,
+        setResponseHeader(event, "Content-Type", "text/csv; charset=utf-8");
+        setResponseHeader(
+          event,
+          "Content-Disposition",
+          `attachment; filename="export_${fmt.filename}_${isoDate(new Date())}.csv"`,
         );
+        return csv;
+      }
 
-        if (includeHeaders) {
-          csvLines.push(headers.join(";"));
+      // Cas multi-catégories : sections séparées par # CATEGORIE
+      const csvLines: string[] = [];
+      for (const cat of presentCategories) {
+        const fmt = FORMATTERS[cat]!;
+        const data = result[cat] ?? [];
+        if (data.length === 0) continue;
+        csvLines.push(`# ${cat.toUpperCase()}`);
+        if (includeHeaders) csvLines.push(fmt.headers.join(";"));
+        for (const row of fmt.toRows(data)) {
+          csvLines.push(row.map(csvCell).join(";"));
         }
-
-        // Add data rows
-        for (const item of data) {
-          const values = headers.map((h) => {
-            const val = item[h];
-            if (val === null || val === undefined) return "";
-            if (typeof val === "string" && val.includes(";")) return `"${val}"`;
-            return String(val);
-          });
-          csvLines.push(values.join(";"));
-        }
-
-        csvLines.push(""); // Empty line between categories
+        csvLines.push("");
       }
 
       setResponseHeader(event, "Content-Type", "text/csv; charset=utf-8");
       setResponseHeader(
         event,
         "Content-Disposition",
-        `attachment; filename="export_${Date.now()}.csv"`,
+        `attachment; filename="export_${isoDate(new Date())}.csv"`,
       );
       return csvLines.join("\n");
     }

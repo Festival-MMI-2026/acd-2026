@@ -23,7 +23,7 @@ const router = useRouter();
 interface MealOption {
   id: string;
   name: string;
-  optionType: "STARTER" | "MAIN" | "DESSERT";
+  optionType: "STARTER" | "MAIN" | "CHEESE" | "DESSERT";
   hasAllergens: boolean;
   allergens: string[];
 }
@@ -49,7 +49,7 @@ const editingOption = ref<MealOption | null>(null);
 const hasAllergensEnabled = ref(false);
 const optionForm = reactive({
   name: "",
-  optionType: "STARTER" as "STARTER" | "MAIN" | "DESSERT",
+  optionType: "STARTER" as "STARTER" | "MAIN" | "CHEESE" | "DESSERT",
   allergens: [] as string[],
 });
 
@@ -61,6 +61,7 @@ const allergenOptions = Object.entries(ALLERGEN_MAP).map(([value, info]) => ({
 const optionTypeLabels: Record<string, string> = {
   STARTER: "Entrée",
   MAIN: "Plat",
+  CHEESE: "Fromage",
   DESSERT: "Dessert",
 };
 
@@ -76,6 +77,9 @@ const starterOptions = computed(
 const mainOptions = computed(
   () => meal.value?.options.filter((o) => o.optionType === "MAIN") || [],
 );
+const cheeseOptions = computed(
+  () => meal.value?.options.filter((o) => o.optionType === "CHEESE") || [],
+);
 const dessertOptions = computed(
   () => meal.value?.options.filter((o) => o.optionType === "DESSERT") || [],
 );
@@ -89,7 +93,7 @@ function formatDate(date: string) {
   });
 }
 
-function openAddOption(type: "STARTER" | "MAIN" | "DESSERT") {
+function openAddOption(type: "STARTER" | "MAIN" | "CHEESE" | "DESSERT") {
   editingOption.value = null;
   optionForm.name = "";
   optionForm.optionType = type;
@@ -314,6 +318,79 @@ async function executeDeleteOption() {
           <div v-else class="space-y-2">
             <div
               v-for="option in mainOptions"
+              :key="option.id"
+              class="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+            >
+              <div class="flex items-center gap-3">
+                <span class="font-medium">{{ option.name }}</span>
+                <div
+                  v-if="option.hasAllergens && option.allergens.length > 0"
+                  class="flex flex-wrap gap-1"
+                >
+                  <span
+                    v-for="allergen in option.allergens"
+                    :key="allergen"
+                    class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium"
+                    :class="getAllergenInfo(allergen).badgeClass"
+                  >
+                    <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                    {{ getAllergenInfo(allergen).label }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8"
+                  @click="openEditOption(option)"
+                >
+                  <Icon name="lucide:pencil" class="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8 text-destructive"
+                  @click="confirmDeleteOption(option)"
+                >
+                  <Icon name="lucide:trash-2" class="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Cheeses -->
+      <Card class="rounded-xl">
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <div>
+            <CardTitle class="text-lg">Fromages</CardTitle>
+            <CardDescription
+              >{{ cheeseOptions.length }} / 3 options</CardDescription
+            >
+          </div>
+          <Button
+            v-if="cheeseOptions.length < 3"
+            variant="outline"
+            size="sm"
+            class="rounded-full"
+            @click="openAddOption('CHEESE')"
+          >
+            <Icon name="lucide:plus" class="h-4 w-4" />
+            Ajouter
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div
+            v-if="cheeseOptions.length === 0"
+            class="text-center py-6 text-muted-foreground"
+          >
+            Aucun fromage
+          </div>
+          <div v-else class="space-y-2">
+            <div
+              v-for="option in cheeseOptions"
               :key="option.id"
               class="flex items-center justify-between p-3 rounded-lg bg-muted/50"
             >

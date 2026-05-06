@@ -20,9 +20,9 @@ services:
 
   # TON APP NUXT 4
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Image pré-construite par le CI et publiée sur GHCR — zéro build sur le serveur
+    image: ${APP_IMAGE:-ghcr.io/festival-mmi-2026/acd-app:latest}
+    pull_policy: always
     container_name: acd-app
     restart: unless-stopped
     env_file:

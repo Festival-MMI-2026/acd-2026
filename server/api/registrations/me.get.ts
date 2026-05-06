@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
           meal: true,
           starterOption: true,
           mainOption: true,
+          cheeseOption: true,
           dessertOption: true,
         },
       },

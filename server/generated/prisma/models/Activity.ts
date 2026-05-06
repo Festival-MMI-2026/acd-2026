@@ -43,6 +43,7 @@ export type ActivityMinAggregateOutputType = {
   date: Date | null
   startTime: string | null
   endTime: string | null
+  allDay: boolean | null
   maxParticipants: number | null
   price: runtime.Decimal | null
   createdAt: Date | null
@@ -56,6 +57,7 @@ export type ActivityMaxAggregateOutputType = {
   date: Date | null
   startTime: string | null
   endTime: string | null
+  allDay: boolean | null
   maxParticipants: number | null
   price: runtime.Decimal | null
   createdAt: Date | null
@@ -69,6 +71,7 @@ export type ActivityCountAggregateOutputType = {
   date: number
   startTime: number
   endTime: number
+  allDay: number
   maxParticipants: number
   price: number
   createdAt: number
@@ -94,6 +97,7 @@ export type ActivityMinAggregateInputType = {
   date?: true
   startTime?: true
   endTime?: true
+  allDay?: true
   maxParticipants?: true
   price?: true
   createdAt?: true
@@ -107,6 +111,7 @@ export type ActivityMaxAggregateInputType = {
   date?: true
   startTime?: true
   endTime?: true
+  allDay?: true
   maxParticipants?: true
   price?: true
   createdAt?: true
@@ -120,6 +125,7 @@ export type ActivityCountAggregateInputType = {
   date?: true
   startTime?: true
   endTime?: true
+  allDay?: true
   maxParticipants?: true
   price?: true
   createdAt?: true
@@ -220,6 +226,7 @@ export type ActivityGroupByOutputType = {
   date: Date
   startTime: string
   endTime: string
+  allDay: boolean
   maxParticipants: number | null
   price: runtime.Decimal
   createdAt: Date
@@ -256,6 +263,7 @@ export type ActivityWhereInput = {
   date?: Prisma.DateTimeFilter<"Activity"> | Date | string
   startTime?: Prisma.StringFilter<"Activity"> | string
   endTime?: Prisma.StringFilter<"Activity"> | string
+  allDay?: Prisma.BoolFilter<"Activity"> | boolean
   maxParticipants?: Prisma.IntNullableFilter<"Activity"> | number | null
   price?: Prisma.DecimalFilter<"Activity"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
@@ -270,6 +278,7 @@ export type ActivityOrderByWithRelationInput = {
   date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  allDay?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -287,6 +296,7 @@ export type ActivityWhereUniqueInput = Prisma.AtLeast<{
   date?: Prisma.DateTimeFilter<"Activity"> | Date | string
   startTime?: Prisma.StringFilter<"Activity"> | string
   endTime?: Prisma.StringFilter<"Activity"> | string
+  allDay?: Prisma.BoolFilter<"Activity"> | boolean
   maxParticipants?: Prisma.IntNullableFilter<"Activity"> | number | null
   price?: Prisma.DecimalFilter<"Activity"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
@@ -301,6 +311,7 @@ export type ActivityOrderByWithAggregationInput = {
   date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  allDay?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -322,6 +333,7 @@ export type ActivityScalarWhereWithAggregatesInput = {
   date?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
   startTime?: Prisma.StringWithAggregatesFilter<"Activity"> | string
   endTime?: Prisma.StringWithAggregatesFilter<"Activity"> | string
+  allDay?: Prisma.BoolWithAggregatesFilter<"Activity"> | boolean
   maxParticipants?: Prisma.IntNullableWithAggregatesFilter<"Activity"> | number | null
   price?: Prisma.DecimalWithAggregatesFilter<"Activity"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
@@ -335,6 +347,7 @@ export type ActivityCreateInput = {
   date: Date | string
   startTime: string
   endTime: string
+  allDay?: boolean
   maxParticipants?: number | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -349,6 +362,7 @@ export type ActivityUncheckedCreateInput = {
   date: Date | string
   startTime: string
   endTime: string
+  allDay?: boolean
   maxParticipants?: number | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -363,6 +377,7 @@ export type ActivityUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,6 +392,7 @@ export type ActivityUncheckedUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +407,7 @@ export type ActivityCreateManyInput = {
   date: Date | string
   startTime: string
   endTime: string
+  allDay?: boolean
   maxParticipants?: number | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -404,6 +421,7 @@ export type ActivityUpdateManyMutationInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,6 +435,7 @@ export type ActivityUncheckedUpdateManyInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -430,6 +449,7 @@ export type ActivityCountOrderByAggregateInput = {
   date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  allDay?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -448,6 +468,7 @@ export type ActivityMaxOrderByAggregateInput = {
   date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  allDay?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -461,6 +482,7 @@ export type ActivityMinOrderByAggregateInput = {
   date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  allDay?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -506,6 +528,7 @@ export type ActivityCreateWithoutRegistrationActivitiesInput = {
   date: Date | string
   startTime: string
   endTime: string
+  allDay?: boolean
   maxParticipants?: number | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -519,6 +542,7 @@ export type ActivityUncheckedCreateWithoutRegistrationActivitiesInput = {
   date: Date | string
   startTime: string
   endTime: string
+  allDay?: boolean
   maxParticipants?: number | null
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -548,6 +572,7 @@ export type ActivityUpdateWithoutRegistrationActivitiesInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -561,6 +586,7 @@ export type ActivityUncheckedUpdateWithoutRegistrationActivitiesInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -605,6 +631,7 @@ export type ActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   date?: boolean
   startTime?: boolean
   endTime?: boolean
+  allDay?: boolean
   maxParticipants?: boolean
   price?: boolean
   createdAt?: boolean
@@ -620,6 +647,7 @@ export type ActivitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   date?: boolean
   startTime?: boolean
   endTime?: boolean
+  allDay?: boolean
   maxParticipants?: boolean
   price?: boolean
   createdAt?: boolean
@@ -633,6 +661,7 @@ export type ActivitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   date?: boolean
   startTime?: boolean
   endTime?: boolean
+  allDay?: boolean
   maxParticipants?: boolean
   price?: boolean
   createdAt?: boolean
@@ -646,13 +675,14 @@ export type ActivitySelectScalar = {
   date?: boolean
   startTime?: boolean
   endTime?: boolean
+  allDay?: boolean
   maxParticipants?: boolean
   price?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "date" | "startTime" | "endTime" | "maxParticipants" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
+export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "date" | "startTime" | "endTime" | "allDay" | "maxParticipants" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
 export type ActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   registrationActivities?: boolean | Prisma.Activity$registrationActivitiesArgs<ExtArgs>
   _count?: boolean | Prisma.ActivityCountOutputTypeDefaultArgs<ExtArgs>
@@ -672,6 +702,7 @@ export type $ActivityPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     date: Date
     startTime: string
     endTime: string
+    allDay: boolean
     maxParticipants: number | null
     price: runtime.Decimal
     createdAt: Date
@@ -1106,6 +1137,7 @@ export interface ActivityFieldRefs {
   readonly date: Prisma.FieldRef<"Activity", 'DateTime'>
   readonly startTime: Prisma.FieldRef<"Activity", 'String'>
   readonly endTime: Prisma.FieldRef<"Activity", 'String'>
+  readonly allDay: Prisma.FieldRef<"Activity", 'Boolean'>
   readonly maxParticipants: Prisma.FieldRef<"Activity", 'Int'>
   readonly price: Prisma.FieldRef<"Activity", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Activity", 'DateTime'>

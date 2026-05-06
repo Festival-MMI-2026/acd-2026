@@ -10,6 +10,7 @@ interface ActivityData {
   date: Date | string;
   startTime: string;
   endTime: string;
+  allDay?: boolean;
   maxParticipants?: number | null;
   price: number | string;
 }
@@ -35,6 +36,7 @@ const formData = ref({
   date: today(getLocalTimeZone()) as DateValue,
   startTime: "10:00",
   endTime: "12:00",
+  allDay: false,
   maxParticipants: "",
   price: "0",
 });
@@ -54,8 +56,9 @@ watch(
         name: props.activity.name,
         description: props.activity.description || "",
         date: toCalendarDate(props.activity.date),
-        startTime: props.activity.startTime,
-        endTime: props.activity.endTime,
+        startTime: props.activity.startTime || "10:00",
+        endTime: props.activity.endTime || "12:00",
+        allDay: !!props.activity.allDay,
         maxParticipants: props.activity.maxParticipants
           ? String(props.activity.maxParticipants)
           : "",
@@ -68,6 +71,7 @@ watch(
         date: today(getLocalTimeZone()),
         startTime: "10:00",
         endTime: "12:00",
+        allDay: false,
         maxParticipants: "",
         price: "0",
       };
@@ -80,8 +84,8 @@ async function handleSubmit() {
   if (
     !formData.value.name ||
     !formData.value.date ||
-    !formData.value.startTime ||
-    !formData.value.endTime
+    (!formData.value.allDay &&
+      (!formData.value.startTime || !formData.value.endTime))
   ) {
     toast.error("Veuillez remplir tous les champs obligatoires");
     return;
@@ -96,8 +100,9 @@ async function handleSubmit() {
       name: formData.value.name,
       description: formData.value.description || null,
       date: dateValue,
-      startTime: formData.value.startTime,
-      endTime: formData.value.endTime,
+      startTime: formData.value.allDay ? "" : formData.value.startTime,
+      endTime: formData.value.allDay ? "" : formData.value.endTime,
+      allDay: formData.value.allDay,
       maxParticipants: formData.value.maxParticipants
         ? parseInt(formData.value.maxParticipants)
         : null,
@@ -207,7 +212,15 @@ async function handleSubmit() {
           </div>
         </div>
 
-        <div class="flex gap-4">
+        <div class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2.5">
+          <Label for="allDay" class="text-sm font-medium cursor-pointer flex items-center gap-2">
+            <Icon name="lucide:calendar-clock" class="h-4 w-4 text-muted-foreground" />
+            Toute la journée
+          </Label>
+          <Switch id="allDay" v-model="formData.allDay" />
+        </div>
+
+        <div v-if="!formData.allDay" class="flex gap-4">
           <div class="flex flex-col gap-2 flex-1">
             <Label for="startTime">Début *</Label>
             <Input

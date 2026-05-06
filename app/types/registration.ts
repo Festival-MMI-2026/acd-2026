@@ -2,13 +2,14 @@ export interface SelectedMeal {
   mealId: string;
   starterOptionId?: string;
   mainOptionId?: string;
+  cheeseOptionId?: string;
   dessertOptionId?: string;
 }
 
 export interface MealOption {
   id: string;
   name: string;
-  optionType: "STARTER" | "MAIN" | "DESSERT";
+  optionType: "STARTER" | "MAIN" | "CHEESE" | "DESSERT";
   hasAllergens: boolean;
   allergens: string[];
 }
@@ -16,6 +17,7 @@ export interface MealOption {
 export interface Meal {
   id: string;
   name: string;
+  description?: string | null;
   date: string;
   mealType: "LUNCH" | "DINNER";
   price: number | string;
@@ -29,6 +31,7 @@ export interface Activity {
   description?: string;
   startTime?: string;
   endTime?: string;
+  allDay?: boolean;
   duration?: number;
   capacity?: number;
   maxParticipants?: number;
@@ -51,6 +54,10 @@ export interface Registration {
   iutId?: string | null;
   allergens?: string | null;
   isMotorized: boolean;
+  isVegetarian?: boolean;
+  isVegan?: boolean;
+  noPork?: boolean;
+  noAlcohol?: boolean;
   totalPrice: number | string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED";
   createdAt: string;
@@ -65,9 +72,11 @@ export interface RegistrationMealItem {
   meal?: Meal;
   starterOptionId?: string | null;
   mainOptionId?: string | null;
+  cheeseOptionId?: string | null;
   dessertOptionId?: string | null;
   starterOption?: MealOption | null;
   mainOption?: MealOption | null;
+  cheeseOption?: MealOption | null;
   dessertOption?: MealOption | null;
 }
 

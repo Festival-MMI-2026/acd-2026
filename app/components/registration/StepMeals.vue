@@ -7,14 +7,21 @@ const props = defineProps<{
   showErrors?: boolean;
 }>();
 
-function isMealOptionMissing(mealId: string, optionType: "STARTER" | "MAIN" | "DESSERT"): boolean {
+function isMealOptionMissing(mealId: string, optionType: "STARTER" | "MAIN" | "CHEESE" | "DESSERT"): boolean {
   if (!props.showErrors) return false;
   const meal = meals.value.find((m) => m.id === mealId);
   if (!meal) return false;
   const hasType = getOptionsByType(meal, optionType).length > 0;
   if (!hasType) return false;
   const sm = getSelectedMeal(mealId);
-  const key = optionType === "STARTER" ? "starterOptionId" : optionType === "MAIN" ? "mainOptionId" : "dessertOptionId";
+  const key =
+    optionType === "STARTER"
+      ? "starterOptionId"
+      : optionType === "MAIN"
+        ? "mainOptionId"
+        : optionType === "CHEESE"
+          ? "cheeseOptionId"
+          : "dessertOptionId";
   return !sm?.[key];
 }
 
@@ -47,7 +54,7 @@ function toggleMeal(mealId: string) {
 
 function updateMealOption(
   mealId: string,
-  optionType: "starterOptionId" | "mainOptionId" | "dessertOptionId",
+  optionType: "starterOptionId" | "mainOptionId" | "cheeseOptionId" | "dessertOptionId",
   optionId: string,
 ) {
   const updated = props.modelValue.map((m) => {
@@ -61,7 +68,7 @@ function updateMealOption(
 
 function getOptionsByType(
   meal: Meal,
-  type: "STARTER" | "MAIN" | "DESSERT",
+  type: "STARTER" | "MAIN" | "CHEESE" | "DESSERT",
 ): MealOption[] {
   return meal.options?.filter((o) => o.optionType === type) || [];
 }
@@ -175,6 +182,14 @@ const totalSelected = computed(() => props.modelValue.length);
                 </Badge>
               </div>
 
+              <!-- Description -->
+              <p
+                v-if="meal.description"
+                class="text-sm text-muted-foreground leading-relaxed"
+              >
+                {{ meal.description }}
+              </p>
+
               <!-- Menu preview -->
               <div
                 v-if="meal.options?.length"
@@ -195,6 +210,16 @@ const totalSelected = computed(() => props.modelValue.length);
                   <span class="text-xs">
                     {{
                       getOptionsByType(meal, "MAIN")
+                        .map((o) => o.name)
+                        .join(" · ")
+                    }}
+                  </span>
+                </p>
+                <p v-if="getOptionsByType(meal, 'CHEESE').length" class="flex items-center gap-1.5">
+                  <span class="font-medium text-foreground/70">Fromages</span>
+                  <span class="text-xs">
+                    {{
+                      getOptionsByType(meal, "CHEESE")
                         .map((o) => o.name)
                         .join(" · ")
                     }}
@@ -230,9 +255,9 @@ const totalSelected = computed(() => props.modelValue.length);
             </div>
           </Label>
 
-          <!-- Options selection (show when selected) -->
+          <!-- Options selection (show when selected and meal has options) -->
           <Card
-            v-if="isMealSelected(meal.id)"
+            v-if="isMealSelected(meal.id) && meal.options?.length"
             class="ml-8 border-primary/20 bg-primary/2"
           >
             <CardHeader class="pb-3">
@@ -371,6 +396,69 @@ const totalSelected = computed(() => props.modelValue.length);
                 </p>
               </div>
 
+              <!-- Cheeses -->
+              <div
+                v-if="getOptionsByType(meal, 'CHEESE').length"
+                class="space-y-3"
+              >
+                <Label class="text-sm font-medium flex items-center gap-1.5">
+                  <span
+                    class="flex h-5 w-5 items-center justify-center rounded bg-muted text-xs font-semibold"
+                    >3</span
+                  >
+                  Fromage
+                </Label>
+                <RadioGroup
+                  :model-value="getSelectedMeal(meal.id)?.cheeseOptionId"
+                  @update:model-value="
+                    updateMealOption(meal.id, 'cheeseOptionId', String($event))
+                  "
+                  class="space-y-2"
+                >
+                  <div
+                    v-for="option in getOptionsByType(meal, 'CHEESE')"
+                    :key="option.id"
+                    class="flex items-start gap-3 rounded-xl border p-3 hover:bg-accent/50 cursor-pointer transition-all duration-200"
+                    :class="{
+                      'border-primary bg-primary/5 shadow-sm':
+                        getSelectedMeal(meal.id)?.cheeseOptionId === option.id,
+                    }"
+                  >
+                    <RadioGroupItem
+                      :value="option.id"
+                      :id="`cheese-${option.id}`"
+                      class="mt-0.5"
+                    />
+                    <div class="grid gap-1 font-normal flex-1">
+                      <Label
+                        :for="`cheese-${option.id}`"
+                        class="text-sm leading-none font-medium cursor-pointer"
+                      >
+                        {{ option.name }}
+                      </Label>
+                      <div
+                        v-if="option.hasAllergens && option.allergens?.length"
+                        class="flex flex-wrap gap-1 mt-0.5"
+                      >
+                        <span
+                          v-for="allergen in option.allergens"
+                          :key="allergen"
+                          class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium"
+                          :class="getAllergenInfo(allergen).badgeClass"
+                        >
+                          <Icon :name="getAllergenInfo(allergen).icon" class="h-3 w-3 shrink-0" />
+                          {{ getAllergenInfo(allergen).label }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </RadioGroup>
+                <p v-if="isMealOptionMissing(meal.id, 'CHEESE')" class="text-xs text-destructive flex items-center gap-1">
+                  <Icon name="lucide:circle-alert" class="h-3 w-3 shrink-0" />
+                  Veuillez choisir un fromage
+                </p>
+              </div>
+
               <!-- Desserts -->
               <div
                 v-if="getOptionsByType(meal, 'DESSERT').length"
@@ -379,7 +467,7 @@ const totalSelected = computed(() => props.modelValue.length);
                 <Label class="text-sm font-medium flex items-center gap-1.5">
                   <span
                     class="flex h-5 w-5 items-center justify-center rounded bg-muted text-xs font-semibold"
-                    >3</span
+                    >4</span
                   >
                   Dessert
                 </Label>
@@ -434,13 +522,6 @@ const totalSelected = computed(() => props.modelValue.length);
                 </p>
               </div>
 
-              <!-- No options message -->
-              <p
-                v-if="!meal.options?.length"
-                class="text-sm text-muted-foreground text-center py-4"
-              >
-                Pas d'options disponibles pour ce repas
-              </p>
             </CardContent>
           </Card>
         </div>

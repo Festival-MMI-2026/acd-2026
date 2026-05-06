@@ -93,6 +93,10 @@ const registrationForm = reactive({
   phone: "",
   allergens: "",
   isMotorized: false,
+  isVegetarian: false,
+  isVegan: false,
+  noPork: false,
+  noAlcohol: false,
   isLoading: false,
 });
 const editShowErrors = ref(false);
@@ -137,11 +141,16 @@ function resetEditForm() {
   registrationForm.phone = registration.value.phone;
   registrationForm.allergens = registration.value.allergens || "";
   registrationForm.isMotorized = registration.value.isMotorized;
+  registrationForm.isVegetarian = registration.value.isVegetarian || false;
+  registrationForm.isVegan = registration.value.isVegan || false;
+  registrationForm.noPork = registration.value.noPork || false;
+  registrationForm.noAlcohol = registration.value.noAlcohol || false;
   hydrateRegistrationSelection(
     registration.value.meals?.map((rm) => ({
       mealId: rm.mealId,
       starterOptionId: rm.starterOptionId || undefined,
       mainOptionId: rm.mainOptionId || undefined,
+      cheeseOptionId: rm.cheeseOptionId || undefined,
       dessertOptionId: rm.dessertOptionId || undefined,
     })),
     registration.value.activities?.map((ra) => ra.activityId),
@@ -307,6 +316,10 @@ async function handleUpdateRegistration() {
         phone: registrationForm.phone,
         allergens: registrationForm.allergens || null,
         isMotorized: registrationForm.isMotorized,
+        isVegetarian: registrationForm.isVegetarian,
+        isVegan: registrationForm.isVegan,
+        noPork: registrationForm.noPork,
+        noAlcohol: registrationForm.noAlcohol,
         meals: selectedMeals.value,
         activities: selectedActivities.value,
       },
@@ -738,6 +751,13 @@ async function downloadInvoice() {
                           Plat: {{ rm.mainOption.name }}
                         </Badge>
                         <Badge
+                          v-if="rm.cheeseOption"
+                          variant="secondary"
+                          class="text-xs font-normal"
+                        >
+                          Fromage: {{ rm.cheeseOption.name }}
+                        </Badge>
+                        <Badge
                           v-if="rm.dessertOption"
                           variant="secondary"
                           class="text-xs font-normal"
@@ -776,10 +796,10 @@ async function downloadInvoice() {
                     </div>
                   </div>
 
-                  <!-- Extra info row: allergens + motorized -->
+                  <!-- Extra info row: allergens, dietary preferences, motorized -->
                   <div
-                    v-if="registration.allergens || registration.isMotorized"
-                    class="px-6 py-5 flex flex-wrap gap-4"
+                    v-if="registration.allergens || registration.isMotorized || registration.isVegetarian || registration.isVegan || registration.noPork || registration.noAlcohol"
+                    class="px-6 py-5 flex flex-wrap gap-4 items-center"
                   >
                     <div
                       v-if="registration.allergens"
@@ -787,13 +807,29 @@ async function downloadInvoice() {
                     >
                       <Icon
                         name="lucide:alert-triangle"
-                        class="h-4 w-4 text-orange-500 shrink-0"
+                        class="h-4 w-4 text-muted-foreground shrink-0"
                       />
                       <span class="text-muted-foreground">Allergènes :</span>
                       <span class="font-medium">{{
                         registration.allergens
                       }}</span>
                     </div>
+                    <Badge v-if="registration.isVegan" variant="outline" class="gap-1 font-normal">
+                      <Icon name="lucide:sprout" class="h-3 w-3" />
+                      Vegan
+                    </Badge>
+                    <Badge v-else-if="registration.isVegetarian" variant="outline" class="gap-1 font-normal">
+                      <Icon name="lucide:leaf" class="h-3 w-3" />
+                      Végétarien
+                    </Badge>
+                    <Badge v-if="registration.noPork" variant="outline" class="gap-1 font-normal">
+                      <Icon name="lucide:ban" class="h-3 w-3" />
+                      Sans porc
+                    </Badge>
+                    <Badge v-if="registration.noAlcohol" variant="outline" class="gap-1 font-normal">
+                      <Icon name="lucide:wine-off" class="h-3 w-3" />
+                      Sans alcool
+                    </Badge>
                     <div
                       v-if="registration.isMotorized"
                       class="flex items-center gap-2 text-sm"
@@ -907,6 +943,41 @@ async function downloadInvoice() {
                         <div class="space-y-2">
                           <Label class="text-sm font-medium">Téléphone</Label>
                           <Input v-model="registrationForm.phone" type="tel" />
+                        </div>
+                        <div class="space-y-2">
+                          <Label class="text-sm font-medium">
+                            Préférences alimentaires
+                          </Label>
+                          <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                              <span class="flex items-center gap-2 text-sm">
+                                <Icon name="lucide:leaf" class="h-4 w-4 text-muted-foreground" />
+                                Végétarien
+                              </span>
+                              <Switch v-model="registrationForm.isVegetarian" />
+                            </label>
+                            <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                              <span class="flex items-center gap-2 text-sm">
+                                <Icon name="lucide:sprout" class="h-4 w-4 text-muted-foreground" />
+                                Vegan
+                              </span>
+                              <Switch v-model="registrationForm.isVegan" />
+                            </label>
+                            <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                              <span class="flex items-center gap-2 text-sm">
+                                <Icon name="lucide:ban" class="h-4 w-4 text-muted-foreground" />
+                                Sans porc
+                              </span>
+                              <Switch v-model="registrationForm.noPork" />
+                            </label>
+                            <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                              <span class="flex items-center gap-2 text-sm">
+                                <Icon name="lucide:wine-off" class="h-4 w-4 text-muted-foreground" />
+                                Sans alcool
+                              </span>
+                              <Switch v-model="registrationForm.noAlcohol" />
+                            </label>
+                          </div>
                         </div>
                         <div class="space-y-2">
                           <Label class="text-sm font-medium">Allergènes</Label>

@@ -4,9 +4,17 @@ on:
   push:
     branches: [main]
 
+env:
+  REGISTRY: ghcr.io
+  # GHCR exige des noms en minuscules
+  IMAGE: ghcr.io/festival-mmi-2026/acd-app
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     env:
       NODE_OPTIONS: "--max-old-space-size=4096"
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
@@ -27,71 +35,74 @@ jobs:
       - run: npx prisma generate
       - run: npm run build
 
-      - name: Create artifact
-        run: |
-          tar -czf app.tar.gz \
-            .output \
-            prisma \
-            prisma.config.ts \
-            package.json \
-            package-lock.json \
-            docker-compose.yml \
-            Caddyfile \
-            Dockerfile
-
-      - uses: actions/upload-artifact@v4
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          name: prod-build
-          path: app.tar.gz
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          # Cache des layers Docker entre runs CI (BuildKit + GitHub Actions cache)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     env:
       SMTP_HOST: ${{ secrets.SMTP_HOST }}
       SMTP_PORT: ${{ secrets.SMTP_PORT }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASS: ${{ secrets.SMTP_PASS }}
       MAIL_FROM: ${{ secrets.MAIL_FROM }}
+      REGISTRY_USER: ${{ github.actor }}
+      REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: prod-build
+          sparse-checkout: |
+            docker-compose.yml
+            Caddyfile
+          sparse-checkout-cone-mode: false
 
-      - name: Clean server disk space before upload
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "Purge du cache de build Docker et des images inutilisées..."
-            docker builder prune -a -f
-            docker image prune -a -f
-
-      - name: Copy artifact to server
+      - name: Copy compose & caddy to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "app.tar.gz"
+          source: "docker-compose.yml,Caddyfile"
           target: "/var/www/acd-prod/"
 
-      - name: Deploy via Docker
+      - name: Pull image and rolling-update app
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command_timeout: 30m
-          envs: SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,MAIL_FROM
+          command_timeout: 10m
+          envs: SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,MAIL_FROM,REGISTRY_USER,REGISTRY_TOKEN
           script: |
             set -e
             cd /var/www/acd-prod
 
-            # Injecter les variables SMTP dans le .env
+            # Synchronise le bloc SMTP dans .env
             sed -i '/^SMTP_/d' .env
             sed -i '/^MAIL_FROM/d' .env
             echo "SMTP_HOST=${SMTP_HOST}" >> .env
@@ -100,13 +111,14 @@ jobs:
             echo "SMTP_PASS=${SMTP_PASS}" >> .env
             echo "MAIL_FROM=${MAIL_FROM}" >> .env
 
-            docker compose down
+            # Login GHCR avec le token éphémère du workflow (read:packages)
+            echo "${REGISTRY_TOKEN}" | docker login ghcr.io -u "${REGISTRY_USER}" --password-stdin
 
-            rm -rf .output
+            # Pull la nouvelle image et redémarre uniquement l'app
+            # (postgres / caddy / gotenberg ne sont pas touchés → pas de downtime sur la DB ni le reverse-proxy)
+            docker compose pull app
+            docker compose up -d --no-deps app
 
-            tar -xzf app.tar.gz
-            rm app.tar.gz
-
-            docker compose up -d --build
-
+            # Nettoyage léger : seulement les images orphelines
+            # (ne PAS faire `docker builder prune -a -f` ici — ça vide le cache et casse les rebuilds)
             docker image prune -f

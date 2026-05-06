@@ -38,6 +38,7 @@ export type SettingMinAggregateOutputType = {
   eventEndDate: Date | null
   location: string | null
   locationAddress: string | null
+  sendInvoicePdf: boolean | null
   maintenanceMode: boolean | null
   legalMentions: string | null
   privacyPolicy: string | null
@@ -59,6 +60,7 @@ export type SettingMaxAggregateOutputType = {
   eventEndDate: Date | null
   location: string | null
   locationAddress: string | null
+  sendInvoicePdf: boolean | null
   maintenanceMode: boolean | null
   legalMentions: string | null
   privacyPolicy: string | null
@@ -81,6 +83,7 @@ export type SettingCountAggregateOutputType = {
   location: number
   locationAddress: number
   notificationEmails: number
+  sendInvoicePdf: number
   maintenanceMode: number
   legalMentions: number
   privacyPolicy: number
@@ -104,6 +107,7 @@ export type SettingMinAggregateInputType = {
   eventEndDate?: true
   location?: true
   locationAddress?: true
+  sendInvoicePdf?: true
   maintenanceMode?: true
   legalMentions?: true
   privacyPolicy?: true
@@ -125,6 +129,7 @@ export type SettingMaxAggregateInputType = {
   eventEndDate?: true
   location?: true
   locationAddress?: true
+  sendInvoicePdf?: true
   maintenanceMode?: true
   legalMentions?: true
   privacyPolicy?: true
@@ -147,6 +152,7 @@ export type SettingCountAggregateInputType = {
   location?: true
   locationAddress?: true
   notificationEmails?: true
+  sendInvoicePdf?: true
   maintenanceMode?: true
   legalMentions?: true
   privacyPolicy?: true
@@ -242,6 +248,7 @@ export type SettingGroupByOutputType = {
   location: string
   locationAddress: string
   notificationEmails: string[]
+  sendInvoicePdf: boolean
   maintenanceMode: boolean
   legalMentions: string
   privacyPolicy: string
@@ -285,6 +292,7 @@ export type SettingWhereInput = {
   location?: Prisma.StringFilter<"Setting"> | string
   locationAddress?: Prisma.StringFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  sendInvoicePdf?: Prisma.BoolFilter<"Setting"> | boolean
   maintenanceMode?: Prisma.BoolFilter<"Setting"> | boolean
   legalMentions?: Prisma.StringFilter<"Setting"> | string
   privacyPolicy?: Prisma.StringFilter<"Setting"> | string
@@ -307,6 +315,7 @@ export type SettingOrderByWithRelationInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  sendInvoicePdf?: Prisma.SortOrder
   maintenanceMode?: Prisma.SortOrder
   legalMentions?: Prisma.SortOrder
   privacyPolicy?: Prisma.SortOrder
@@ -332,6 +341,7 @@ export type SettingWhereUniqueInput = Prisma.AtLeast<{
   location?: Prisma.StringFilter<"Setting"> | string
   locationAddress?: Prisma.StringFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  sendInvoicePdf?: Prisma.BoolFilter<"Setting"> | boolean
   maintenanceMode?: Prisma.BoolFilter<"Setting"> | boolean
   legalMentions?: Prisma.StringFilter<"Setting"> | string
   privacyPolicy?: Prisma.StringFilter<"Setting"> | string
@@ -354,6 +364,7 @@ export type SettingOrderByWithAggregationInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  sendInvoicePdf?: Prisma.SortOrder
   maintenanceMode?: Prisma.SortOrder
   legalMentions?: Prisma.SortOrder
   privacyPolicy?: Prisma.SortOrder
@@ -382,6 +393,7 @@ export type SettingScalarWhereWithAggregatesInput = {
   location?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   locationAddress?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   notificationEmails?: Prisma.StringNullableListFilter<"Setting">
+  sendInvoicePdf?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
   maintenanceMode?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
   legalMentions?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   privacyPolicy?: Prisma.StringWithAggregatesFilter<"Setting"> | string
@@ -404,6 +416,7 @@ export type SettingCreateInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: string
   privacyPolicy?: string
@@ -426,6 +439,7 @@ export type SettingUncheckedCreateInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: string
   privacyPolicy?: string
@@ -448,6 +462,7 @@ export type SettingUpdateInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  sendInvoicePdf?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
   privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
@@ -470,6 +485,7 @@ export type SettingUncheckedUpdateInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  sendInvoicePdf?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
   privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
@@ -492,6 +508,7 @@ export type SettingCreateManyInput = {
   location?: string
   locationAddress?: string
   notificationEmails?: Prisma.SettingCreatenotificationEmailsInput | string[]
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: string
   privacyPolicy?: string
@@ -514,6 +531,7 @@ export type SettingUpdateManyMutationInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  sendInvoicePdf?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
   privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
@@ -536,6 +554,7 @@ export type SettingUncheckedUpdateManyInput = {
   location?: Prisma.StringFieldUpdateOperationsInput | string
   locationAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notificationEmails?: Prisma.SettingUpdatenotificationEmailsInput | string[]
+  sendInvoicePdf?: Prisma.BoolFieldUpdateOperationsInput | boolean
   maintenanceMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   legalMentions?: Prisma.StringFieldUpdateOperationsInput | string
   privacyPolicy?: Prisma.StringFieldUpdateOperationsInput | string
@@ -558,6 +577,7 @@ export type SettingCountOrderByAggregateInput = {
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
   notificationEmails?: Prisma.SortOrder
+  sendInvoicePdf?: Prisma.SortOrder
   maintenanceMode?: Prisma.SortOrder
   legalMentions?: Prisma.SortOrder
   privacyPolicy?: Prisma.SortOrder
@@ -579,6 +599,7 @@ export type SettingMaxOrderByAggregateInput = {
   eventEndDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
+  sendInvoicePdf?: Prisma.SortOrder
   maintenanceMode?: Prisma.SortOrder
   legalMentions?: Prisma.SortOrder
   privacyPolicy?: Prisma.SortOrder
@@ -600,6 +621,7 @@ export type SettingMinOrderByAggregateInput = {
   eventEndDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   locationAddress?: Prisma.SortOrder
+  sendInvoicePdf?: Prisma.SortOrder
   maintenanceMode?: Prisma.SortOrder
   legalMentions?: Prisma.SortOrder
   privacyPolicy?: Prisma.SortOrder
@@ -633,6 +655,7 @@ export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: boolean
   privacyPolicy?: boolean
@@ -655,6 +678,7 @@ export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: boolean
   privacyPolicy?: boolean
@@ -677,6 +701,7 @@ export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: boolean
   privacyPolicy?: boolean
@@ -699,6 +724,7 @@ export type SettingSelectScalar = {
   location?: boolean
   locationAddress?: boolean
   notificationEmails?: boolean
+  sendInvoicePdf?: boolean
   maintenanceMode?: boolean
   legalMentions?: boolean
   privacyPolicy?: boolean
@@ -706,7 +732,7 @@ export type SettingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "showAcces" | "showHotels" | "headerBadgeText" | "siteName" | "eventDate" | "eventEndDate" | "location" | "locationAddress" | "notificationEmails" | "maintenanceMode" | "legalMentions" | "privacyPolicy" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "showProgramme" | "showInscription" | "showActivities" | "showMeals" | "showAcces" | "showHotels" | "headerBadgeText" | "siteName" | "eventDate" | "eventEndDate" | "location" | "locationAddress" | "notificationEmails" | "sendInvoicePdf" | "maintenanceMode" | "legalMentions" | "privacyPolicy" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
 
 export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Setting"
@@ -726,6 +752,7 @@ export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     location: string
     locationAddress: string
     notificationEmails: string[]
+    sendInvoicePdf: boolean
     maintenanceMode: boolean
     legalMentions: string
     privacyPolicy: string
@@ -1168,6 +1195,7 @@ export interface SettingFieldRefs {
   readonly location: Prisma.FieldRef<"Setting", 'String'>
   readonly locationAddress: Prisma.FieldRef<"Setting", 'String'>
   readonly notificationEmails: Prisma.FieldRef<"Setting", 'String[]'>
+  readonly sendInvoicePdf: Prisma.FieldRef<"Setting", 'Boolean'>
   readonly maintenanceMode: Prisma.FieldRef<"Setting", 'Boolean'>
   readonly legalMentions: Prisma.FieldRef<"Setting", 'String'>
   readonly privacyPolicy: Prisma.FieldRef<"Setting", 'String'>

@@ -13,6 +13,10 @@ export default defineEventHandler(async (event) => {
     iutId,
     allergens,
     isMotorized,
+    isVegetarian,
+    isVegan,
+    noPork,
+    noAlcohol,
     meals,
     activities,
   } = await readValidated(event, registrationCreateSchema);
@@ -78,6 +82,10 @@ export default defineEventHandler(async (event) => {
         iutId: iutId || null,
         allergens: allergens || null,
         isMotorized: isMotorized || false,
+        isVegetarian: isVegetarian || false,
+        isVegan: isVegan || false,
+        noPork: noPork || false,
+        noAlcohol: noAlcohol || false,
         totalPrice: computedTotal,
         status: "PENDING",
         meals: {
@@ -85,6 +93,7 @@ export default defineEventHandler(async (event) => {
             mealId: meal.mealId,
             starterOptionId: meal.starterOptionId || null,
             mainOptionId: meal.mainOptionId || null,
+            cheeseOptionId: meal.cheeseOptionId || null,
             dessertOptionId: meal.dessertOptionId || null,
           })),
         },
@@ -109,6 +118,7 @@ export default defineEventHandler(async (event) => {
             meal: true,
             starterOption: true,
             mainOption: true,
+            cheeseOption: true,
             dessertOption: true,
           },
         },
@@ -134,6 +144,7 @@ export default defineEventHandler(async (event) => {
       mealName: m.meal?.name || "",
       starter: m.starterOption?.name || null,
       main: m.mainOption?.name || null,
+      cheese: m.cheeseOption?.name || null,
       dessert: m.dessertOption?.name || null,
     }));
     const emailActivities = registration.activities.map(
@@ -158,36 +169,48 @@ export default defineEventHandler(async (event) => {
     };
 
     const finalOrderNumber = registration.order?.orderNumber || orderNumber;
+    const shouldSendPdf = settings?.sendInvoicePdf ?? true;
 
     // Send confirmation email to the registrant
-    Promise.all([
-      render(RegistrationConfirmationEmail, {
-        firstName: registration.firstName,
-        lastName: registration.lastName,
-        orderNumber: finalOrderNumber,
-        registrationId: registration.id,
-        totalPrice: Number(registration.totalPrice),
-        meals: emailMeals,
-        activities: emailActivities,
-        appUrl,
-      }),
-      generateInvoicePdf(invoiceData),
-    ])
-      .then(([html, pdfBuffer]) =>
-        sendMail(
-          registration.email,
-          `Confirmation d'inscription ACD - ${finalOrderNumber}`,
-          html,
-          [
-            {
-              filename: `Facture_${finalOrderNumber}.pdf`,
-              content: pdfBuffer,
-              contentType: "application/pdf",
-            },
-          ],
-        ),
-      )
-      .catch(console.error);
+    const emailRender = render(RegistrationConfirmationEmail, {
+      firstName: registration.firstName,
+      lastName: registration.lastName,
+      orderNumber: finalOrderNumber,
+      registrationId: registration.id,
+      totalPrice: Number(registration.totalPrice),
+      meals: emailMeals,
+      activities: emailActivities,
+      appUrl,
+    });
+
+    if (shouldSendPdf) {
+      Promise.all([emailRender, generateInvoicePdf(invoiceData)])
+        .then(([html, pdfBuffer]) =>
+          sendMail(
+            registration.email,
+            `Confirmation d'inscription ACD - ${finalOrderNumber}`,
+            html,
+            [
+              {
+                filename: `Facture_${finalOrderNumber}.pdf`,
+                content: pdfBuffer,
+                contentType: "application/pdf",
+              },
+            ],
+          ),
+        )
+        .catch(console.error);
+    } else {
+      emailRender
+        .then((html) =>
+          sendMail(
+            registration.email,
+            `Confirmation d'inscription ACD - ${finalOrderNumber}`,
+            html,
+          ),
+        )
+        .catch(console.error);
+    }
 
     // Send notification email to configured admin recipients
     const notificationEmails = settings?.notificationEmails ?? [];

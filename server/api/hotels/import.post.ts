@@ -11,26 +11,25 @@ export default defineEventHandler(async (event) => {
   }
 
   const content = file.data.toString("utf-8");
-  const lines = content.split(/\r?\n/).filter((l) => l.trim() !== "");
-  if (lines.length === 0) {
+  const rows = parseCsv(content);
+  if (rows.length === 0) {
     throw createError({ statusCode: 400, statusMessage: "Fichier vide" });
   }
 
   // Skip header if present
-  const firstLine = lines[0]?.toLowerCase() ?? "";
-  const startIndex =
-    firstLine.includes("nom") || firstLine.includes("name") || firstLine.includes("hotel")
-      ? 1
-      : 0;
+  const firstCells = (rows[0] ?? []).map((c) => c.toLowerCase());
+  const hasHeader =
+    firstCells.includes("nom") || firstCells.includes("name") || firstCells.includes("hotel");
+  const startIndex = hasHeader ? 1 : 0;
 
   const rowErrors: string[] = [];
   let created = 0;
 
-  for (let i = startIndex; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line) continue;
+  for (let i = startIndex; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.every((c) => !c.trim())) continue;
 
-    const parts = line.split(/[;,]/).map((p) => p.trim());
+    const parts = row.map((p) => p.trim());
     const [rawName, rawAddress, rawPostal, rawCity, rawPhone, rawEmail, rawWebsite, rawMaps, rawLat, rawLng] = parts;
 
     if (!rawName || !rawAddress || !rawPostal || !rawCity) {
