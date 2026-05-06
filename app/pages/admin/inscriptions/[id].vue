@@ -14,6 +14,13 @@ interface Registration {
   lastName: string;
   email: string;
   phone: string;
+  iutId?: string | null;
+  allergens?: string | null;
+  isMotorized: boolean;
+  isVegetarian?: boolean;
+  isVegan?: boolean;
+  noPork?: boolean;
+  noAlcohol?: boolean;
   totalPrice: number | string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED";
   checkedIn: boolean;
@@ -24,9 +31,28 @@ interface Registration {
   activities?: any[];
 }
 
+interface Iut {
+  id: string;
+  name: string;
+  city?: string | null;
+}
+
 const { data: registration, refresh } = await useFetch<Registration>(
   `/api/registrations/${route.params.id}`,
 );
+
+const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
+
+const iutInfo = computed(() => {
+  if (!registration.value?.iutId || !iuts.value) return null;
+  return iuts.value.find((i) => i.id === registration.value!.iutId) || null;
+});
+
+const hasAnyDietary = computed(() => {
+  const r = registration.value;
+  if (!r) return false;
+  return !!(r.isVegan || r.isVegetarian || r.noPork || r.noAlcohol);
+});
 
 const isLoading = ref(false);
 const isCheckingIn = ref(false);
@@ -134,15 +160,31 @@ const invoiceDetails = computed(() => {
   if (!registration.value) return { meals: [], activities: [], subtotal: 0 };
 
   const meals =
-    registration.value.meals?.map((m) => ({
-      name: m.meal?.name || "Repas",
-      price: Number(m.meal?.price || 0),
-    })) || [];
+    registration.value.meals?.map((m: any) => {
+      const choices = [
+        m.starterOption?.name && { label: "Entrée", name: m.starterOption.name },
+        m.mainOption?.name && { label: "Plat", name: m.mainOption.name },
+        m.cheeseOption?.name && { label: "Fromage", name: m.cheeseOption.name },
+        m.dessertOption?.name && { label: "Dessert", name: m.dessertOption.name },
+      ].filter(Boolean) as { label: string; name: string }[];
+      return {
+        name: m.meal?.name || "Repas",
+        price: Number(m.meal?.price || 0),
+        date: m.meal?.date as string | undefined,
+        mealType: m.meal?.mealType as "LUNCH" | "DINNER" | undefined,
+        choices,
+      };
+    }) || [];
 
   const activities =
-    registration.value.activities?.map((a) => ({
+    registration.value.activities?.map((a: any) => ({
       name: a.activity?.name || "Activité",
       price: Number(a.activity?.price || 0),
+      date: a.activity?.date as string | undefined,
+      startTime: a.activity?.startTime as string | undefined,
+      endTime: a.activity?.endTime as string | undefined,
+      allDay: !!a.activity?.allDay,
+      location: a.activity?.location as string | undefined,
     })) || [];
 
   const subtotal =
@@ -151,6 +193,15 @@ const invoiceDetails = computed(() => {
 
   return { meals, activities, subtotal };
 });
+
+function formatShortDate(date?: string) {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
 </script>
 
 <template>
@@ -229,32 +280,88 @@ const invoiceDetails = computed(() => {
               <div
                 v-for="(meal, index) in invoiceDetails.meals"
                 :key="`meal-${index}`"
-                class="flex justify-between py-2"
+                class="flex justify-between gap-4 py-2"
               >
-                <div class="flex items-center gap-2">
+                <div class="flex items-start gap-2 min-w-0 flex-1">
                   <Icon
                     name="lucide:utensils"
-                    class="h-4 w-4 text-muted-foreground"
+                    class="h-4 w-4 text-muted-foreground mt-0.5 shrink-0"
                   />
-                  <span>{{ meal.name }}</span>
+                  <div class="min-w-0 space-y-1">
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span class="font-medium">{{ meal.name }}</span>
+                      <Badge v-if="meal.date" variant="outline" class="text-xs font-normal gap-1">
+                        <Icon name="lucide:calendar" class="h-3 w-3" />
+                        {{ formatShortDate(meal.date) }}
+                      </Badge>
+                      <Badge v-if="meal.mealType" variant="outline" class="text-xs font-normal gap-1">
+                        <Icon
+                          :name="meal.mealType === 'LUNCH' ? 'lucide:sun' : 'lucide:moon'"
+                          class="h-3 w-3"
+                        />
+                        {{ meal.mealType === "LUNCH" ? "Déjeuner" : "Dîner" }}
+                      </Badge>
+                    </div>
+                    <ul v-if="meal.choices.length" class="text-xs text-muted-foreground space-y-0.5">
+                      <li v-for="c in meal.choices" :key="c.label">
+                        <span class="font-medium">{{ c.label }} :</span> {{ c.name }}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-                <span class="font-medium">{{ meal.price.toFixed(2) }} €</span>
+                <span class="font-medium tabular-nums shrink-0">{{ meal.price.toFixed(2) }} €</span>
               </div>
 
               <!-- Activities -->
               <div
                 v-for="(activity, index) in invoiceDetails.activities"
                 :key="`activity-${index}`"
-                class="flex justify-between py-2"
+                class="flex justify-between gap-4 py-2"
               >
-                <div class="flex items-center gap-2">
+                <div class="flex items-start gap-2 min-w-0 flex-1">
                   <Icon
                     name="lucide:compass"
-                    class="h-4 w-4 text-muted-foreground"
+                    class="h-4 w-4 text-muted-foreground mt-0.5 shrink-0"
                   />
-                  <span>{{ activity.name }}</span>
+                  <div class="min-w-0 space-y-1">
+                    <span class="font-medium">{{ activity.name }}</span>
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <Badge v-if="activity.date" variant="outline" class="text-xs font-normal gap-1">
+                        <Icon name="lucide:calendar" class="h-3 w-3" />
+                        {{ formatShortDate(activity.date) }}
+                      </Badge>
+                      <Badge
+                        v-if="
+                          !activity.allDay &&
+                          (activity.startTime || activity.endTime)
+                        "
+                        variant="outline"
+                        class="text-xs font-normal gap-1 tabular-nums"
+                      >
+                        <Icon name="lucide:clock" class="h-3 w-3" />
+                        <template v-if="activity.startTime && activity.endTime">
+                          {{ activity.startTime }} – {{ activity.endTime }}
+                        </template>
+                        <template v-else>
+                          {{ activity.startTime || activity.endTime }}
+                        </template>
+                      </Badge>
+                      <Badge
+                        v-else-if="activity.allDay"
+                        variant="outline"
+                        class="text-xs font-normal gap-1"
+                      >
+                        <Icon name="lucide:calendar-clock" class="h-3 w-3" />
+                        Toute la journée
+                      </Badge>
+                      <Badge v-if="activity.location" variant="outline" class="text-xs font-normal gap-1">
+                        <Icon name="lucide:map-pin" class="h-3 w-3" />
+                        {{ activity.location }}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
-                <span class="font-medium">
+                <span class="font-medium tabular-nums shrink-0">
                   {{ activity.price.toFixed(2) }} €
                 </span>
               </div>
@@ -342,6 +449,93 @@ const invoiceDetails = computed(() => {
               <Icon name="lucide:mail" class="h-4 w-4" />
               Envoyer un email
             </Button>
+          </CardContent>
+        </Card>
+
+        <!-- Préférences & informations -->
+        <Card class="rounded-xl">
+          <CardHeader>
+            <CardTitle class="text-base">Préférences & informations</CardTitle>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <!-- IUT -->
+            <div class="flex items-start justify-between gap-4 text-sm">
+              <span class="text-muted-foreground flex items-center gap-1.5">
+                <Icon name="lucide:graduation-cap" class="h-3.5 w-3.5" />
+                IUT
+              </span>
+              <span class="font-medium text-right">
+                <template v-if="iutInfo">
+                  {{ iutInfo.name }}
+                  <span v-if="iutInfo.city" class="text-muted-foreground font-normal">
+                    · {{ iutInfo.city }}
+                  </span>
+                </template>
+                <template v-else-if="registration.iutId">
+                  <code class="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
+                    {{ registration.iutId.slice(0, 8) }}…
+                  </code>
+                </template>
+                <template v-else>—</template>
+              </span>
+            </div>
+
+            <!-- Motorisé -->
+            <div class="flex items-center justify-between gap-4 text-sm">
+              <span class="text-muted-foreground flex items-center gap-1.5">
+                <Icon name="lucide:car" class="h-3.5 w-3.5" />
+                Motorisé
+              </span>
+              <Badge
+                :variant="registration.isMotorized ? 'default' : 'outline'"
+                class="rounded-full"
+              >
+                {{ registration.isMotorized ? "Oui" : "Non" }}
+              </Badge>
+            </div>
+
+            <Separator />
+
+            <!-- Préférences alimentaires -->
+            <div class="space-y-2">
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Préférences alimentaires
+              </p>
+              <div v-if="hasAnyDietary" class="flex flex-wrap gap-1.5">
+                <Badge v-if="registration.isVegan" variant="outline" class="gap-1 font-normal">
+                  <Icon name="lucide:sprout" class="h-3 w-3" />
+                  Vegan
+                </Badge>
+                <Badge v-else-if="registration.isVegetarian" variant="outline" class="gap-1 font-normal">
+                  <Icon name="lucide:leaf" class="h-3 w-3" />
+                  Végétarien
+                </Badge>
+                <Badge v-if="registration.noPork" variant="outline" class="gap-1 font-normal">
+                  <Icon name="lucide:ban" class="h-3 w-3" />
+                  Sans porc
+                </Badge>
+                <Badge v-if="registration.noAlcohol" variant="outline" class="gap-1 font-normal">
+                  <Icon name="lucide:wine-off" class="h-3 w-3" />
+                  Sans alcool
+                </Badge>
+              </div>
+              <p v-else class="text-sm text-muted-foreground">Aucune</p>
+            </div>
+
+            <!-- Allergies -->
+            <div class="space-y-2">
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Icon name="lucide:alert-triangle" class="h-3.5 w-3.5" />
+                Allergies alimentaires
+              </p>
+              <div
+                v-if="registration.allergens"
+                class="rounded-lg border bg-muted/30 px-3 py-2 text-sm"
+              >
+                {{ registration.allergens }}
+              </div>
+              <p v-else class="text-sm text-muted-foreground">Aucune renseignée</p>
+            </div>
           </CardContent>
         </Card>
 
