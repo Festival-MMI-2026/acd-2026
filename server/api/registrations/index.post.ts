@@ -154,10 +154,12 @@ export default defineEventHandler(async (event) => {
       main: m.mainOption?.name || null,
       cheese: m.cheeseOption?.name || null,
       dessert: m.dessertOption?.name || null,
+      price: Number(m.meal?.price ?? 0),
     }));
-    const emailActivities = registration.activities.map(
-      (a: any) => a.activity?.name || "",
-    );
+    const emailActivities = registration.activities.map((a: any) => ({
+      name: a.activity?.name || "",
+      price: Number(a.activity?.price ?? 0),
+    }));
 
     const [settings, iut] = await Promise.all([
       prisma.setting.findUnique({ where: { id: "site_settings" } }),

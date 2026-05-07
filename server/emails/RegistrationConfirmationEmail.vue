@@ -21,6 +21,12 @@ interface MealSelection {
   main: string | null;
   cheese: string | null;
   dessert: string | null;
+  price: number;
+}
+
+interface ActivitySelection {
+  name: string;
+  price: number;
 }
 
 defineProps({
@@ -30,9 +36,13 @@ defineProps({
   registrationId: { type: String, required: true },
   totalPrice: { type: Number, required: true },
   meals: { type: Array as () => MealSelection[], default: () => [] },
-  activities: { type: Array as () => string[], default: () => [] },
+  activities: { type: Array as () => ActivitySelection[], default: () => [] },
   appUrl: { type: String, default: "http://localhost:3000" },
 });
+
+function formatPrice(price: number): string {
+  return price > 0 ? `${price.toFixed(2)} €` : "Gratuit";
+}
 
 const dateStr = new Date().toLocaleDateString("fr-FR", {
   year: "numeric",
@@ -135,6 +145,11 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
                     {{ [meal.starter, meal.main, meal.cheese, meal.dessert].filter(Boolean).join(" · ") }}
                   </Text>
                 </Column>
+                <Column align="right" class="py-2" style="vertical-align: top; white-space: nowrap;">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ formatPrice(meal.price) }}
+                  </Text>
+                </Column>
               </Row>
             </Section>
           </template>
@@ -161,7 +176,12 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
             >
               <Row style="border-bottom: 1px solid #f3f4f6">
                 <Column class="py-2">
-                  <Text class="text-sm text-foreground m-0">{{ activity }}</Text>
+                  <Text class="text-sm text-foreground m-0">{{ activity.name }}</Text>
+                </Column>
+                <Column align="right" class="py-2" style="vertical-align: top; white-space: nowrap;">
+                  <Text class="text-sm font-semibold text-foreground m-0">
+                    {{ formatPrice(activity.price) }}
+                  </Text>
                 </Column>
               </Row>
             </Section>
