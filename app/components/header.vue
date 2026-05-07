@@ -84,14 +84,14 @@ const isProfileIncomplete = computed(() => {
           >
             <div class="flex items-center gap-2">
               <NuxtImg
-                src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                src="/logo.svg"
                 alt="ACD Logo"
                 class="h-14 dark:hidden"
                 loading="eager"
                 height="56"
               />
               <NuxtImg
-                src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                src="/logo.svg"
                 alt="ACD Logo"
                 class="h-14 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
                 loading="eager"
@@ -300,14 +300,14 @@ const isProfileIncomplete = computed(() => {
                 <SheetHeader class="m-0">
                   <SheetTitle class="text-left flex items-center">
                     <NuxtImg
-                      src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                      src="/logo.svg"
                       alt="ACD Logo"
                       class="h-14 dark:hidden"
                       loading="lazy"
                       height="56"
                     />
                     <NuxtImg
-                      src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                      src="/logo.svg"
                       alt="ACD Logo"
                       class="h-14 hidden dark:block dark:grayscale dark:contrast-1"
                       loading="lazy"
@@ -391,29 +391,37 @@ const isProfileIncomplete = computed(() => {
         </div>
       </div>
     </header>
-    <div v-if="isProfileIncomplete" class="w-full border-y bg-background">
-      <div class="container mx-auto px-6 py-3">
+    <div
+      v-if="isProfileIncomplete"
+      class="relative w-full overflow-hidden border-y border-primary/40 bg-primary text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]"
+    >
+      <div
+        class="pointer-events-none absolute inset-0 bg-linear-to-r from-transparent via-white/12 to-transparent"
+      />
+      <div class="container relative mx-auto px-4 sm:px-6 py-3">
         <div
-          class="flex flex-col sm:flex-row items-start sm:items-center justify-between"
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div class="flex items-center gap-2 text-red-700 dark:text-red-400">
-            <TriangleAlertIcon class="h-4 w-4" />
-            <span class="text-xs font-medium">
-              Votre profil est incomplet. Veuillez compléter vos informations.
+          <div class="flex items-center gap-3">
+            <span
+              class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/35 backdrop-blur-sm"
+            >
+              <TriangleAlertIcon class="h-4 w-4" :stroke-width="2.25" />
             </span>
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold tracking-tight">
+                Votre profil est incomplet
+              </span>
+              <span class="text-xs opacity-85">
+                Ajouter votre numéro de téléphone et votre IUT pour finaliser
+                votre compte.
+              </span>
+            </div>
           </div>
-          <Button
-            variant="link"
-            size="sm"
-            class="text-xs text-red-700 dark:text-red-400 group"
-            as-child
-          >
+          <Button size="sm" variant="secondary" as-child>
             <NuxtLink to="/profil">
               Compléter mon profil
-              <Icon
-                name="lucide:chevron-right"
-                class="h-3 w-3 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-              />
+              <Icon name="lucide:arrow-right" class="h-3.5 w-3.5" />
             </NuxtLink>
           </Button>
         </div>
@@ -421,3 +429,26 @@ const isProfileIncomplete = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.profile-alert__shimmer {
+  transform: translateX(-100%);
+  animation: profile-alert-shimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes profile-alert-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-alert__shimmer {
+    animation: none;
+  }
+}
+</style>
