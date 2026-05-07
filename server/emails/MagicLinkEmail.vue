@@ -36,10 +36,10 @@ defineProps({
               <Row>
                 <Column>
                   <Img
-                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                    src="cid:acd-logo"
                     alt="ACD Logo"
-                    width="64"
-                    height="64"
+                    width="120"
+                    height="52"
                     class="inline-block align-middle"
                   />
                 </Column>
@@ -95,10 +95,10 @@ defineProps({
                 </Column>
                 <Column align="center">
                   <Img
-                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                    src="cid:acd-logo"
                     alt="ACD Logo"
-                    width="48"
-                    height="48"
+                    width="44"
+                    height="20"
                     class="inline-block align-left"
                   />
                 </Column>

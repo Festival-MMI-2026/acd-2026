@@ -6,6 +6,7 @@ import MagicLinkEmail from "../emails/MagicLinkEmail.vue";
 import VerificationEmail from "../emails/VerificationEmail.vue";
 import ResetPasswordEmail from "../emails/ResetPasswordEmail.vue";
 import { sendMail } from "./mail";
+import { buildLogoAttachment } from "./emailAssets";
 
 export const auth = betterAuth({
   socialProviders: {
@@ -48,17 +49,21 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
       const appUrl = process.env.APP_URL || "http://localhost:3000";
-      const html = await render(ResetPasswordEmail, {
-        url,
-        email: user.email,
-        name: user.name,
-        appUrl,
-      });
+      const [html, logo] = await Promise.all([
+        render(ResetPasswordEmail, {
+          url,
+          email: user.email,
+          name: user.name,
+          appUrl,
+        }),
+        buildLogoAttachment(),
+      ]);
 
       sendMail(
         user.email,
         "Réinitialisation de votre mot de passe - ACD",
         html,
+        logo ? [logo] : undefined,
       );
     },
   },
@@ -68,28 +73,43 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       const appUrl = process.env.APP_URL || "http://localhost:3000";
-      const html = await render(VerificationEmail, {
-        url,
-        email: user.email,
-        name: user.name,
-        appUrl,
-      });
+      const [html, logo] = await Promise.all([
+        render(VerificationEmail, {
+          url,
+          email: user.email,
+          name: user.name,
+          appUrl,
+        }),
+        buildLogoAttachment(),
+      ]);
 
-      sendMail(user.email, "Vérifiez votre adresse email - ACD", html);
+      sendMail(
+        user.email,
+        "Vérifiez votre adresse email - ACD",
+        html,
+        logo ? [logo] : undefined,
+      );
     },
   },
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        // Render Vue email template to HTML
         const appUrl = process.env.APP_URL || "http://localhost:3000";
-        const html = await render(MagicLinkEmail, {
-          url,
-          email,
-          appUrl,
-        });
+        const [html, logo] = await Promise.all([
+          render(MagicLinkEmail, {
+            url,
+            email,
+            appUrl,
+          }),
+          buildLogoAttachment(),
+        ]);
 
-        await sendMail(email, "Votre lien de connexion ACD", html);
+        await sendMail(
+          email,
+          "Votre lien de connexion ACD",
+          html,
+          logo ? [logo] : undefined,
+        );
       },
       expiresIn: 300, // 5 minutes
     }),

@@ -36,14 +36,14 @@ async function handleGithubSignIn() {
       <div class="text-center space-y-2">
         <div class="flex items-center justify-center">
           <NuxtImg
-            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+            src="/logo.svg"
             alt="ACD Logo"
             class="h-16 dark:hidden"
             loading="eager"
             height="64"
           />
           <NuxtImg
-            src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+            src="/logo.svg"
             alt="ACD Logo"
             class="h-16 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
             loading="eager"

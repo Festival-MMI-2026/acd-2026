@@ -138,7 +138,7 @@ function formatTimeRange(startTime?: string, endTime?: string) {
             </div>
             <p
               v-if="activity.description"
-              class="text-muted-foreground text-xs leading-relaxed mt-1"
+              class="text-muted-foreground text-xs leading-relaxed mt-1 whitespace-pre-line"
             >
               {{ activity.description }}
             </p>

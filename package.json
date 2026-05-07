@@ -1,6 +1,6 @@
 {
   "name": "acd-nuxt",
-  "version": "2.6.3",
+  "version": "2.7.1",
   "type": "module",
   "private": true,
   "scripts": {
@@ -58,6 +58,7 @@
     "pg": "^8.17.2",
     "reka-ui": "^2.9.0",
     "shadcn-nuxt": "^2.4.3",
+    "sharp": "^0.34.5",
     "tailwind-merge": "^3.4.0",
     "vue": "^3.5.27",
     "vue-qrcode-reader": "^5.7.3",

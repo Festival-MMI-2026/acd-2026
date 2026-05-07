@@ -185,7 +185,7 @@ const totalSelected = computed(() => props.modelValue.length);
               <!-- Description -->
               <p
                 v-if="meal.description"
-                class="text-sm text-muted-foreground leading-relaxed"
+                class="text-sm text-muted-foreground leading-relaxed whitespace-pre-line"
               >
                 {{ meal.description }}
               </p>

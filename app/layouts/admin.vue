@@ -130,12 +130,12 @@ const searchOpen = ref(false);
               <NuxtLink to="/admin" class="flex items-center gap-2">
                 <div class="flex items-center gap-2">
                   <img
-                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                    src="/logo.svg"
                     alt="ACD Logo"
                     class="h-14 dark:hidden"
                   />
                   <img
-                    src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                    src="/logo.svg"
                     alt="ACD Logo"
                     class="h-14 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
                   />

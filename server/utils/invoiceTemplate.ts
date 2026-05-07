@@ -1,3 +1,26 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+let cachedLogoDataUri: string | null = null;
+function getLogoDataUri(): string {
+  if (cachedLogoDataUri) return cachedLogoDataUri;
+  const candidates = [
+    resolve(process.cwd(), ".output/public/logo.svg"),
+    resolve(process.cwd(), "public/logo.svg"),
+  ];
+  for (const path of candidates) {
+    try {
+      const buf = readFileSync(path);
+      cachedLogoDataUri = `data:image/svg+xml;base64,${buf.toString("base64")}`;
+      return cachedLogoDataUri;
+    } catch {
+      // try next
+    }
+  }
+  cachedLogoDataUri = "";
+  return cachedLogoDataUri;
+}
+
 export function generateInvoiceHtml(data: any) {
   const {
     registration,
@@ -273,7 +296,7 @@ export function generateInvoiceHtml(data: any) {
     <body>
       <div class="invoice-box">
         <div class="header">
-          <img src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg" alt="Logo" class="logo" />
+          <img src="${getLogoDataUri()}" alt="Logo" class="logo" />
           <div class="invoice-title">
             <h1>Facture</h1>
             <p>Réf: ${registration.order?.orderNumber || registration.id.substring(0, 8).toUpperCase()}</p>

@@ -3,6 +3,7 @@ import RegistrationConfirmationEmail from "../../emails/RegistrationConfirmation
 import NewRegistrationNotifEmail from "../../emails/NewRegistrationNotifEmail.vue";
 import { sendMail } from "../../utils/mail";
 import { generateInvoicePdf } from "../../utils/generateInvoicePdf";
+import { buildLogoAttachment, buildQrAttachment } from "../../utils/emailAssets";
 
 export default defineEventHandler(async (event) => {
   const sessionUser = await requireUser(event);
@@ -140,7 +141,14 @@ export default defineEventHandler(async (event) => {
 
     // Send confirmation email with invoice PDF attachment (fire-and-forget)
     const appUrl = process.env.APP_URL || "http://localhost:3000";
-    const emailMeals = registration.meals.map((m: any) => ({
+    const sortedMeals = [...registration.meals].sort((a: any, b: any) => {
+      const da = new Date(a.meal?.date ?? 0).getTime();
+      const db = new Date(b.meal?.date ?? 0).getTime();
+      if (da !== db) return da - db;
+      const order = { LUNCH: 0, DINNER: 1 } as Record<string, number>;
+      return (order[a.meal?.mealType] ?? 9) - (order[b.meal?.mealType] ?? 9);
+    });
+    const emailMeals = sortedMeals.map((m: any) => ({
       mealName: m.meal?.name || "",
       starter: m.starterOption?.name || null,
       main: m.mainOption?.name || null,
@@ -183,14 +191,20 @@ export default defineEventHandler(async (event) => {
       appUrl,
     });
 
+    const inlineAssets = Promise.all([
+      buildLogoAttachment(),
+      buildQrAttachment(registration.id),
+    ]).then((items) => items.filter((a): a is NonNullable<typeof a> => !!a));
+
     if (shouldSendPdf) {
-      Promise.all([emailRender, generateInvoicePdf(invoiceData)])
-        .then(([html, pdfBuffer]) =>
+      Promise.all([emailRender, generateInvoicePdf(invoiceData), inlineAssets])
+        .then(([html, pdfBuffer, inline]) =>
           sendMail(
             registration.email,
             `Confirmation d'inscription ACD - ${finalOrderNumber}`,
             html,
             [
+              ...inline,
               {
                 filename: `Facture_${finalOrderNumber}.pdf`,
                 content: pdfBuffer,
@@ -201,12 +215,13 @@ export default defineEventHandler(async (event) => {
         )
         .catch(console.error);
     } else {
-      emailRender
-        .then((html) =>
+      Promise.all([emailRender, inlineAssets])
+        .then(([html, inline]) =>
           sendMail(
             registration.email,
             `Confirmation d'inscription ACD - ${finalOrderNumber}`,
             html,
+            inline,
           ),
         )
         .catch(console.error);
@@ -215,20 +230,24 @@ export default defineEventHandler(async (event) => {
     // Send notification email to configured admin recipients
     const notificationEmails = settings?.notificationEmails ?? [];
     if (notificationEmails.length > 0) {
-      render(NewRegistrationNotifEmail, {
-        firstName: registration.firstName,
-        lastName: registration.lastName,
-        email: registration.email,
-        registrationId: registration.id,
-        orderNumber: finalOrderNumber,
-        totalPrice: Number(registration.totalPrice),
-        appUrl,
-      })
-        .then((html) =>
+      Promise.all([
+        render(NewRegistrationNotifEmail, {
+          firstName: registration.firstName,
+          lastName: registration.lastName,
+          email: registration.email,
+          registrationId: registration.id,
+          orderNumber: finalOrderNumber,
+          totalPrice: Number(registration.totalPrice),
+          appUrl,
+        }),
+        buildLogoAttachment(),
+      ])
+        .then(([html, logo]) =>
           sendMail(
             notificationEmails.join(", "),
             `Nouvelle inscription ACD - ${registration.firstName} ${registration.lastName}`,
             html,
+            logo ? [logo] : undefined,
           ),
         )
         .catch(console.error);

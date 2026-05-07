@@ -12,14 +12,14 @@ const { data: settings } = await useFetch("/api/settings");
             class="inline-block transition-opacity hover:opacity-80"
           >
             <NuxtImg
-              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+              src="/logo.svg"
               alt="ACD Logo"
               class="h-20 dark:hidden"
               loading="lazy"
               height="80"
             />
             <NuxtImg
-              src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+              src="/logo.svg"
               alt="ACD Logo"
               class="h-20 hidden dark:block dark:grayscale dark:invert dark:contrast-200"
               loading="lazy"
@@ -28,7 +28,7 @@ const { data: settings } = await useFetch("/api/settings");
           </NuxtLink>
 
           <p class="text-base text-muted-foreground leading-relaxed max-w-sm">
-            L'Assemblée des Chefs de Département MMI. Un événement annuel pour
+            L'Assemblée des chefs de département MMI. Un événement annuel pour
             façonner l'avenir de la formation et échanger sur nos pratiques.
           </p>
 

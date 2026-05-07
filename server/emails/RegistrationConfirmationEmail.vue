@@ -56,7 +56,7 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
             <Row>
               <Column>
                 <Img
-                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                  src="cid:acd-logo"
                   alt="ACD Logo"
                   width="90"
                   height="36"
@@ -200,7 +200,7 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
             <Row>
               <Column align="center">
                 <Img
-                  :src="`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${registrationId}&bgcolor=ffffff&color=111827&margin=8`"
+                  src="cid:acd-qr"
                   alt="QR code de présence"
                   width="160"
                   height="160"
@@ -234,7 +234,7 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
               </Column>
               <Column align="right" style="vertical-align: middle">
                 <Img
-                  src="https://butmmi.fr/wp-content/themes/blitz-starter-kit/assets/img/logo.svg"
+                  src="cid:acd-logo"
                   alt="ACD"
                   width="44"
                   height="20"
