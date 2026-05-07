@@ -88,7 +88,12 @@ export const userUpdateSchema = z.object({
   firstName: z.string().trim().max(100).optional(),
   lastName: z.string().trim().max(100).optional(),
   email: emailSchema.optional(),
-  tel: phoneSchema.optional(),
+  tel: z
+    .string()
+    .trim()
+    .max(32, "Numéro de téléphone invalide")
+    .refine((v) => !v || v.length >= 6, "Numéro de téléphone invalide")
+    .optional(),
   iut: z.string().max(100).optional(),
 });
 
