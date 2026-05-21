@@ -15,7 +15,8 @@
     "test:unit": "vitest --project unit",
     "test:nuxt": "vitest --project nuxt",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@nuxt/a11y": "^1.0.0-alpha.1",

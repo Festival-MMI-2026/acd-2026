@@ -67,7 +67,7 @@ const { data: settings } = await useFetch("/api/settings");
               class="rounded-full h-10 w-10 transition-transform hover:-translate-y-1"
               as-child
             >
-              <a href="mailto:contact@acd-iut.fr" aria-label="Email">
+              <a href="mailto:romain.delon@univ-reims.fr" aria-label="Email">
                 <Icon name="lucide:mail" class="h-4 w-4" />
               </a>
             </Button>

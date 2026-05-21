@@ -10,8 +10,24 @@ Plateforme de gestion d'événement pour l'**Assemblée des Chefs de Départemen
 
 ---
 
+## 🧪 Démo
+
+Une instance de démo avec données fictives est disponible pour le **Festival MMI 2026** :
+
+- **URL** : <https://demo-acd-mmi.mmi23f03.fr>
+- **Compte admin** :
+  - Email : `admin@demo-acd.com`
+  - Mot de passe : `DemoMMI2026!`
+
+La démo contient 45 inscriptions fictives, 34 IUTs, 6 hôtels, 6 activités et 6 repas pour permettre au jury de tester l'ensemble des fonctionnalités (côté participant et côté administration).
+
+> ⚠️ Environnement de démo — données fictives, données régulièrement réinitialisées. Toute inscription ou modification effectuée sur cette instance n'a aucune valeur réelle.
+
+---
+
 ## Sommaire
 
+- [Démo](#-démo)
 - [Fonctionnalités](#fonctionnalités)
 - [Stack technique](#stack-technique)
 - [Prérequis](#prérequis)

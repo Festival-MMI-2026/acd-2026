@@ -8,7 +8,7 @@ import { version } from "./package.json";
 export default defineNuxtConfig({
   appConfig: { version },
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   app: {
     head: {
@@ -18,9 +18,23 @@ export default defineNuxtConfig({
       title: "ACD MMI 2026",
       link: [
         { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
-        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
-        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
-        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+        {
+          rel: "icon",
+          type: "image/png",
+          sizes: "32x32",
+          href: "/favicon-32.png",
+        },
+        {
+          rel: "icon",
+          type: "image/png",
+          sizes: "16x16",
+          href: "/favicon-16.png",
+        },
+        {
+          rel: "apple-touch-icon",
+          sizes: "180x180",
+          href: "/apple-touch-icon.png",
+        },
         { rel: "shortcut icon", href: "/favicon.ico" },
       ],
     },
