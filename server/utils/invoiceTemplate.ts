@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { computeVat } from "../../shared/utils/vat";
 
 let cachedLogoDataUri: string | null = null;
 function getLogoDataUri(): string {
@@ -48,27 +49,28 @@ export function generateInvoiceHtml(data: any) {
 
   const isPaid = paymentStatus === "PAID";
 
+  // TVA extraite du total (les prix sont TTC) — taux configurable dans les paramètres
+  const vat = computeVat(Number(totalPrice), Number(settings?.vatRate) || 0);
+
+  // Libellé FR de la méthode de paiement (l'enum est stocké en anglais)
+  const paymentMethodLabels: Record<string, string> = {
+    CARD: "Carte bancaire",
+    TRANSFER: "Virement",
+    CASH: "Espèces",
+    FREE: "Gratuit",
+  };
+  // Par défaut, les paiements sont des virements
+  const paymentMethodLabel =
+    paymentMethodLabels[paymentMethod || "TRANSFER"] || "Virement";
+
   // Build rows for meals
   let mealsHtml = "";
   if (registration.meals && registration.meals.length > 0) {
     mealsHtml = registration.meals
       .map((m: any) => {
-        let optionsHtml = "";
-        const options = [];
-        if (m.starterOption) options.push(m.starterOption.name);
-        if (m.mainOption) options.push(m.mainOption.name);
-        if (m.cheeseOption) options.push(m.cheeseOption.name);
-        if (m.dessertOption) options.push(m.dessertOption.name);
-        if (options.length > 0) {
-          optionsHtml = options.join(" • ");
-        }
-
         return `
         <tr>
-          <td>
-            <div class="item-name">${m.meal.name}</div>
-            ${optionsHtml ? `<div class="item-options">${optionsHtml}</div>` : ""}
-          </td>
+          <td><div class="item-name">${m.meal.name}</div></td>
           <td class="center">${m.quantity}</td>
           <td class="right">${Number(m.meal.price).toFixed(2)} €</td>
           <td class="right item-name">${(Number(m.meal.price) * m.quantity).toFixed(2)} €</td>
@@ -120,7 +122,12 @@ export function generateInvoiceHtml(data: any) {
         :root {
           --text-main: #111827;
           --text-muted: #6b7280;
-          --border: #e5e7eb;
+          --border: #e9e7ee;
+          --brand: #4d2465;
+          --paid: #047857;
+          --paid-bg: rgba(4, 120, 87, 0.09);
+          --pending: #b45309;
+          --pending-bg: rgba(180, 83, 9, 0.10);
         }
 
         * {
@@ -144,17 +151,25 @@ export function generateInvoiceHtml(data: any) {
           margin: 0;
         }
 
+        .top-accent {
+          height: 5px;
+          background: var(--brand);
+        }
+
         .invoice-box {
-          padding: 60px 70px;
+          padding: 40px 56px 32px;
           max-width: 800px;
           margin: auto;
+          min-height: calc(100vh - 5px);
+          display: flex;
+          flex-direction: column;
         }
 
         .header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 50px;
+          margin-bottom: 30px;
         }
 
         .logo {
@@ -170,10 +185,10 @@ export function generateInvoiceHtml(data: any) {
         .invoice-title h1 {
           font-size: 32px;
           font-weight: 300;
-          letter-spacing: -0.02em;
+          letter-spacing: 0.04em;
           margin-bottom: 5px;
           text-transform: uppercase;
-          color: var(--text-main);
+          color: var(--brand);
         }
 
         .invoice-title p {
@@ -184,7 +199,7 @@ export function generateInvoiceHtml(data: any) {
         .info-section {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 50px;
+          margin-bottom: 32px;
         }
 
         .info-block {
@@ -214,7 +229,7 @@ export function generateInvoiceHtml(data: any) {
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-bottom: 40px;
+          margin-bottom: 28px;
         }
 
         th {
@@ -237,9 +252,9 @@ export function generateInvoiceHtml(data: any) {
         }
 
         td {
-          padding: 16px 0;
-          border-bottom: 1px solid #f9fafb;
-          vertical-align: top;
+          padding: 12px 0;
+          border-bottom: 1px solid #f4f3f6;
+          vertical-align: middle;
         }
 
         .item-name {
@@ -253,47 +268,81 @@ export function generateInvoiceHtml(data: any) {
           margin-top: 4px;
         }
 
+        .summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 40px;
+        }
+
+        .payment .info-label {
+          margin-bottom: 10px;
+        }
+
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 6px 13px 6px 11px;
+          border-radius: 999px;
+          font-weight: 600;
+          font-size: 13px;
+          line-height: 1;
+        }
+
+        .status-pill.paid { background: var(--paid-bg); color: var(--paid); }
+        .status-pill.pending { background: var(--pending-bg); color: var(--pending); }
+
+        .status-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: currentColor;
+        }
+
+        .payment-meta {
+          margin-top: 10px;
+          color: var(--text-muted);
+          font-size: 12px;
+          line-height: 1.7;
+        }
+
         .totals {
-          width: 280px;
-          margin-left: auto;
+          width: 260px;
+          flex-shrink: 0;
         }
 
         .total-row {
           display: flex;
           justify-content: space-between;
-          padding: 8px 0;
+          padding: 7px 0;
           color: var(--text-muted);
         }
 
         .total-row.final {
           border-top: 1px solid var(--border);
-          margin-top: 8px;
-          padding-top: 16px;
+          margin-top: 6px;
+          padding-top: 14px;
           color: var(--text-main);
-          font-weight: 600;
-          font-size: 16px;
+          font-weight: 700;
+          font-size: 17px;
         }
 
-        .status-box {
-          margin-top: 40px;
-          padding: 16px;
-          background-color: #f9fafb;
-          border-radius: 6px;
-          display: inline-block;
-          min-width: 250px;
-        }
+        .total-row.final .amount { color: var(--brand); }
 
         .footer {
-          margin-top: 80px;
-          padding-top: 20px;
+          margin-top: auto;
+          padding-top: 18px;
           border-top: 1px solid var(--border);
           text-align: center;
           color: var(--text-muted);
           font-size: 11px;
+          line-height: 1.7;
         }
       </style>
     </head>
     <body>
+      <div class="top-accent"></div>
       <div class="invoice-box">
         <div class="header">
           <img src="${getLogoDataUri()}" alt="Logo" class="logo" />
@@ -339,30 +388,31 @@ export function generateInvoiceHtml(data: any) {
           </tbody>
         </table>
 
-        <div class="totals">
-          <div class="total-row">
-            <span>Sous-total HT</span>
-            <span>${Number(totalPrice).toFixed(2)} €</span>
+        <div class="summary">
+          <div class="payment">
+            <div class="info-label">Statut du paiement</div>
+            <div class="status-pill ${isPaid ? "paid" : "pending"}">
+              <span class="status-dot"></span>
+              ${isPaid ? "Acquittée" : "En attente de paiement"}
+            </div>
+            <div class="payment-meta">
+              ${isPaid ? `Réglée le ${paidAtStr}` : "À régler à réception de la facture"}<br>Méthode : ${paymentMethodLabel}
+            </div>
           </div>
-          <div class="total-row">
-            <span>TVA (0%)</span>
-            <span>0.00 €</span>
-          </div>
-          <div class="total-row final">
-            <span>Total TTC</span>
-            <span>${Number(totalPrice).toFixed(2)} €</span>
-          </div>
-        </div>
 
-        <div class="status-box">
-          <div class="info-label">Statut du paiement</div>
-          <div class="info-text">
-            ${
-              isPaid
-                ? `<span style="color: #059669; font-weight: 600;">Acquittée</span> le ${paidAtStr}`
-                : `<span style="color: #dc2626; font-weight: 600;">En attente de paiement</span>`
-            }
-            ${paymentMethod ? `<br><span style="color: var(--text-muted); font-size: 12px; margin-top: 4px; display: inline-block;">Méthode : ${paymentMethod}</span>` : ""}
+          <div class="totals">
+            <div class="total-row">
+              <span>Sous-total HT</span>
+              <span>${vat.ht.toFixed(2)} €</span>
+            </div>
+            <div class="total-row">
+              <span>TVA (${vat.rate}%)</span>
+              <span>${vat.tva.toFixed(2)} €</span>
+            </div>
+            <div class="total-row final">
+              <span>Total TTC</span>
+              <span class="amount">${vat.ttc.toFixed(2)} €</span>
+            </div>
           </div>
         </div>
 

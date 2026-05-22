@@ -9,8 +9,14 @@ export async function generateInvoicePdf(data: any): Promise<Buffer> {
     new Blob([htmlContent], { type: "text/html" }),
     "index.html",
   );
-  formData.append("paperWidth", "8.27"); // A4
-  formData.append("paperHeight", "11.7"); // A4
+  formData.append("paperWidth", "8.27"); // A4 (210mm)
+  formData.append("paperHeight", "11.69"); // A4 (297mm)
+  // Marges à 0 : le gabarit gère ses propres marges via .invoice-box,
+  // et la barre d'accent doit atteindre le bord du document.
+  formData.append("marginTop", "0");
+  formData.append("marginBottom", "0");
+  formData.append("marginLeft", "0");
+  formData.append("marginRight", "0");
 
   const gotenbergUrl = process.env.GOTENBERG_URL || "http://localhost:3001";
 
