@@ -181,6 +181,12 @@ export default defineEventHandler(async (event) => {
     const finalOrderNumber = registration.order?.orderNumber || orderNumber;
     const shouldSendPdf = settings?.sendInvoicePdf ?? true;
 
+    // Détail TVA (les prix sont TTC : la TVA est extraite du total)
+    const vat = computeVat(
+      Number(registration.totalPrice),
+      Number(settings?.vatRate) || 0,
+    );
+
     // Send confirmation email to the registrant
     const emailRender = render(RegistrationConfirmationEmail, {
       firstName: registration.firstName,
@@ -188,6 +194,9 @@ export default defineEventHandler(async (event) => {
       orderNumber: finalOrderNumber,
       registrationId: registration.id,
       totalPrice: Number(registration.totalPrice),
+      vatRate: vat.rate,
+      subtotalHt: vat.ht,
+      vatAmount: vat.tva,
       meals: emailMeals,
       activities: emailActivities,
       appUrl,
@@ -240,6 +249,9 @@ export default defineEventHandler(async (event) => {
           registrationId: registration.id,
           orderNumber: finalOrderNumber,
           totalPrice: Number(registration.totalPrice),
+          vatRate: vat.rate,
+          subtotalHt: vat.ht,
+          vatAmount: vat.tva,
           appUrl,
         }),
         buildLogoAttachment(),
