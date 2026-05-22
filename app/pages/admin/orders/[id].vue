@@ -170,6 +170,16 @@ const invoiceItems = computed(() => {
   return items;
 });
 
+const { data: appSettings } = await useFetch("/api/settings");
+
+// TVA extraite du total (les prix sont TTC) — taux configurable dans les paramètres
+const vat = computed(() =>
+  computeVat(
+    invoiceItems.value.reduce((acc, i) => acc + i.price, 0),
+    Number(appSettings.value?.vatRate) || 0,
+  ),
+);
+
 const showDeleteDialog = ref(false);
 const isDeleting = ref(false);
 
@@ -320,22 +330,17 @@ async function deleteOrder() {
             <!-- Totals -->
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Sous-total</span>
-                <span>
-                  {{
-                    invoiceItems.reduce((acc, i) => acc + i.price, 0).toFixed(2)
-                  }}
-                  €
-                </span>
+                <span class="text-muted-foreground">Sous-total HT</span>
+                <span>{{ vat.ht.toFixed(2) }} €</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">TVA (0%)</span>
-                <span>—</span>
+                <span class="text-muted-foreground">TVA ({{ vat.rate }}%)</span>
+                <span>{{ vat.tva.toFixed(2) }} €</span>
               </div>
               <Separator />
               <div class="flex justify-between text-lg font-bold pt-2">
-                <span>Total</span>
-                <span>{{ invoiceItems.reduce((acc, i) => acc + i.price, 0).toFixed(2) }} €</span>
+                <span>Total TTC</span>
+                <span>{{ vat.ttc.toFixed(2) }} €</span>
               </div>
             </div>
           </div>
