@@ -203,7 +203,7 @@ model Order {
   registration    Registration  @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   amount          Decimal       @db.Decimal(10, 2)
   paymentStatus   PaymentStatus @default(PENDING)
-  paymentMethod   PaymentMethod?
+  paymentMethod   PaymentMethod? @default(TRANSFER)
   notes           String?
   paidAt          DateTime?
   createdAt       DateTime      @default(now())
@@ -275,6 +275,7 @@ model Setting {
   locationAddress  String   @default("9 Rue de Québec, 10000 Troyes")
   notificationEmails String[] @default([])
   sendInvoicePdf     Boolean  @default(true)
+  vatRate            Float    @default(0)
   maintenanceMode    Boolean  @default(false)
   legalMentions      String   @default("")
   privacyPolicy      String   @default("")

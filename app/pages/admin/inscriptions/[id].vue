@@ -221,6 +221,16 @@ const invoiceDetails = computed(() => {
   return { meals, activities, subtotal };
 });
 
+const { data: appSettings } = await useFetch("/api/settings");
+
+// TVA extraite du total (les prix sont TTC) — taux configurable dans les paramètres
+const vat = computed(() =>
+  computeVat(
+    invoiceDetails.value.subtotal,
+    Number(appSettings.value?.vatRate) || 0,
+  ),
+);
+
 function formatShortDate(date?: string) {
   if (!date) return "";
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -421,17 +431,17 @@ function formatShortDate(date?: string) {
             <!-- Totals -->
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Sous-total</span>
-                <span>{{ invoiceDetails.subtotal.toFixed(2) }} €</span>
+                <span class="text-muted-foreground">Sous-total HT</span>
+                <span>{{ vat.ht.toFixed(2) }} €</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">TVA (0%)</span>
-                <span>—</span>
+                <span class="text-muted-foreground">TVA ({{ vat.rate }}%)</span>
+                <span>{{ vat.tva.toFixed(2) }} €</span>
               </div>
               <Separator />
               <div class="flex justify-between text-lg font-bold pt-2">
-                <span>Total</span>
-                <span>{{ invoiceDetails.subtotal.toFixed(2) }} €</span>
+                <span>Total TTC</span>
+                <span>{{ vat.ttc.toFixed(2) }} €</span>
               </div>
             </div>
           </div>

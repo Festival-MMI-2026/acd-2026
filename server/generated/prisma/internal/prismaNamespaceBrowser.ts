@@ -298,6 +298,7 @@ export const SettingScalarFieldEnum = {
   locationAddress: 'locationAddress',
   notificationEmails: 'notificationEmails',
   sendInvoicePdf: 'sendInvoicePdf',
+  vatRate: 'vatRate',
   maintenanceMode: 'maintenanceMode',
   legalMentions: 'legalMentions',
   privacyPolicy: 'privacyPolicy',

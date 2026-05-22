@@ -38,6 +38,7 @@ const settings = ref({
   showHotels: true,
   notificationEmails: [] as string[],
   sendInvoicePdf: true,
+  vatRate: 0,
 });
 
 const newEmail = ref("");
@@ -88,6 +89,7 @@ watchEffect(() => {
       dbSettings.value.notificationEmails ?? [];
     settings.value.sendInvoicePdf =
       dbSettings.value.sendInvoicePdf ?? true;
+    settings.value.vatRate = dbSettings.value.vatRate ?? 0;
   }
 });
 
@@ -110,6 +112,7 @@ async function save() {
         showHotels: settings.value.showHotels,
         notificationEmails: settings.value.notificationEmails,
         sendInvoicePdf: settings.value.sendInvoicePdf,
+        vatRate: settings.value.vatRate,
       },
     });
     await refresh();
@@ -281,6 +284,44 @@ async function executeClear() {
             Texte affiché dans le badge à côté du logo dans le header
           </p>
         </div>
+      </CardContent>
+    </Card>
+
+    <!-- Facturation -->
+    <Card class="rounded-2xl">
+      <CardHeader>
+        <div class="flex items-center gap-3">
+          <div
+            class="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"
+          >
+            <Icon name="lucide:percent" class="h-5 w-5 text-emerald-500" />
+          </div>
+          <div>
+            <CardTitle>Facturation</CardTitle>
+            <CardDescription>Taux de TVA appliqué aux factures</CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <Label>Taux de TVA (%)</Label>
+            <Input
+              v-model.number="settings.vatRate"
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              class="rounded-xl"
+              placeholder="0"
+            />
+          </div>
+        </div>
+        <p class="text-xs text-muted-foreground">
+          Les prix sont saisis TTC (TVA incluse). Ce taux sert uniquement à
+          afficher le détail de la TVA sur les factures ; il ne modifie pas le
+          montant payé. Laisser à 0 pour ne pas afficher de TVA.
+        </p>
       </CardContent>
     </Card>
 
