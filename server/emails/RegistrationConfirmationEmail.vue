@@ -35,6 +35,9 @@ defineProps({
   orderNumber: { type: String, required: true },
   registrationId: { type: String, required: true },
   totalPrice: { type: Number, required: true },
+  vatRate: { type: Number, default: 0 },
+  subtotalHt: { type: Number, required: true },
+  vatAmount: { type: Number, default: 0 },
   meals: { type: Array as () => MealSelection[], default: () => [] },
   activities: { type: Array as () => ActivitySelection[], default: () => [] },
   appUrl: { type: String, default: "http://localhost:3000" },
@@ -194,8 +197,29 @@ const dateStr = new Date().toLocaleDateString("fr-FR", {
           >
             <Hr class="border-border m-0 mb-4" />
             <Row>
+              <Column class="py-1">
+                <Text class="text-sm text-muted-foreground m-0">Sous-total HT</Text>
+              </Column>
+              <Column align="right" class="py-1">
+                <Text class="text-sm text-muted-foreground m-0">
+                  {{ subtotalHt.toFixed(2) }} €
+                </Text>
+              </Column>
+            </Row>
+            <Row>
+              <Column class="py-1">
+                <Text class="text-sm text-muted-foreground m-0">TVA ({{ vatRate }}%)</Text>
+              </Column>
+              <Column align="right" class="py-1">
+                <Text class="text-sm text-muted-foreground m-0">
+                  {{ vatAmount.toFixed(2) }} €
+                </Text>
+              </Column>
+            </Row>
+            <Hr class="border-border m-0 my-2" />
+            <Row>
               <Column>
-                <Text class="text-sm font-semibold text-foreground m-0">Total</Text>
+                <Text class="text-sm font-semibold text-foreground m-0">Total TTC</Text>
               </Column>
               <Column align="right">
                 <Text class="text-sm font-semibold text-foreground m-0">
