@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import {
-  sortSelectedMealsByDate,
-  sortSelectedActivityIdsByDate,
-} from "~/utils/sortRegistrationItems";
-
 interface PersonalInfo {
   firstName: string;
   lastName: string;

@@ -199,6 +199,14 @@ const paymentStatusMap: Record<string, { label: string; variant: string }> = {
   REFUNDED: { label: "Remboursé", variant: "secondary" },
 };
 
+// Payment method labels (FR)
+const paymentMethodLabels: Record<string, string> = {
+  CARD: "Carte bancaire",
+  TRANSFER: "Virement",
+  CASH: "Espèces",
+  FREE: "Gratuit",
+};
+
 // Update profile
 async function handleUpdateProfile() {
   profileForm.error = "";
@@ -871,18 +879,19 @@ async function downloadInvoice() {
                       class="text-muted-foreground"
                     >
                       via
-                      <span class="capitalize">{{
-                        registration.order.paymentMethod?.toLowerCase()
+                      <span>{{
+                        paymentMethodLabels[registration.order.paymentMethod] ||
+                        registration.order.paymentMethod
                       }}</span>
                     </span>
                   </div>
                   <div v-else />
-                  <NuxtLink
-                    to="/inscription"
+                  <a
+                    href="mailto:romain.delon@univ-reims.fr"
                     class="text-sm font-medium text-primary hover:underline underline-offset-4 flex items-center gap-1"
                   >
                     Besoin d'aide ?
-                  </NuxtLink>
+                  </a>
                 </div>
               </Card>
 
