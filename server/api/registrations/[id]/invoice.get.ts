@@ -1,4 +1,8 @@
 import { generateInvoicePdf } from "../../../utils/generateInvoicePdf";
+import {
+  sortRegistrationMealsByDate,
+  sortRegistrationActivitiesByDate,
+} from "../../../../shared/utils/sortRegistrationItems";
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
@@ -63,9 +67,20 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Tri chronologique des repas et activités (LUNCH avant DINNER à date égale)
+  const sortedRegistration = {
+    ...registration,
+    meals: registration.meals
+      ? sortRegistrationMealsByDate(registration.meals as any[])
+      : registration.meals,
+    activities: registration.activities
+      ? sortRegistrationActivitiesByDate(registration.activities as any[])
+      : registration.activities,
+  };
+
   // Prepare data for template
   const data = {
-    registration,
+    registration: sortedRegistration,
     settings,
     iutName: iut?.name ?? null,
     totalPrice: computedTotal,

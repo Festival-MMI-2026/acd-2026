@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
-import {
-  compareMealsByDate,
-  compareActivitiesByDate,
-} from "~/utils/sortRegistrationItems";
+import type { Activity, Meal } from "~/types/registration";
 
 definePageMeta({
   layout: "admin",
@@ -46,6 +43,108 @@ const { data: registration, refresh } = await useFetch<Registration>(
 );
 
 const { data: iuts } = useLazyFetch<Iut[]>("/api/iuts");
+const { data: mealsCatalog } = useLazyFetch<Meal[]>("/api/meals");
+const { data: activitiesCatalog } = useLazyFetch<Activity[]>("/api/activities");
+
+// Edit mode
+const isEditing = ref(false);
+const isSaving = ref(false);
+const editShowErrors = ref(false);
+const editForm = reactive({
+  allergens: "",
+  isVegetarian: false,
+  isVegan: false,
+  noPork: false,
+  noAlcohol: false,
+});
+const {
+  selectedMeals: editMeals,
+  selectedActivities: editActivities,
+  totalPrice: editTotal,
+  mealsValid: isEditMealsValid,
+  activitiesValid: isEditActivitiesValid,
+  hydrate: hydrateEditSelection,
+} = useRegistrationForm(mealsCatalog, activitiesCatalog);
+
+function hydrateEditFromRegistration() {
+  if (!registration.value) return;
+  editForm.allergens = registration.value.allergens || "";
+  editForm.isVegetarian = registration.value.isVegetarian || false;
+  editForm.isVegan = registration.value.isVegan || false;
+  editForm.noPork = registration.value.noPork || false;
+  editForm.noAlcohol = registration.value.noAlcohol || false;
+  hydrateEditSelection(
+    registration.value.meals?.map((rm: any) => ({
+      mealId: rm.mealId,
+      starterOptionId: rm.starterOptionId || undefined,
+      mainOptionId: rm.mainOptionId || undefined,
+      cheeseOptionId: rm.cheeseOptionId || undefined,
+      dessertOptionId: rm.dessertOptionId || undefined,
+    })),
+    registration.value.activities?.map((ra: any) => ra.activityId),
+  );
+}
+
+function startEdit() {
+  hydrateEditFromRegistration();
+  editShowErrors.value = false;
+  isEditing.value = true;
+}
+
+function cancelEdit() {
+  isEditing.value = false;
+}
+
+async function saveEdit() {
+  if (!registration.value) return;
+  if (!isEditMealsValid.value) {
+    editShowErrors.value = true;
+    toast.error("Vérifiez les choix de repas (entrée/plat/fromage/dessert)");
+    return;
+  }
+  if (!isEditActivitiesValid.value) {
+    editShowErrors.value = true;
+    toast.error("Sélectionnez au moins une activité");
+    return;
+  }
+
+  isSaving.value = true;
+  try {
+    // Tri chronologique : la facture et la BDD reflètent l'ordre des dates
+    const sortedMeals = sortSelectedMealsByDate(
+      editMeals.value,
+      mealsCatalog.value || [],
+    );
+    const sortedActivities = sortSelectedActivityIdsByDate(
+      editActivities.value,
+      activitiesCatalog.value || [],
+    );
+
+    await $fetch(`/api/registrations/${registration.value.id}`, {
+      method: "PUT",
+      body: {
+        firstName: registration.value.firstName,
+        lastName: registration.value.lastName,
+        phone: registration.value.phone,
+        allergens: editForm.allergens || null,
+        isMotorized: registration.value.isMotorized,
+        isVegetarian: editForm.isVegetarian,
+        isVegan: editForm.isVegan,
+        noPork: editForm.noPork,
+        noAlcohol: editForm.noAlcohol,
+        meals: sortedMeals,
+        activities: sortedActivities,
+      },
+    });
+    toast.success("Inscription mise à jour");
+    isEditing.value = false;
+    await refresh();
+  } catch (e: any) {
+    toast.error(e?.data?.statusMessage || "Erreur lors de la sauvegarde");
+  } finally {
+    isSaving.value = false;
+  }
+}
 
 const iutInfo = computed(() => {
   if (!registration.value?.iutId || !iuts.value) return null;
@@ -224,9 +323,10 @@ const invoiceDetails = computed(() => {
 const { data: appSettings } = await useFetch("/api/settings");
 
 // TVA extraite du total (les prix sont TTC) — taux configurable dans les paramètres
+// En mode édition, on utilise le total recalculé en direct
 const vat = computed(() =>
   computeVat(
-    invoiceDetails.value.subtotal,
+    isEditing.value ? editTotal.value : invoiceDetails.value.subtotal,
     Number(appSettings.value?.vatRate) || 0,
   ),
 );
@@ -266,6 +366,42 @@ function formatShortDate(date?: string) {
           {{ statusLabels[registration.status] }}
         </Badge>
         <Button
+          v-if="!isEditing"
+          variant="outline"
+          size="sm"
+          class="rounded-full"
+          @click="startEdit"
+        >
+          <Icon name="lucide:pencil" class="mr-2 h-3.5 w-3.5" />
+          Modifier
+        </Button>
+        <template v-else>
+          <Button
+            variant="outline"
+            size="sm"
+            class="rounded-full"
+            :disabled="isSaving"
+            @click="cancelEdit"
+          >
+            Annuler
+          </Button>
+          <Button
+            size="sm"
+            class="rounded-full"
+            :disabled="isSaving"
+            @click="saveEdit"
+          >
+            <Icon
+              v-if="isSaving"
+              name="lucide:loader-2"
+              class="mr-2 h-3.5 w-3.5 animate-spin"
+            />
+            <Icon v-else name="lucide:check" class="mr-2 h-3.5 w-3.5" />
+            Sauvegarder
+          </Button>
+        </template>
+        <Button
+          v-if="!isEditing"
           variant="ghost"
           size="icon"
           class="rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
@@ -318,8 +454,33 @@ function formatShortDate(date?: string) {
               </div>
             </div>
 
-            <!-- Line Items -->
-            <div class="space-y-3 mt-12">
+            <!-- Edit mode: meals + activities selection -->
+            <div v-if="isEditing" class="space-y-8 mt-12">
+              <div>
+                <h4 class="font-medium text-md text-muted-foreground mb-4">
+                  Repas
+                </h4>
+                <RegistrationStepMeals
+                  v-model="editMeals"
+                  :meals-data="mealsCatalog"
+                  :show-errors="editShowErrors"
+                />
+              </div>
+              <Separator />
+              <div>
+                <h4 class="font-medium text-md text-muted-foreground mb-4">
+                  Activités
+                </h4>
+                <RegistrationStepActivities
+                  v-model="editActivities"
+                  :activities-data="activitiesCatalog"
+                  :show-errors="editShowErrors"
+                />
+              </div>
+            </div>
+
+            <!-- Read mode: line items -->
+            <div v-else class="space-y-3 mt-12">
               <h4 class="font-medium text-md text-muted-foreground">
                 Éléments facturés
               </h4>
@@ -549,7 +710,39 @@ function formatShortDate(date?: string) {
               <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Préférences alimentaires
               </p>
-              <div v-if="hasAnyDietary" class="flex flex-wrap gap-1.5">
+              <!-- Edit mode -->
+              <div v-if="isEditing" class="grid grid-cols-2 gap-2">
+                <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                  <span class="flex items-center gap-2 text-sm">
+                    <Icon name="lucide:leaf" class="h-4 w-4 text-muted-foreground" />
+                    Végétarien
+                  </span>
+                  <Switch v-model="editForm.isVegetarian" />
+                </label>
+                <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                  <span class="flex items-center gap-2 text-sm">
+                    <Icon name="lucide:sprout" class="h-4 w-4 text-muted-foreground" />
+                    Vegan
+                  </span>
+                  <Switch v-model="editForm.isVegan" />
+                </label>
+                <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                  <span class="flex items-center gap-2 text-sm">
+                    <Icon name="lucide:ban" class="h-4 w-4 text-muted-foreground" />
+                    Sans porc
+                  </span>
+                  <Switch v-model="editForm.noPork" />
+                </label>
+                <label class="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 cursor-pointer hover:bg-muted/50">
+                  <span class="flex items-center gap-2 text-sm">
+                    <Icon name="lucide:wine-off" class="h-4 w-4 text-muted-foreground" />
+                    Sans alcool
+                  </span>
+                  <Switch v-model="editForm.noAlcohol" />
+                </label>
+              </div>
+              <!-- Read mode -->
+              <div v-else-if="hasAnyDietary" class="flex flex-wrap gap-1.5">
                 <Badge v-if="registration.isVegan" variant="outline" class="gap-1 font-normal">
                   <Icon name="lucide:sprout" class="h-3 w-3" />
                   Vegan
@@ -576,8 +769,13 @@ function formatShortDate(date?: string) {
                 <Icon name="lucide:alert-triangle" class="h-3.5 w-3.5" />
                 Allergies alimentaires
               </p>
+              <Input
+                v-if="isEditing"
+                v-model="editForm.allergens"
+                placeholder="Ex : gluten, lactose…"
+              />
               <div
-                v-if="registration.allergens"
+                v-else-if="registration.allergens"
                 class="rounded-lg border bg-muted/30 px-3 py-2 text-sm"
               >
                 {{ registration.allergens }}
