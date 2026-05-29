@@ -56,3 +56,25 @@ export function sortSelectedActivityIdsByDate(
     compareActivitiesByDate(byId.get(a) ?? {}, byId.get(b) ?? {}),
   );
 }
+
+export function sortRegistrationMealsByDate<
+  T extends { meal?: { date?: DateLike; mealType?: string | null } | null },
+>(items: readonly T[]): T[] {
+  return [...items].sort((a, b) =>
+    compareMealsByDate(a.meal ?? {}, b.meal ?? {}),
+  );
+}
+
+export function sortRegistrationActivitiesByDate<
+  T extends {
+    activity?: {
+      date?: DateLike;
+      startTime?: string | null;
+      allDay?: boolean | null;
+    } | null;
+  },
+>(items: readonly T[]): T[] {
+  return [...items].sort((a, b) =>
+    compareActivitiesByDate(a.activity ?? {}, b.activity ?? {}),
+  );
+}

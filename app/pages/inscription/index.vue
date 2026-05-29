@@ -10,10 +10,6 @@ import {
   StepperSeparator,
 } from "@/components/ui/stepper";
 import type { Activity, Iut, Meal } from "~/types/registration";
-import {
-  sortSelectedMealsByDate,
-  sortSelectedActivityIdsByDate,
-} from "~/utils/sortRegistrationItems";
 
 definePageMeta({
   layout: "default",

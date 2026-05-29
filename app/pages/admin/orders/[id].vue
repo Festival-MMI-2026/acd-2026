@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
-import {
-  compareMealsByDate,
-  compareActivitiesByDate,
-} from "~/utils/sortRegistrationItems";
 
 definePageMeta({
   layout: "admin",

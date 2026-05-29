@@ -120,7 +120,11 @@ function formatDate(date: string) {
           présents
         </p>
       </div>
-      <Button variant="outline" class="rounded-full">
+      <Button
+        variant="outline"
+        class="rounded-full"
+        @click="router.push('/admin/export')"
+      >
         <Icon name="lucide:download" class="h-4 w-4" />
         Exporter
       </Button>
