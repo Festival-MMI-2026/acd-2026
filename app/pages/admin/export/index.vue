@@ -1,10 +1,92 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
 import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 definePageMeta({
   layout: "admin",
 });
+
+// ── Export traiteur (par repas) ───────────────────────────────
+interface MealLite {
+  id: string;
+  name: string;
+  date: string;
+  mealType: "LUNCH" | "DINNER";
+}
+
+const meals = ref<MealLite[]>([]);
+const selectedMealId = ref<string | undefined>(undefined);
+const catererScope = ref<"active" | "confirmed" | "all">("active");
+const includeSummary = ref(true);
+const isExportingMeal = ref(false);
+
+const mealLabel = (m: MealLite) => {
+  const d = new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Paris",
+  }).format(new Date(m.date));
+  const service = m.mealType === "DINNER" ? "Soir" : "Midi";
+  // Capitalise le jour
+  const day = d.charAt(0).toUpperCase() + d.slice(1);
+  return `${m.name} — ${day} (${service})`;
+};
+
+const selectedMeal = computed(() =>
+  meals.value.find((m) => m.id === selectedMealId.value),
+);
+
+const fetchMeals = async () => {
+  try {
+    meals.value = await $fetch<MealLite[]>("/api/meals");
+  } catch (err) {
+    console.error("Error fetching meals:", err);
+  }
+};
+
+const handleCatererExport = async () => {
+  if (!selectedMealId.value) {
+    toast.error("Veuillez sélectionner un repas");
+    return;
+  }
+  isExportingMeal.value = true;
+  try {
+    const csv = await $fetch<string>(
+      `/api/export/meal/${selectedMealId.value}`,
+      {
+        query: {
+          scope: catererScope.value,
+          summary: includeSummary.value ? "1" : "0",
+        },
+      },
+    );
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const m = selectedMeal.value;
+    const service = m?.mealType === "DINNER" ? "soir" : "midi";
+    link.href = url;
+    link.download = `traiteur_${service}_${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Export traiteur téléchargé");
+  } catch (err: any) {
+    console.error("Caterer export error:", err);
+    toast.error(err.data?.statusMessage || "Erreur lors de l'export");
+  } finally {
+    isExportingMeal.value = false;
+  }
+};
 
 const filterByDate = ref(false);
 const startDate = ref<Date | null>(null);
@@ -147,6 +229,7 @@ const handleExport = async () => {
 
 onMounted(() => {
   fetchCounts();
+  fetchMeals();
 });
 </script>
 
@@ -173,6 +256,78 @@ onMounted(() => {
         <Icon v-else name="lucide:download" class="h-4 w-4" />
         {{ isExporting ? "Export en cours..." : "Exporter" }}
       </Button>
+    </div>
+
+    <!-- Export traiteur (par repas) -->
+    <div class="border rounded-lg bg-card p-4 sm:p-5 space-y-4">
+      <div class="flex items-start gap-3">
+        <div
+          class="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"
+        >
+          <Icon name="lucide:chef-hat" class="h-4 w-4 text-primary" />
+        </div>
+        <div class="min-w-0">
+          <h2 class="text-sm font-semibold">Export traiteur (par repas)</h2>
+          <p class="text-xs text-muted-foreground">
+            Liste complète des inscrits d'un repas (midi ou soir) avec le détail
+            du menu — entrée, plat, fromage, dessert — les régimes alimentaires
+            et un récapitulatif des quantités par plat.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1.5">
+          <Label class="text-xs">Repas à exporter</Label>
+          <Select v-model="selectedMealId">
+            <SelectTrigger class="w-full">
+              <SelectValue placeholder="Choisir un repas (jour + service)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="m in meals" :key="m.id" :value="m.id">
+                {{ mealLabel(m) }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="space-y-1.5">
+          <Label class="text-xs">Inscriptions à inclure</Label>
+          <Select v-model="catererScope">
+            <SelectTrigger class="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">
+                Confirmées + en attente (hors annulées)
+              </SelectItem>
+              <SelectItem value="confirmed">Confirmées uniquement</SelectItem>
+              <SelectItem value="all">Toutes (annulées incluses)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1"
+      >
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <Switch v-model="includeSummary" />
+          <span class="text-sm">Inclure le récapitulatif des quantités</span>
+        </label>
+        <Button
+          class="rounded-full"
+          :disabled="isExportingMeal || !selectedMealId"
+          @click="handleCatererExport"
+        >
+          <Icon
+            v-if="isExportingMeal"
+            name="lucide:loader-2"
+            class="h-4 w-4 animate-spin"
+          />
+          <Icon v-else name="lucide:download" class="h-4 w-4" />
+          {{ isExportingMeal ? "Export en cours..." : "Exporter pour le traiteur" }}
+        </Button>
+      </div>
     </div>
 
     <!-- Data Selection -->

@@ -1,3 +1,19 @@
+// Échappe une valeur pour une cellule CSV : entoure de quotes si elle contient
+// un séparateur (; ,), une quote ou un saut de ligne, et double les quotes internes.
+export function csvCell(val: unknown): string {
+  if (val === null || val === undefined) return "";
+  const s = String(val);
+  if (/[;,"\n\r]/.test(s)) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+// Sérialise des lignes (tableaux de cellules) en CSV avec ; comme séparateur.
+export function rowsToCsv(rows: unknown[][]): string {
+  return rows.map((r) => r.map(csvCell).join(";")).join("\n");
+}
+
 // Parseur CSV minimal mais correct : gère les cellules entre quotes, les
 // quotes échappées (""), les sauts de ligne à l'intérieur d'une cellule, et
 // accepte ; ou , comme délimiteur (auto-détecté ligne par ligne).
